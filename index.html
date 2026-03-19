@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test KimmMovie</title>
+    <style>
+        body { background: #141414; color: white; font-family: sans-serif; text-align: center; }
+        .movie-card { border: 1px solid #444; padding: 20px; border-radius: 10px; display: inline-block; margin-top: 50px; }
+        img { border-radius: 8px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>KimmMovie Net - API Test</h1>
+    <div id="display">Memuat film...</div>
+
+    <script>
+        // GANTI 'ISI_API_KEY_KAMU' DENGAN API KEY (V3 AUTH) DARI TMDB
+        const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0'; 
+        const URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID`;
+
+        async function fetchMovie() {
+            try {
+                const response = await fetch(URL);
+                const data = await response.json();
+                const movie = data.results[0]; // Ambil film terpopuler nomor 1
+
+                document.getElementById('display').innerHTML = `
+                    <div class="movie-card">
+                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" />
+                        <h2>${movie.title}</h2>
+                        <p>Rating: ⭐ ${movie.vote_average}</p>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById('display').innerText = "Gagal! Cek API Key kamu lagi.";
+            }
+        }
+        fetchMovie();
+    </script>
+</body>
+</html>
