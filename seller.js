@@ -1,5 +1,19 @@
 let currentPage = 1;
         let currentUrl = "";
+function toggleBookmark(id, title) {
+    let favorites = JSON.parse(localStorage.getItem('kimm_fav')) || [];
+    const index = favorites.indexOf(id);
+    
+    if (index === -1) {
+        favorites.push(id);
+        alert(`Film ${title} ditambahkan ke favorit!`);
+    } else {
+        favorites.splice(index, 1);
+        alert(`Film ${title} dihapus dari favorit.`);
+    }
+    localStorage.setItem('kimm_fav', JSON.stringify(favorites));
+    ambilDataFilm(); // Refresh tampilan
+}
 
         async function masukKeHome() {
             profile.style.display = 'none';
