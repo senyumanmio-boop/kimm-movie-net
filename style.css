@@ -1,0 +1,19 @@
+/* Banner Hero ala MovieBox */
+        #hero-banner {
+            height: 70vh;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            padding: 50px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+        #hero-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, #000, transparent);
+        }
+        .hero-content { position: relative; z-index: 10; max-width: 600px; }
