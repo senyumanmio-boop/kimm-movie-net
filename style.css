@@ -1,3 +1,24 @@
+<style>
+/* Menghilangkan scrollbar tapi tetap bisa digeser */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Ukuran kartu film khusus slider */
+.flex-card {
+    min-width: 160px; /* Atur lebar poster */
+    transition: transform 0.3s ease;
+}
+.flex-card:hover {
+    transform: scale(1.05);
+}
+</style>
+
+
 /* Banner Hero ala MovieBox */
         #hero-banner {
             height: 70vh;
