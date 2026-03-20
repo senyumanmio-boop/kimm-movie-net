@@ -1,13 +1,13 @@
-// --- KONSTANTA & VARIABEL ---
+// --- 1. KONSTANTA & VARIABEL ---
 const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 
 let currentPage = 1;
 let currentUrl = "";
-const container = document.getElementById('movie-list'); // Pastikan ID ini ada di HTML
+const container = document.getElementById('movie-list'); 
 
-// --- 1. FITUR BOOKMARK (LOCAL STORAGE) ---
+// --- 2. FITUR BOOKMARK (LOCAL STORAGE) ---
 function toggleBookmark(e, id, title) {
     e.stopPropagation(); // Biar pas klik Love, modal detail gak kebuka
     let favorites = JSON.parse(localStorage.getItem('kimm_fav')) || [];
@@ -22,14 +22,13 @@ function toggleBookmark(e, id, title) {
     }
     localStorage.setItem('kimm_fav', JSON.stringify(favorites));
     
-    // Update tampilan tombol love tanpa refresh halaman
-    const btn = e.target;
-    btn.classList.toggle('text-red-600');
+    // Update warna hati tanpa refresh
+    const icon = e.target;
+    icon.classList.toggle('text-red-600');
 }
 
-// --- 2. FITUR SKELETON LOADING ---
+// --- 3. FITUR SKELETON LOADING (EFEK KEDIP) ---
 function tampilkanSkeleton() {
-    // Kita nggak hapus semua konten kalau lagi Load More
     const skeletons = Array(10).fill(`<div class="skeleton h-72 rounded-xl"></div>`).join('');
     if (currentPage === 1) {
         container.innerHTML = skeletons;
@@ -42,10 +41,13 @@ function tampilkanSkeleton() {
     }
 }
 
-// --- 3. LOGIKA AMBIL DATA ---
+// --- 4. LOGIKA AMBIL DATA ---
 async function masukKeHome() {
-    profile.style.display = 'none';
+    // Pastikan variabel 'profile' dan 'main' sudah didefinisikan di HTML kamu
+    document.getElementById('profile-screen').style.display = 'none'; 
+    const main = document.getElementById('main-content');
     main.classList.remove('hidden');
+    
     setTimeout(() => { 
         main.style.opacity = '1'; 
         currentUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID`;
@@ -55,16 +57,21 @@ async function masukKeHome() {
 
 async function ambilDataFilm(url, isLoadMore = false) {
     try {
-        if (!isLoadMore) currentPage = 1;
+        if (!isLoadMore) {
+            currentPage = 1;
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+        
         tampilkanSkeleton();
 
         const res = await fetch(`${url}&page=${currentPage}`);
         const data = await res.json();
         
-        // Hapus skeleton setelah data datang
+        // Hapus skeleton setelah data muncul
         const tempSkeleton = document.getElementById('temp-skeleton');
         if (tempSkeleton) tempSkeleton.remove();
 
+        // Set Banner cuma di halaman 1
         if (currentPage === 1 && data.results.length > 0) {
             setHero(data.results[0]);
         }
@@ -79,11 +86,11 @@ function setHero(hero) {
     const banner = document.getElementById('hero-banner');
     banner.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${hero.backdrop_path})`;
     document.getElementById('hero-title').innerText = hero.title;
-    document.getElementById('hero-desc').innerText = hero.overview;
+    document.getElementById('hero-desc').innerText = hero.overview || "Nikmati film terbaik di KimmMovie.";
     document.getElementById('hero-nonton').onclick = () => window.open(`https://vidsrc.to/embed/movie/${hero.id}`, '_blank');
 }
 
-// --- 4. TAMPILKAN FILM (DENGAN TOMBOL FAVORIT & MODAL) ---
+// --- 5. TAMPILKAN DAFTAR FILM ---
 function tampilkanFilm(movies, isLoadMore) {
     if (!isLoadMore) container.innerHTML = ""; 
     
@@ -94,13 +101,13 @@ function tampilkanFilm(movies, isLoadMore) {
         const card = document.createElement('div');
         card.className = "movie-card flex flex-col shadow-lg shadow-black/50 relative cursor-pointer";
         
-        // Pas kartu diklik (kecuali tombol), buka modal detail
+        // Buka modal kalau kartu diklik
         card.onclick = () => bukaDetail(movie.id);
 
         card.innerHTML = `
             <div class="relative group h-72 overflow-hidden">
                 <div onclick="toggleBookmark(event, ${movie.id}, '${movie.title.replace(/'/g, "\\'")}')" class="absolute top-2 right-2 z-50 bg-black/50 p-2 rounded-full hover:scale-110 transition">
-                    <span class="heart-icon ${isFav}">❤</span>
+                    <span class="heart-icon ${isFav} transition-colors">❤</span>
                 </div>
                 <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500x750'}" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-2 text-center p-4">
@@ -112,45 +119,52 @@ function tampilkanFilm(movies, isLoadMore) {
                 <h2 class="font-bold text-[12px] mb-1 truncate">${movie.title}</h2>
                 <div class="flex justify-between items-center">
                     <p class="text-[10px] text-yellow-500 font-bold italic">⭐ ${movie.vote_average.toFixed(1)}</p>
-                    <p class="text-[9px] text-gray-500">${movie.release_date ? movie.release_date.split('-')[0] : ''}</p>
+                    <p class="text-[9px] text-gray-500">${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
                 </div>
             </div>`;
         container.appendChild(card);
     });
 }
 
-// --- 5. MODAL DETAIL & TRAILER ---
+// --- 6. MODAL DETAIL (AKTOR, TAHUN, DESKRIPSI) ---
 async function bukaDetail(id) {
-    const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits,videos`);
-    const movie = await res.json();
-    
-    const modal = document.getElementById('movieModal');
-    const content = document.getElementById('modalContent');
-    const casts = movie.credits.cast.slice(0, 5).map(c => c.name).join(", ");
-    
-    content.innerHTML = `
-        <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-1/3 object-cover">
-        <div class="p-8 flex flex-col justify-center">
-            <h2 class="text-4xl font-black mb-2">${movie.title}</h2>
-            <div class="flex gap-4 mb-4 text-sm font-bold text-red-500">
-                <span>⭐ ${movie.vote_average.toFixed(1)}</span>
-                <span>📅 ${movie.release_date}</span>
+    try {
+        const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits`);
+        const movie = await res.json();
+        
+        const modal = document.getElementById('movieModal');
+        const content = document.getElementById('modalContent');
+        
+        // Ambil 5 nama aktor
+        const casts = movie.credits.cast.slice(0, 5).map(c => c.name).join(", ");
+        
+        content.innerHTML = `
+            <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-1/3 object-cover h-full">
+            <div class="p-8 flex flex-col justify-center">
+                <h2 class="text-3xl md:text-5xl font-black mb-2">${movie.title}</h2>
+                <div class="flex gap-4 mb-4 text-sm font-bold text-red-500">
+                    <span>⭐ ${movie.vote_average.toFixed(1)}</span>
+                    <span>📅 ${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
+                </div>
+                <p class="text-gray-300 text-sm mb-6 leading-relaxed">${movie.overview || 'Tidak ada deskripsi tersedia.'}</p>
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-6 font-bold">Aktor Utama: ${casts || 'Informasi tidak tersedia'}</p>
+                <div class="flex gap-4">
+                    <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-8 py-3 rounded-full font-black text-xs hover:bg-red-700 transition">NONTON SEKARANG</button>
+                    <button onclick="tutupModal()" class="bg-gray-800 px-8 py-3 rounded-full font-black text-xs hover:bg-gray-700 transition">TUTUP</button>
+                </div>
             </div>
-            <p class="text-gray-300 text-sm mb-6">${movie.overview || 'Tidak ada deskripsi.'}</p>
-            <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-6">Aktor: ${casts}</p>
-            <div class="flex gap-4">
-                <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-8 py-3 rounded-full font-black text-xs">NONTON SEKARANG</button>
-                <button onclick="tutupModal()" class="bg-gray-700 px-8 py-3 rounded-full font-black text-xs">TUTUP</button>
-            </div>
-        </div>
-    `;
-    modal.classList.remove('hidden');
+        `;
+        modal.classList.remove('hidden');
+    } catch (err) {
+        console.error("Gagal memuat detail:", err);
+    }
 }
 
 function tutupModal() {
     document.getElementById('movieModal').classList.add('hidden');
 }
 
+// --- 7. TRAILER ---
 async function getTrailer(id) {
     const res = await fetch(`${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}`);
     const data = await res.json();
@@ -159,7 +173,7 @@ async function getTrailer(id) {
     else alert("Trailer tidak ditemukan.");
 }
 
-// --- 6. EVENT LISTENER ---
+// --- 8. EVENT LISTENER ---
 document.getElementById('loadMore').addEventListener('click', () => {
     currentPage++;
     ambilDataFilm(currentUrl, true);
