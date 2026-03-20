@@ -3,40 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test KimmMovie</title>
+    <title>KimmMovie Net - Portal Film Akimm</title>
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/DZ3yMyM3/lalala-removebg-preview.png">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #141414; color: white; font-family: sans-serif; text-align: center; }
-        .movie-card { border: 1px solid #444; padding: 20px; border-radius: 10px; display: inline-block; margin-top: 50px; }
-        img { border-radius: 8px; width: 200px; }
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap');
+        body { 
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://i.postimg.cc/CLXSzxHk/hauhaha.jpg'); 
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden;
+        }
+        #intro-screen { position: fixed; inset: 0; background: black; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 1s ease; }
+        #intro-h { font-family: 'Bebas Neue', sans-serif; font-size: clamp(100px, 20vw, 200px); color: #e50914; animation: zoomIn 1.5s ease-out forwards; }
+        @keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        #login-screen, #profile-screen { position: fixed; inset: 0; background: #000; display: none; align-items: center; justify-content: center; z-index: 9000; text-align: center; }
+        .btn-cat { background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; font-size: 10px; font-weight: 900; transition: 0.3s; white-space: nowrap; }
+        .btn-cat.active { background: #e50914; }
+        .movie-card { background: #181818; border-radius: 12px; overflow: hidden; transition: 0.3s; }
+        .movie-card:hover { transform: scale(1.05); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <h1>KimmMovie Net - API Test</h1>
-    <div id="display">Memuat film...</div>
+
+    <div id="intro-screen"><div id="intro-h">H</div></div>
+
+    <div id="login-screen">
+        <div class="px-6 w-full max-w-sm">
+            <h2 class="text-4xl font-black italic mb-8 text-red-600">KimmMovie</h2>
+            <input type="text" id="userNameInput" placeholder="Nama kamu..." class="w-full bg-[#222] p-4 rounded-xl mb-4 outline-none border border-white/10 text-center">
+            <button onclick="handleLogin()" class="w-full bg-[#e50914] py-4 rounded-xl font-black tracking-widest">MASUK</button>
+        </div>
+    </div>
+
+    <div id="profile-screen" class="flex-col">
+        <h1 class="text-2xl font-bold mb-10">Siapa yang menonton?</h1>
+        <div onclick="masukKeHome()" class="cursor-pointer group">
+            <img src="https://i.postimg.cc/sfYkhBMX/image.png" class="w-32 h-32 rounded-xl mb-4 group-hover:ring-4 ring-white transition">
+            <p id="display-name" class="text-xl font-bold text-gray-400 group-hover:text-white">User</p>
+        </div>
+    </div>
+
+    <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000">
+        <header class="pt-10 pb-6 text-center">
+            <h1 class="text-4xl md:text-7xl font-black italic mb-2"><span class="text-red-600">Kimm</span>Movie</h1>
+            <div class="flex overflow-x-auto justify-center gap-2 p-4 mb-6">
+                <button onclick="filterKategori('Semua', this)" class="btn-cat active">Semua</button>
+                <button onclick="filterKategori('Horor', this)" class="btn-cat">Horor</button>
+                <button onclick="filterKategori('Komedi', this)" class="btn-cat">Komedi</button>
+                <button onclick="filterKategori('Animasi', this)" class="btn-cat">Animasi</button>
+            </div>
+            <div class="max-w-md mx-auto px-6">
+                <input type="text" id="searchInput" placeholder="Cari film... (Tekan Enter)" class="w-full bg-white/5 border border-white/10 rounded-full py-3 px-6 outline-none focus:border-red-600 text-center">
+            </div>
+        </header>
+        <main class="max-w-7xl mx-auto p-4">
+            <div id="movie-list" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+        </main>
+    </div>
 
     <script>
-        // GANTI 'ISI_API_KEY_KAMU' DENGAN API KEY (V3 AUTH) DARI TMDB
         const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0'; 
-        const URL = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID`;
+        const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 
-        async function fetchMovie() {
-            try {
-                const response = await fetch(URL);
-                const data = await response.json();
-                const movie = data.results[0]; // Ambil film terpopuler nomor 1
+        const intro = document.getElementById('intro-screen');
+        const login = document.getElementById('login-screen');
+        const profile = document.getElementById('profile-screen');
+        const main = document.getElementById('main-content');
+        const container = document.getElementById('movie-list');
+        const searchInput = document.getElementById('searchInput');
 
-                document.getElementById('display').innerHTML = `
-                    <div class="movie-card">
-                        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" />
-                        <h2>${movie.title}</h2>
-                        <p>Rating: ⭐ ${movie.vote_average}</p>
-                    </div>
-                `;
-            } catch (err) {
-                document.getElementById('display').innerText = "Gagal! Cek API Key kamu lagi.";
-            }
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                intro.style.opacity = '0';
+                setTimeout(() => { intro.style.display = 'none'; login.style.display = 'flex'; }, 1000);
+            }, 3000);
+        });
+
+        function handleLogin() {
+            const name = document.getElementById('userNameInput').value;
+            if (name.trim() !== "") {
+                document.getElementById('display-name').innerText = name;
+                login.style.display = 'none';
+                profile.style.display = 'flex';
+            } else { alert("Isi nama dulu bos!"); }
         }
-        fetchMovie();
+
+        async function masukKeHome() {
+            profile.style.display = 'none';
+            main.classList.remove('hidden');
+            setTimeout(() => { 
+                main.style.opacity = '1'; 
+                ambilDataFilm(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID`); 
+            }, 100);
+        }
+
+        async function ambilDataFilm(url) {
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                tampilkanFilm(data.results);
+            } catch (error) { console.error(error); }
+        }
+
+        function tampilkanFilm(movies) {
+            container.innerHTML = "";
+            if (!movies || movies.length === 0) return;
+            movies.forEach((movie, i) => {
+                const card = document.createElement('div');
+                card.className = "movie-card flex flex-col";
+                card.style.animation = `fadeIn 0.5s ease forwards ${i * 0.1}s`;
+                const searchLink = `https://www.google.com/search?q=nonton+${movie.title.replace(/\s+/g, '+')}`;
+                card.innerHTML = `
+                    <div class="relative group h-64 overflow-hidden">
+                        <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500'}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                            <a href="${searchLink}" target="_blank" class="border-2 border-white px-4 py-1 rounded-full text-[10px] font-bold">DETAIL</a>
+                        </div>
+                    </div>
+                    <div class="p-3 text-center bg-[#181818] flex-grow">
+                        <h2 class="font-bold text-[11px] mb-1 truncate">${movie.title}</h2>
+                        <p class="text-[9px] text-red-500 font-bold mb-2">⭐ ${movie.vote_average}</p>
+                        <a href="${searchLink}" target="_blank" class="block bg-red-600 py-2 rounded-lg text-[9px] font-black">NONTON</a>
+                    </div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function filterKategori(kat, btn) {
+            document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            let url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID`;
+            if (kat === 'Horor') url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=27&language=id-ID`;
+            if (kat === 'Komedi') url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=35&language=id-ID`;
+            if (kat === 'Animasi') url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=16&language=id-ID`;
+            ambilDataFilm(url);
+        }
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                ambilDataFilm(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${e.target.value}&language=id-ID`);
+            }
+        });
     </script>
 </body>
 </html>
