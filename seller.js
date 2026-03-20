@@ -1,3 +1,45 @@
+// --- FITUR SEARCH BAR CANGGIH ---
+document.getElementById('searchInput').addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter') {
+        const query = e.target.value.toLowerCase();
+        currentPage = 1;
+
+        if (query) {
+            let extraParams = "";
+            
+            // 1. Deteksi Negara (Origin Country)
+            if (query.includes("indonesia") || query.includes("indo")) extraParams += "&with_origin_country=ID";
+            if (query.includes("jepang") || query.includes("japan")) extraParams += "&with_origin_country=JP";
+            if (query.includes("korea")) extraParams += "&with_origin_country=KR";
+            if (query.includes("barat") || query.includes("hollywood")) extraParams += "&with_origin_country=US";
+
+            // 2. Deteksi Genre/Tipe
+            if (query.includes("horor") || query.includes("horror")) extraParams += "&with_genres=27";
+            if (query.includes("anime") || query.includes("animasi")) extraParams += "&with_genres=16";
+            if (query.includes("action") || query.includes("aksi")) extraParams += "&with_genres=28";
+            if (query.includes("komedi") || query.includes("lucu")) extraParams += "&with_genres=35";
+            if (query.includes("romance") || query.includes("romantis")) extraParams += "&with_genres=10749";
+
+            // 3. Bersihkan kata kunci murni (menghapus kata bantu negara/genre agar tidak bentrok)
+            const cleanQuery = query.replace(/(indonesia|indo|jepang|japan|korea|barat|hollywood|horor|horror|anime|animasi|action|aksi|komedi|lucu|romance|romantis)/gi, "").trim();
+
+            // 4. Logika Penentuan URL
+            if (cleanQuery === "" && extraParams !== "") {
+                // Jika cuma ketik "Horor Indonesia", gunakan DISCOVER (lebih akurat untuk filter)
+                currentUrl = `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=id-ID${extraParams}`;
+            } else {
+                // Jika ketik "Spiderman", gunakan SEARCH standar
+                currentUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${cleanQuery}&language=id-ID${extraParams}`;
+            }
+        } else {
+            // Jika kolom search kosong, balik ke populer
+            currentUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID`;
+        }
+        
+        ambilDataFilm(currentUrl, false);
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    }
+});
 // --- 1. KONSTANTA & VARIABEL ---
 const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
 const BASE_URL = 'https://api.themoviedb.org/3';
