@@ -65,6 +65,7 @@
     <script>
         const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0'; 
         const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
+        const BASE_URL = 'https://api.themoviedb.org/3';
 
         const intro = document.getElementById('intro-screen');
         const login = document.getElementById('login-screen');
@@ -94,7 +95,7 @@
             main.classList.remove('hidden');
             setTimeout(() => { 
                 main.style.opacity = '1'; 
-                ambilDataFilm(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID`); 
+                ambilDataFilm(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID`); 
             }, 100);
         }
 
@@ -106,25 +107,45 @@
             } catch (error) { console.error(error); }
         }
 
+        // FUNGSI BARU: Ambil Link Trailer
+        async function getTrailer(id) {
+            const res = await fetch(`${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}`);
+            const data = await res.json();
+            const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+            if(trailer) {
+                window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank');
+            } else {
+                alert("Yah, trailernya belum ada di database TMDB.");
+            }
+        }
+
         function tampilkanFilm(movies) {
             container.innerHTML = "";
-            if (!movies || movies.length === 0) return;
+            if (!movies || movies.length === 0) {
+                container.innerHTML = "<p class='text-center col-span-5'>Film tidak ditemukan. Coba ketik judul aslinya (Inggris).</p>";
+                return;
+            }
+
             movies.forEach((movie, i) => {
                 const card = document.createElement('div');
                 card.className = "movie-card flex flex-col";
                 card.style.animation = `fadeIn 0.5s ease forwards ${i * 0.1}s`;
-                const searchLink = `https://www.google.com/search?q=nonton+${movie.title.replace(/\s+/g, '+')}`;
+                
+                // Link Nonton (Google Search otomatis)
+                const watchLink = `https://www.google.com/search?q=nonton+${movie.title.replace(/\s+/g, '+')}`;
+
                 card.innerHTML = `
                     <div class="relative group h-64 overflow-hidden">
                         <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500'}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                            <a href="${searchLink}" target="_blank" class="border-2 border-white px-4 py-1 rounded-full text-[10px] font-bold">DETAIL</a>
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-2">
+                            <button onclick="getTrailer(${movie.id})" class="bg-white text-black px-4 py-1 rounded-full text-[10px] font-bold">TRAILER</button>
+                            <a href="${watchLink}" target="_blank" class="border-2 border-white px-4 py-1 rounded-full text-[10px] font-bold">NONTON</a>
                         </div>
                     </div>
                     <div class="p-3 text-center bg-[#181818] flex-grow">
                         <h2 class="font-bold text-[11px] mb-1 truncate">${movie.title}</h2>
                         <p class="text-[9px] text-red-500 font-bold mb-2">⭐ ${movie.vote_average}</p>
-                        <a href="${searchLink}" target="_blank" class="block bg-red-600 py-2 rounded-lg text-[9px] font-black">NONTON</a>
+                        <button onclick="getTrailer(${movie.id})" class="block w-full bg-red-600 py-2 rounded-lg text-[9px] font-black mb-1">LIHAT TRAILER</button>
                     </div>`;
                 container.appendChild(card);
             });
@@ -133,18 +154,18 @@
         function filterKategori(kat, btn) {
             document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            let url = `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=id-ID`;
-            if (kat === 'Horor') url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=27&language=id-ID`;
-            if (kat === 'Komedi') url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=35&language=id-ID`;
-            if (kat === 'Animasi') url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=16&language=id-ID`;
+            let url = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID`;
+            if (kat === 'Horor') url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&language=id-ID`;
+            if (kat === 'Komedi') url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=35&language=id-ID`;
+            if (kat === 'Animasi') url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16&language=id-ID`;
             ambilDataFilm(url);
         }
 
+        // PENCARIAN LEBIH PINTAR
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                ambilDataFilm(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${e.target.value}&language=id-ID`);
+                const query = e.target.value;
+                // Kita hapus language=id-ID saat mencari judul agar lebih luas jangkauannya
+                ambilDataFilm(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`);
             }
         });
-    </script>
-</body>
-</html>
