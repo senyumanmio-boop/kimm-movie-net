@@ -121,10 +121,35 @@
 
         function tampilkanFilm(movies) {
             container.innerHTML = "";
-            if (!movies || movies.length === 0) {
-                container.innerHTML = "<p class='text-center col-span-5'>Film tidak ditemukan. Coba ketik judul aslinya (Inggris).</p>";
-                return;
-            }
+            if (!movies || movies.length === 0) return;
+
+            movies.forEach((movie, i) => {
+                const card = document.createElement('div');
+                card.className = "movie-card flex flex-col";
+                card.style.animation = `fadeIn 0.5s ease forwards ${i * 0.1}s`;
+                
+                // TRIK NONTON: Otomatis cari di Google dengan parameter "nonton" + judul film
+                const searchNonton = `https://www.google.com/search?q=nonton+full+movie+${movie.title.replace(/\s+/g, '+')}+sub+indo`;
+
+                card.innerHTML = `
+                    <div class="relative group h-64 overflow-hidden">
+                        <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500'}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-2">
+                            <button onclick="getTrailer(${movie.id})" class="bg-white text-black px-4 py-1 rounded-full text-[10px] font-bold">TRAILER</button>
+                            <a href="${searchNonton}" target="_blank" class="bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-bold">NONTON FULL</a>
+                        </div>
+                    </div>
+                    <div class="p-3 text-center bg-[#181818] flex-grow">
+                        <h2 class="font-bold text-[11px] mb-1 truncate">${movie.title}</h2>
+                        <p class="text-[9px] text-red-500 font-bold mb-2">⭐ ${movie.vote_average}</p>
+                        <div class="flex gap-1">
+                             <button onclick="getTrailer(${movie.id})" class="flex-1 bg-gray-700 py-2 rounded-lg text-[8px] font-black">TRAILER</button>
+                             <a href="${searchNonton}" target="_blank" class="flex-1 bg-red-600 py-2 rounded-lg text-[8px] font-black flex items-center justify-center">NONTON</a>
+                        </div>
+                    </div>`;
+                container.appendChild(card);
+            });
+        }
 
             movies.forEach((movie, i) => {
                 const card = document.createElement('div');
