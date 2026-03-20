@@ -136,14 +136,29 @@
                 card.style.animation = `fadeIn 0.5s ease forwards ${i * 0.1}s`;
                 
                 // Link Nonton Otomatis
-                const searchNonton = `https://www.google.com/search?q=nonton+full+movie+${movie.title.replace(/\s+/g, '+')}+sub+indo`;
+               function tampilkanFilm(movies) {
+            container.innerHTML = "";
+            if (!movies || movies.length === 0) {
+                container.innerHTML = "<p class='text-center col-span-2 md:col-span-5'>Film tidak ditemukan...</p>";
+                return;
+            }
+
+            movies.forEach((movie, i) => {
+                const card = document.createElement('div');
+                card.className = "movie-card flex flex-col shadow-lg shadow-black/50";
+                card.style.animation = `fadeIn 0.5s ease forwards ${i * 0.1}s`;
+                
+                // --- INI PERUBAHANNYA ---
+                // Pakai vidsrc.to atau vidsrc.me (Database film otomatis berdasarkan ID TMDB)
+                const linkNonton = `https://vidsrc.to/embed/movie/${movie.id}`;
+                // ------------------------
 
                 card.innerHTML = `
                     <div class="relative group h-64 overflow-hidden">
                         <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster'}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-2">
                             <button onclick="getTrailer(${movie.id})" class="bg-white text-black px-4 py-1 rounded-full text-[10px] font-bold">TRAILER</button>
-                            <a href="${searchNonton}" target="_blank" class="bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-bold">NONTON FULL</a>
+                            <a href="${linkNonton}" target="_blank" class="bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-bold">NONTON FULL</a>
                         </div>
                     </div>
                     <div class="p-3 text-center bg-[#181818] flex-grow">
@@ -151,7 +166,7 @@
                         <p class="text-[9px] text-red-500 font-bold mb-2">⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : '0'}</p>
                         <div class="flex gap-1">
                              <button onclick="getTrailer(${movie.id})" class="flex-1 bg-gray-700 py-2 rounded-lg text-[8px] font-black">TRAILER</button>
-                             <a href="${searchNonton}" target="_blank" class="flex-1 bg-red-600 py-2 rounded-lg text-[8px] font-black flex items-center justify-center">NONTON</a>
+                             <a href="${linkNonton}" target="_blank" class="flex-1 bg-red-600 py-2 rounded-lg text-[8px] font-black flex items-center justify-center">NONTON</a>
                         </div>
                     </div>`;
                 container.appendChild(card);
