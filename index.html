@@ -74,61 +74,104 @@
         </div>
     </div>
 
-    <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000">
+    <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000 pb-32">
         
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Cari Film, Genre, Negara..." class="w-full bg-black/40 backdrop-blur-md border border-white/20 py-3 px-6 rounded-full outline-none focus:border-red-600 transition text-sm">
         </div>
 
-        <div id="hero-banner">
-            <div class="hero-content">
-                <span class="bg-red-600 text-[10px] font-black px-3 py-1 rounded-sm mb-4 inline-block tracking-tighter">FEATURED CONTENT</span>
-                <h1 id="hero-title" class="text-6xl md:text-8xl font-black italic mb-4 leading-none uppercase tracking-tighter text-white">...</h1>
-                <p id="hero-desc" class="text-gray-300 text-sm md:text-base mb-8 line-clamp-3 max-w-xl font-medium"></p>
-                <div class="flex gap-4">
-                    <button id="hero-btn-nonton" class="bg-white text-black px-10 py-4 rounded-full font-black hover:bg-red-600 hover:text-white transition duration-500 shadow-xl text-xs tracking-widest">PLAY NOW</button>
-                    <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full font-black hover:bg-white/20 transition duration-500 text-xs tracking-widest uppercase">Trailer</button>
+        <div id="tab-home" class="tab-content">
+            <div id="hero-banner">
+                <div class="hero-content">
+                    <span class="bg-red-600 text-[10px] font-black px-3 py-1 rounded-sm mb-4 inline-block tracking-tighter uppercase">Hot Picks</span>
+                    <h1 id="hero-title" class="text-6xl md:text-8xl font-black italic mb-4 leading-none uppercase tracking-tighter text-white">...</h1>
+                    <p id="hero-desc" class="text-gray-300 text-sm md:text-base mb-8 line-clamp-3 max-w-xl font-medium"></p>
+                    <div class="flex gap-4">
+                        <button id="hero-btn-nonton" class="bg-white text-black px-10 py-4 rounded-full font-black hover:bg-red-600 hover:text-white transition duration-500 shadow-xl text-xs tracking-widest uppercase">Play Now</button>
+                        <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full font-black hover:bg-white/20 transition duration-500 text-xs tracking-widest uppercase">Trailer</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="py-10 space-y-12">
+                <div class="px-8">
+                    <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Trending <span class="text-red-600">Minggu Ini</span></h2>
+                    <div id="trending-list" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth pb-4"></div>
+                </div>
+                <div class="px-8">
+                    <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Populer <span class="text-red-600">Di KimmMovie</span></h2>
+                    <div id="home-recommend" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth pb-4"></div>
                 </div>
             </div>
         </div>
 
-        <div id="categories-section" class="py-10 space-y-12">
+        <div id="tab-movie" class="tab-content hidden pt-24">
+            <div class="px-8 mb-10">
+                <h1 class="text-5xl font-black italic tracking-tighter uppercase leading-none">Katalog <span class="text-red-600">Film</span></h1>
+                <p class="text-gray-500 text-[10px] font-black tracking-[0.3em] uppercase mt-2">Eksplorasi Tanpa Batas</p>
+            </div>
             
-            <div class="px-8">
-                <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Trending <span class="text-red-600">Sekarang</span></h2>
-                <div id="trending-list" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth pb-4"></div>
-            </div>
-
-            <div class="px-8">
-                <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Film <span class="text-red-600">Indonesia</span></h2>
-                <div id="indo-list" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth pb-4"></div>
-            </div>
-
-            <div class="px-8">
-                <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Hollywood <span class="text-red-600">Hits</span></h2>
-                <div id="hollywood-list" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth pb-4"></div>
-            </div>
-
-            <div class="px-8">
-                <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Pojok <span class="text-red-600">Horor</span></h2>
-                <div id="horror-list" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth pb-4"></div>
-            </div>
-
-            <div class="px-8">
-                <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Anime & <span class="text-red-600">Kartun</span></h2>
-                <div id="anime-list" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth pb-4"></div>
+            <div class="space-y-12">
+                <div class="px-8">
+                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter">Film Indonesia</h2>
+                    <div id="list-indo" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
+                </div>
+                <div class="px-8">
+                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter">Hollywood Hits</h2>
+                    <div id="list-hollywood" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
+                </div>
+                <div class="px-8">
+                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter">Drama Korea</h2>
+                    <div id="list-korea" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
+                </div>
+                <div class="px-8">
+                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter">Film Thailand</h2>
+                    <div id="list-thailand" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
+                </div>
+                <div class="px-8">
+                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter">Action & Adventure</h2>
+                    <div id="list-action" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
+                </div>
+                <div class="px-8">
+                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter">Pojok Horor</h2>
+                    <div id="list-horror" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
+                </div>
+                <div class="px-8">
+                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter">Anime & Kartun</h2>
+                    <div id="list-anime" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
+                </div>
             </div>
         </div>
 
         <div id="search-result-section" class="hidden p-8 pt-24">
             <div class="flex items-center justify-between mb-10">
-                <h2 id="search-title" class="text-3xl font-black italic uppercase tracking-tighter">Hasil <span class="text-red-600">Pencarian</span></h2>
-                <button onclick="backToHome()" class="text-xs font-bold text-gray-400 hover:text-white underline uppercase tracking-widest">Kembali ke Beranda</button>
+                <h2 id="search-title" class="text-3xl font-black italic uppercase tracking-tighter text-red-600">Hasil Pencarian</h2>
+                <button onclick="backToHome()" class="text-[10px] font-black text-gray-400 hover:text-white underline uppercase tracking-widest">Tutup</button>
             </div>
             <div id="movie-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8"></div>
         </div>
 
+        <nav class="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-2xl border-t border-white/5 z-[1000] py-4 flex justify-around items-center">
+            <button onclick="pindahTab('home')" id="btn-home" class="flex flex-col items-center gap-1 text-red-600 transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="text-[9px] font-black uppercase tracking-tighter">Home</span>
+            </button>
+            <button onclick="pindahTab('movie')" id="btn-movie" class="flex flex-col items-center gap-1 text-gray-500 transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
+                <span class="text-[9px] font-black uppercase tracking-tighter">Movies</span>
+            </button>
+        </nav>
+
     </div>
+
+    <div id="movieModal" class="hidden fixed inset-0 bg-black/95 z-[10000] flex items-center justify-center p-4">
+        <div class="bg-[#111] max-w-5xl w-full rounded-3xl overflow-hidden relative border border-white/10 shadow-2xl">
+            <button onclick="tutupModal()" class="absolute top-5 right-5 z-50 bg-black/50 w-10 h-10 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-red-600 transition">&times;</button>
+            <div id="modalContent" class="flex flex-col md:flex-row"></div>
+        </div>
+    </div>
+
+</body>
 
     <div id="movieModal" class="hidden fixed inset-0 bg-black/95 z-[10000] flex items-center justify-center p-4">
         <div class="bg-[#111] max-w-5xl w-full rounded-3xl overflow-hidden relative border border-white/10 shadow-2xl">
