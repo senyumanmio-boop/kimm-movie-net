@@ -77,7 +77,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 intro.style.opacity = '0';
-                setTimeout(() => { intro.style.display = 'none'; login.style.display = 'flex'; }, 1000);
+                setTimeout(() => { 
+                    intro.style.display = 'none'; 
+                    login.style.display = 'flex'; 
+                }, 1000);
             }, 3000);
         });
 
@@ -104,19 +107,20 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 tampilkanFilm(data.results);
-            } catch (error) { console.error(error); }
+            } catch (error) { console.error("Error ambil data:", error); }
         }
 
-        // FUNGSI BARU: Ambil Link Trailer
         async function getTrailer(id) {
-            const res = await fetch(`${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}`);
-            const data = await res.json();
-            const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-            if(trailer) {
-                window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank');
-            } else {
-                alert("Yah, trailernya belum ada di database TMDB.");
-            }
+            try {
+                const res = await fetch(`${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}`);
+                const data = await res.json();
+                const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+                if(trailer) {
+                    window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank');
+                } else {
+                    alert("Yah, trailernya belum ada di database TMDB.");
+                }
+            } catch (error) { console.error("Error trailer:", error); }
         }
 
         function tampilkanFilm(movies) {
@@ -131,48 +135,24 @@
                 card.className = "movie-card flex flex-col shadow-lg shadow-black/50";
                 card.style.animation = `fadeIn 0.5s ease forwards ${i * 0.1}s`;
                 
-                // Link Nonton: Otomatis cari di Google dengan parameter "nonton" + judul film + sub indo
+                // Link Nonton Otomatis
                 const searchNonton = `https://www.google.com/search?q=nonton+full+movie+${movie.title.replace(/\s+/g, '+')}+sub+indo`;
 
                 card.innerHTML = `
                     <div class="relative group h-64 overflow-hidden">
                         <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500x750?text=No+Poster'}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-2">
-                            <button onclick="getTrailer(${movie.id})" class="bg-white text-black px-4 py-1 rounded-full text-[10px] font-bold hover:bg-gray-200 transition">TRAILER</button>
-                            <a href="${searchNonton}" target="_blank" class="bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-bold hover:bg-red-700 transition">NONTON FULL</a>
-                        </div>
-                    </div>
-                    <div class="p-3 text-center bg-[#181818] flex-grow">
-                        <h2 class="font-bold text-[11px] mb-1 truncate">${movie.title}</h2>
-                        <p class="text-[9px] text-red-500 font-bold mb-2">⭐ ${movie.vote_average.toFixed(1)}</p>
-                        <div class="flex gap-1">
-                             <button onclick="getTrailer(${movie.id})" class="flex-1 bg-gray-700 py-2 rounded-lg text-[8px] font-black hover:bg-gray-600">TRAILER</button>
-                             <a href="${searchNonton}" target="_blank" class="flex-1 bg-red-600 py-2 rounded-lg text-[8px] font-black flex items-center justify-center hover:bg-red-700">NONTON</a>
-                        </div>
-                    </div>`;
-                container.appendChild(card);
-            });
-        }
-            movies.forEach((movie, i) => {
-                const card = document.createElement('div');
-                card.className = "movie-card flex flex-col";
-                card.style.animation = `fadeIn 0.5s ease forwards ${i * 0.1}s`;
-                
-                // Link Nonton (Google Search otomatis)
-                const watchLink = `https://www.google.com/search?q=nonton+${movie.title.replace(/\s+/g, '+')}`;
-
-                card.innerHTML = `
-                    <div class="relative group h-64 overflow-hidden">
-                        <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500'}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center gap-2">
                             <button onclick="getTrailer(${movie.id})" class="bg-white text-black px-4 py-1 rounded-full text-[10px] font-bold">TRAILER</button>
-                            <a href="${watchLink}" target="_blank" class="border-2 border-white px-4 py-1 rounded-full text-[10px] font-bold">NONTON</a>
+                            <a href="${searchNonton}" target="_blank" class="bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-bold">NONTON FULL</a>
                         </div>
                     </div>
                     <div class="p-3 text-center bg-[#181818] flex-grow">
                         <h2 class="font-bold text-[11px] mb-1 truncate">${movie.title}</h2>
-                        <p class="text-[9px] text-red-500 font-bold mb-2">⭐ ${movie.vote_average}</p>
-                        <button onclick="getTrailer(${movie.id})" class="block w-full bg-red-600 py-2 rounded-lg text-[9px] font-black mb-1">LIHAT TRAILER</button>
+                        <p class="text-[9px] text-red-500 font-bold mb-2">⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : '0'}</p>
+                        <div class="flex gap-1">
+                             <button onclick="getTrailer(${movie.id})" class="flex-1 bg-gray-700 py-2 rounded-lg text-[8px] font-black">TRAILER</button>
+                             <a href="${searchNonton}" target="_blank" class="flex-1 bg-red-600 py-2 rounded-lg text-[8px] font-black flex items-center justify-center">NONTON</a>
+                        </div>
                     </div>`;
                 container.appendChild(card);
             });
@@ -188,15 +168,12 @@
             ambilDataFilm(url);
         }
 
-        // PENCARIAN LEBIH PINTAR
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const query = e.target.value;
-                // Kita hapus language=id-ID saat mencari judul agar lebih luas jangkauannya
                 ambilDataFilm(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`);
             }
         });
-        
     </script>
-</body>
+    </body>
 </html>
