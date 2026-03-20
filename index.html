@@ -3,39 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KimmMovie Net - Portal Pro</title>
+    <title>KimmMovie Pro - Ultimate Edition</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/DZ3yMyM3/lalala-removebg-preview.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap');
         
-        body { background-color: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; }
+        body { background-color: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
 
-        /* Hero Banner ala MovieBox */
+        /* HERO BANNER DENGAN SEARCH BAR */
         #hero-banner {
-            height: 75vh;
+            height: 85vh;
             background-size: cover;
             background-position: center;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             position: relative;
+            padding: 0 5%;
         }
 
         #hero-banner::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, #000 5%, transparent 95%);
+            background: linear-gradient(to right, #000 20%, transparent 100%), 
+                        linear-gradient(to top, #000 10%, transparent 40%);
         }
 
-        .hero-content { position: relative; z-index: 10; padding: 40px; max-width: 800px; }
+        .hero-content { position: relative; z-index: 20; max-width: 700px; }
 
-        /* Movie Card Style */
-        .movie-card { background: #111; border-radius: 12px; transition: 0.3s; overflow: hidden; }
-        .movie-card:hover { transform: scale(1.05); }
+        /* STICKY SEARCH BAR */
+        .search-container {
+            position: absolute;
+            top: 30px;
+            right: 5%;
+            z-index: 100;
+            width: 300px;
+        }
 
-        .btn-cat { background: rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; transition: 0.3s; }
-        .btn-cat.active { background: #e50914; }
+        /* MOVIE CARD ENHANCED */
+        .movie-card {
+            background: #111;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        
+        .movie-card:hover { transform: scale(1.08); z-index: 50; box-shadow: 0 20px 25px -5px rgba(229, 9, 20, 0.3); }
+
+        .btn-cat { 
+            background: rgba(255,255,255,0.05); 
+            padding: 10px 24px; 
+            border-radius: 30px; 
+            font-size: 12px; 
+            font-weight: 800;
+            transition: 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-cat.active { background: #e50914; border-color: #e50914; box-shadow: 0 0 15px rgba(229, 9, 20, 0.5); }
 
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -45,36 +72,51 @@
 
     <div id="login-screen">
         <div class="text-center px-6">
-            <h1 class="text-6xl font-black italic text-red-600 mb-8">KimmMovie</h1>
-            <input type="text" id="userNameInput" placeholder="Nama Kamu..." class="bg-white/10 p-4 rounded-xl mb-4 w-64 text-center border border-white/20 outline-none focus:border-red-600 transition">
+            <h1 class="text-7xl font-black italic text-red-600 mb-2 tracking-tighter">Kimm<span class="text-white">Movie</span></h1>
+            <p class="text-gray-500 mb-8 font-bold tracking-widest text-xs">ULTIMATE STREAMING PORTAL</p>
+            <input type="text" id="userNameInput" placeholder="Siapa namamu, bos?" class="bg-white/5 p-4 rounded-2xl mb-4 w-72 text-center border border-white/10 outline-none focus:border-red-600 transition text-white">
             <br>
-            <button onclick="handleLogin()" class="bg-red-600 px-12 py-3 rounded-xl font-bold hover:bg-red-700 transition">MASUK</button>
+            <button onclick="handleLogin()" class="bg-red-600 px-16 py-4 rounded-2xl font-black hover:bg-red-700 transition tracking-widest">ENTER</button>
         </div>
     </div>
 
     <div id="main-content" class="hidden">
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Cari film... (Enter)" class="w-full bg-black/40 backdrop-blur-md border border-white/20 py-3 px-6 rounded-full outline-none focus:border-red-600 transition text-sm">
+        </div>
+
         <div id="hero-banner">
             <div class="hero-content">
-                <h1 id="hero-title" class="text-5xl md:text-7xl font-black italic mb-4">Loading...</h1>
-                <p id="hero-desc" class="text-gray-300 text-sm md:base mb-6 line-clamp-3 max-w-xl"></p>
-                <button id="hero-btn-nonton" class="bg-red-600 px-10 py-3 rounded-full font-black hover:bg-red-700 transition">NONTON SEKARANG</button>
+                <span class="bg-red-600 text-[10px] font-black px-3 py-1 rounded-sm mb-4 inline-block tracking-tighter">TOP TRENDING</span>
+                <h1 id="hero-title" class="text-6xl md:text-8xl font-black italic mb-4 leading-none">...</h1>
+                <p id="hero-desc" class="text-gray-300 text-sm md:text-base mb-8 line-clamp-3 max-w-xl font-medium"></p>
+                <div class="flex gap-4">
+                    <button id="hero-btn-nonton" class="bg-white text-black px-10 py-4 rounded-full font-black hover:bg-red-600 hover:text-white transition duration-500 shadow-xl">PLAY NOW</button>
+                    <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full font-black hover:bg-white/20 transition duration-500">TRAILER</button>
+                </div>
             </div>
         </div>
 
-        <div class="p-6">
-            <h2 class="text-2xl font-black italic mb-6">TRENDING <span class="text-red-600">SEKARANG</span></h2>
-            
-            <div class="flex gap-3 mb-8 overflow-x-auto hide-scrollbar">
-                <button onclick="filterKategori('Semua', this)" class="btn-cat active">Semua</button>
-                <button onclick="filterKategori('Horor', this)" class="btn-cat">Horor</button>
-                <button onclick="filterKategori('Komedi', this)" class="btn-cat">Komedi</button>
-                <button onclick="filterKategori('Animasi', this)" class="btn-cat">Animasi</button>
+        <div class="p-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
+                <h2 class="text-3xl font-black italic tracking-tighter">EXPLORE <span class="text-red-600">MOVIES</span></h2>
+                
+                <div class="flex gap-3 overflow-x-auto hide-scrollbar">
+                    <button onclick="filterKategori('Semua', this)" class="btn-cat active">Semua</button>
+                    <button onclick="filterKategori('Horor', this)" class="btn-cat">Horor</button>
+                    <button onclick="filterKategori('Komedi', this)" class="btn-cat">Komedi</button>
+                    <button onclick="filterKategori('Animasi', this)" class="btn-cat">Animasi</button>
+                    <button onclick="filterKategori('Action', this)" class="btn-cat">Action</button>
+                </div>
             </div>
 
-            <div id="movie-list" class="grid grid-cols-2 md:grid-cols-5 gap-6"></div>
+            <div id="movie-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8">
+                </div>
 
-            <div class="flex justify-center mt-12 mb-20">
-                <button id="btnLoadMore" onclick="loadNextPage()" class="bg-white/10 px-12 py-3 rounded-full font-bold hover:bg-white/20 border border-white/10 transition">LIHAT LEBIH BANYAK</button>
+            <div class="flex flex-col items-center justify-center mt-20 mb-32">
+                <p class="text-gray-500 text-[10px] mb-4 font-bold tracking-widest uppercase">End of page</p>
+                <button id="btnLoadMore" onclick="loadNextPage()" class="bg-white text-black px-16 py-4 rounded-full font-black hover:bg-red-600 hover:text-white transition-all transform hover:scale-110">LIHAT LEBIH BANYAK</button>
             </div>
         </div>
     </div>
@@ -90,9 +132,12 @@
         function handleLogin() {
             const name = document.getElementById('userNameInput').value;
             if(name.trim() !== "") {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-content').classList.remove('hidden');
-                ambilDataFilm(currentUrl);
+                document.getElementById('login-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('main-content').classList.remove('hidden');
+                    ambilDataFilm(currentUrl);
+                }, 500);
             } else { alert("Isi nama dulu bos!"); }
         }
 
@@ -100,7 +145,7 @@
             try {
                 const res = await fetch(`${url}&page=${currentPage}`);
                 const data = await res.json();
-                if (currentPage === 1) setHero(data.results[0]);
+                if (currentPage === 1 && data.results.length > 0) setHero(data.results[0]);
                 tampilkanFilm(data.results, isAppend);
             } catch (err) { console.error(err); }
         }
@@ -109,8 +154,9 @@
             if(!movie) return;
             document.getElementById('hero-banner').style.backgroundImage = `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
             document.getElementById('hero-title').innerText = movie.title;
-            document.getElementById('hero-desc').innerText = movie.overview || "No description available.";
+            document.getElementById('hero-desc').innerText = movie.overview || "Nikmati tontonan berkualitas tinggi di KimmMovie.";
             document.getElementById('hero-btn-nonton').onclick = () => window.open(`https://vidsrc.to/embed/movie/${movie.id}`, '_blank');
+            document.getElementById('hero-btn-trailer').onclick = () => getTrailer(movie.id);
         }
 
         function tampilkanFilm(movies, isAppend) {
@@ -121,18 +167,22 @@
                 const card = document.createElement('div');
                 card.className = "movie-card";
                 const linkNonton = `https://vidsrc.to/embed/movie/${movie.id}`;
+                const year = movie.release_date ? movie.release_date.split('-')[0] : 'N/A';
                 
                 card.innerHTML = `
-                    <div class="relative group h-72">
+                    <div class="relative group h-80">
                         <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500'}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition flex flex-col items-center justify-center p-4 gap-2">
-                             <a href="${linkNonton}" target="_blank" class="bg-red-600 text-white w-full py-2 rounded-lg text-center text-[10px] font-bold">NONTON</a>
-                             <button onclick="getTrailer(${movie.id})" class="bg-gray-700 text-white w-full py-2 rounded-lg text-[10px] font-bold">TRAILER</button>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-end p-6 gap-3">
+                             <a href="${linkNonton}" target="_blank" class="bg-red-600 text-white w-full py-3 rounded-xl text-center text-[10px] font-black hover:bg-red-700 transition shadow-lg">WATCH NOW</a>
+                             <button onclick="getTrailer(${movie.id})" class="bg-white/20 backdrop-blur-md text-white w-full py-3 rounded-xl text-center text-[10px] font-black hover:bg-white/40 transition">TRAILER</button>
                         </div>
                     </div>
-                    <div class="p-3">
-                        <h3 class="font-bold text-[11px] truncate">${movie.title}</h3>
-                        <p class="text-yellow-500 text-[10px] font-bold mt-1">⭐ ${movie.vote_average.toFixed(1)}</p>
+                    <div class="p-4 bg-[#0a0a0a]">
+                        <h3 class="font-black text-[11px] truncate uppercase tracking-tighter">${movie.title}</h3>
+                        <div class="flex items-center justify-between mt-2">
+                            <p class="text-gray-500 text-[9px] font-bold">${year}</p>
+                            <p class="text-yellow-500 text-[9px] font-black italic">⭐ ${movie.vote_average.toFixed(1)}</p>
+                        </div>
                     </div>`;
                 container.appendChild(card);
             });
@@ -143,13 +193,28 @@
             const data = await res.json();
             const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
             if(trailer) window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank');
-            else alert("Trailer belum tersedia.");
+            else alert("Trailer belum tersedia di database.");
         }
 
         function loadNextPage() {
             currentPage++;
             ambilDataFilm(currentUrl, true);
         }
+
+        // FITUR SEARCH BAR
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = e.target.value;
+                currentPage = 1;
+                if(query) {
+                    currentUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`;
+                } else {
+                    currentUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID`;
+                }
+                ambilDataFilm(currentUrl, false);
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
+        });
 
         function filterKategori(kat, btn) {
             document.querySelectorAll('.btn-cat').forEach(b => b.classList.remove('active'));
@@ -158,8 +223,10 @@
             if(kat === 'Horor') currentUrl = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&language=id-ID`;
             else if(kat === 'Komedi') currentUrl = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=35&language=id-ID`;
             else if(kat === 'Animasi') currentUrl = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16&language=id-ID`;
+            else if(kat === 'Action') currentUrl = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&language=id-ID`;
             else currentUrl = `${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID`;
             ambilDataFilm(currentUrl, false);
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
     </script>
 </body>
