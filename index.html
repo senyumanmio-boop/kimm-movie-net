@@ -45,14 +45,36 @@
     </div>
 
     <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000">
-        <header class="pt-10 pb-6 text-center">
-            <h1 class="text-4xl md:text-7xl font-black italic mb-2"><span class="text-red-600">Kimm</span>Movie</h1>
-            <div class="flex overflow-x-auto justify-center gap-2 p-4 mb-6">
+        <div id="hero-banner">
+            <div class="hero-content">
+                <h1 id="hero-title" class="text-5xl md:text-7xl font-black italic mb-4">Loading...</h1>
+                <p id="hero-desc" class="text-sm md:text-lg mb-6 text-gray-300 line-clamp-3"></p>
+                <div class="flex gap-4">
+                    <button id="hero-nonton" class="bg-red-600 px-8 py-3 rounded-full font-black text-sm">NONTON SEKARANG</button>
+                </div>
+            </div>
+        </div>
+
+        <header class="text-center px-4">
+            <h2 class="text-2xl font-black italic mb-4">TRENDING <span class="text-red-600">SEKARANG</span></h2>
+            <div class="flex overflow-x-auto justify-center gap-2 p-4 mb-6 scrollbar-hide">
                 <button onclick="filterKategori('Semua', this)" class="btn-cat active">Semua</button>
                 <button onclick="filterKategori('Horor', this)" class="btn-cat">Horor</button>
                 <button onclick="filterKategori('Komedi', this)" class="btn-cat">Komedi</button>
                 <button onclick="filterKategori('Animasi', this)" class="btn-cat">Animasi</button>
             </div>
+            <div class="max-w-md mx-auto mb-10">
+                <input type="text" id="searchInput" placeholder="Cari film... (Tekan Enter)" class="w-full bg-white/5 border border-white/10 rounded-full py-3 px-6 outline-none focus:border-red-600 text-center">
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto p-4 pb-20">
+            <div id="movie-list" class="grid grid-cols-2 md:grid-cols-5 gap-6"></div>
+            <div class="text-center mt-10">
+                <button id="loadMore" class="bg-white/10 px-10 py-3 rounded-full font-bold hover:bg-white/20 transition">Lihat Lebih Banyak...</button>
+            </div>
+        </main>
+    </div>
             <div class="max-w-md mx-auto px-6">
                 <input type="text" id="searchInput" placeholder="Cari film... (Tekan Enter)" class="w-full bg-white/5 border border-white/10 rounded-full py-3 px-6 outline-none focus:border-red-600 text-center">
             </div>
