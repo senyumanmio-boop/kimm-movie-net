@@ -3,6 +3,11 @@ const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 
+// Variabel untuk Infinite Scroll
+let currentPage = 1;
+let isLoading = false;
+let currentTab = 'home';
+
 // --- 2. LOGIKA LOGIN & NAVIGASI TAB ---
 function handleLogin() {
     const name = document.getElementById('userNameInput').value;
@@ -14,27 +19,27 @@ function handleLogin() {
             main.classList.remove('hidden');
             setTimeout(() => {
                 main.style.opacity = '1';
-                pindahTab('home'); // Default buka home
+                pindahTab('home'); 
             }, 100);
         }, 500);
     } else { alert("Isi namamu dulu bos!"); }
 }
 
 function pindahTab(tab) {
-    // Sembunyikan semua konten tab & search
+    currentTab = tab;
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.getElementById('search-result-section').classList.add('hidden');
-    
-    // Tampilkan tab yang dipilih
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
     
-    // Update warna navbar
     const btnHome = document.getElementById('btn-home');
     const btnMovie = document.getElementById('btn-movie');
     
     if(tab === 'home') {
         btnHome.classList.replace('text-gray-500', 'text-red-600');
         btnMovie.classList.replace('text-red-600', 'text-gray-500');
+        // Reset page saat balik ke home
+        currentPage = 1;
+        document.getElementById('home-recommend').innerHTML = ""; 
         loadTabHome();
     } else {
         btnMovie.classList.replace('text-gray-500', 'text-red-600');
@@ -44,21 +49,36 @@ function pindahTab(tab) {
     window.scrollTo(0,0);
 }
 
-// --- 3. MUAT DATA HOME ---
+// --- 3. MUAT DATA HOME (WITH INFINITE SCROLL) ---
 async function loadTabHome() {
-    // Trending Week untuk Home
-    const res = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=id-ID`);
-    const data = await res.json();
-    renderBarisFilm(data.results, 'trending-list');
-    setHero(data.results[0]);
+    if (isLoading) return;
+    isLoading = true;
 
-    // Top Rated untuk Home
-    const res2 = await fetch(`${BASE_URL}/movie/top_rated?api_key=${API_KEY}&language=id-ID`);
-    const data2 = await res2.json();
-    renderBarisFilm(data2.results, 'home-recommend');
+    try {
+        // Ambil film populer untuk daftar yang bisa di-scroll terus
+        const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID&page=${currentPage}`);
+        const data = await res.json();
+        
+        // Render data tambahan
+        renderBarisFilm(data.results, 'home-recommend', true);
+
+        // Jika ini halaman pertama, muat juga Trending & Hero
+        if (currentPage === 1) {
+            const resTrending = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=id-ID`);
+            const dataTrending = await resTrending.json();
+            renderBarisFilm(dataTrending.results, 'trending-list');
+            setHero(dataTrending.results[0]);
+        }
+
+        currentPage++; // Siapkan halaman berikutnya
+    } catch (e) {
+        console.error("Gagal muat data home", e);
+    } finally {
+        isLoading = false;
+    }
 }
 
-// --- 4. MUAT DATA MOVIE (VERSI TAK TERBATAS - MULTI PAGE) ---
+// --- 4. MUAT DATA MOVIE (VERSI MULTI PAGE) ---
 async function loadTabMovie() {
     const categories = [
         ['list-indo', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=ID&language=id-ID`],
@@ -72,7 +92,6 @@ async function loadTabMovie() {
 
     for (const [id, url] of categories) {
         let allMovies = [];
-        // Ambil 4 halaman sekaligus biar super panjang (80 Film per baris)
         for(let p = 1; p <= 4; p++) {
             try {
                 const res = await fetch(`${url}&page=${p}`);
@@ -85,10 +104,11 @@ async function loadTabMovie() {
 }
 
 // --- 5. RENDER & UI HELPER ---
-function renderBarisFilm(movies, containerId) {
+// Ditambah parameter 'append' agar data tidak terhapus saat scroll
+function renderBarisFilm(movies, containerId, append = false) {
     const list = document.getElementById(containerId);
     if (!list) return;
-    list.innerHTML = "";
+    if (!append) list.innerHTML = "";
     
     movies.forEach(movie => {
         if(!movie.poster_path) return;
@@ -119,7 +139,16 @@ function setHero(movie) {
     document.getElementById('hero-btn-trailer').onclick = () => getTrailer(movie.id);
 }
 
-// --- 6. FITUR SEARCH ---
+// --- 6. LOGIKA INFINITE SCROLL ---
+window.onscroll = function() {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 700) {
+        if (currentTab === 'home' && !isLoading) {
+            loadTabHome();
+        }
+    }
+};
+
+// --- 7. FITUR SEARCH ---
 document.getElementById('searchInput').addEventListener('keypress', async (e) => {
     if (e.key === 'Enter') {
         const query = e.target.value.toLowerCase();
@@ -141,7 +170,7 @@ document.getElementById('searchInput').addEventListener('keypress', async (e) =>
                     <div class="relative h-72 rounded-2xl overflow-hidden border border-white/10 group-hover:border-red-600 transition-all">
                         <img src="${IMG_PATH + movie.poster_path}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                     </div>
-                    <h3 class="text-[11px] font-black mt-3 truncate uppercase">${movie.title}</h3>
+                    <h3 class="text-[11px] font-black mt-3 truncate uppercase text-white">${movie.title}</h3>
                 `;
                 container.appendChild(card);
             });
@@ -154,7 +183,7 @@ function backToHome() {
     pindahTab('home');
 }
 
-// --- 7. MODAL DETAIL & VIDEO ---
+// --- 8. MODAL DETAIL ---
 async function bukaDetail(id) {
     const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits`);
     const movie = await res.json();
@@ -170,7 +199,7 @@ async function bukaDetail(id) {
             </div>
             <p class="text-gray-400 text-xs mb-8 leading-relaxed line-clamp-5">${movie.overview}</p>
             <div class="flex gap-4">
-                <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-8 py-4 rounded-full font-black text-[10px] tracking-widest hover:scale-105 transition uppercase shadow-[0_0_20px_rgba(220,38,38,0.4)]">Mulai Nonton</button>
+                <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-8 py-4 rounded-full font-black text-[10px] tracking-widest hover:scale-105 transition uppercase shadow-[0_0_20px_rgba(220,38,38,0.4)] text-white">Mulai Nonton</button>
             </div>
         </div>
     `;
