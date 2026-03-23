@@ -57,62 +57,71 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
     }, 500);
 });
 
-// 3. TAB NAVIGATION
+// --- FIX NAVIGASI & KATALOG ---
 function pindahTab(tab) {
-    currentTab = tab;
+    activeTab = tab; // Update status tab aktif
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.getElementById('search-result-section').classList.add('hidden');
-    document.getElementById(`tab-${tab}`).classList.remove('hidden');
-
+    
+    const targetTab = document.getElementById(`tab-${tab}`);
+    if (targetTab) {
+        targetTab.classList.remove('hidden');
+    }
+    
+    // Update warna icon navigasi
     const btnHome = document.getElementById('btn-home');
     const btnMovie = document.getElementById('btn-movie');
-
+    
     if (tab === 'home') {
         btnHome.classList.add('text-red-600');
         btnMovie.classList.remove('text-red-600');
-        currentPage = 1;
-        loadTabHome();
     } else {
         btnMovie.classList.add('text-red-600');
         btnHome.classList.remove('text-red-600');
-        loadTabMovie(); // Ini fungsi biar Katalog penuh
+        // PAKSA LOAD KATALOG BIAR LANGSUNG BANYAK
+        loadTabMovie(); 
     }
-    window.scrollTo(0, 0);
+    window.scrollTo(0,0);
 }
 
-// 4. LOAD KATALOG (Biar Banyak Baris)
+// --- FIX KATALOG BIAR FULL BARIS ---
 async function loadTabMovie() {
     const categories = [
         { nama: "Film Indonesia", params: "&with_origin_country=ID" },
-        { nama: "Hollywood Terpopuler", params: "&with_origin_country=US" },
-        { nama: "Horror Paling Seram", params: "&with_genres=27" },
-        { nama: "Aksi Menegangkan", params: "&with_genres=28" },
-        { nama: "Animasi Pilihan", params: "&with_genres=16" },
-        { nama: "Drama Korea", params: "&with_origin_country=KR" },
-        { nama: "Thailand Movie", params: "&with_origin_country=TH" }
+        { nama: "Hollywood Hits", params: "&with_origin_country=US" },
+        { nama: "Horror Malam Jumat", params: "&with_genres=27" },
+        { nama: "Action Seru", params: "&with_genres=28" },
+        { nama: "Anime & Kartun", params: "&with_genres=16" },
+        { nama: "Drama Korea", params: "&with_origin_country=KR" }
     ];
 
     const containerKatalog = document.getElementById('tab-movie');
-    containerKatalog.innerHTML = '<h2 class="text-2xl font-black italic uppercase mb-6 px-4 pt-4">Katalog <span class="text-red-600">Lengkap</span></h2>';
+    // Bersihkan dulu tapi sisain judul atasnya
+    containerKatalog.innerHTML = '<h2 class="text-2xl font-black italic uppercase mb-6 px-4 pt-4">KATALOG <span class="text-red-600">FILM</span></h2>';
 
     for (const kat of categories) {
-        const sectionId = `kat-${kat.nama.replace(/\s+/g, '')}`;
-        const section = document.createElement('div');
-        section.className = "mb-8";
-        section.innerHTML = `
-            <h3 class="text-xs font-black uppercase italic ml-4 mb-3 tracking-tighter text-gray-400">${kat.nama}</h3>
-            <div id="${sectionId}" class="flex overflow-x-auto gap-3 px-4 no-scrollbar pb-2"></div>
+        const sectionId = `section-${kat.nama.replace(/\s+/g, '')}`;
+        const sectionHTML = `
+            <div class="mb-8">
+                <h3 class="text-red-600 font-black uppercase italic ml-4 mb-3 tracking-wider text-sm">${kat.nama}</h3>
+                <div id="${sectionId}" class="flex overflow-x-auto gap-4 px-4 no-scrollbar pb-2">
+                    <div class="min-w-[150px] h-56 bg-white/5 animate-pulse rounded-2xl"></div>
+                    <div class="min-w-[150px] h-56 bg-white/5 animate-pulse rounded-2xl"></div>
+                </div>
+            </div>
         `;
-        containerKatalog.appendChild(section);
+        containerKatalog.insertAdjacentHTML('beforeend', sectionHTML);
 
+        // Ambil data asli
         try {
             const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=id-ID&sort_by=popularity.desc${kat.params}`);
             const data = await res.json();
+            const listContainer = document.getElementById(sectionId);
+            listContainer.innerHTML = ""; // Hapus shimmer
             renderSlider(data.results, sectionId);
-        } catch (e) { console.error("Gagal load " + kat.nama); }
+        } catch (e) { console.error("Gagal ambil " + kat.nama); }
     }
 }
-
 // 5. RENDER HELPERS
 function renderSlider(movies, containerId) {
     const list = document.getElementById(containerId);
