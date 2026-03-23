@@ -30,17 +30,21 @@ let currentTab = 'home';
 function handleLogin() {
     const name = document.getElementById('userNameInput').value;
     if(name.trim() !== "") {
-        document.getElementById('login-screen').style.opacity = '0';
-        setTimeout(() => {
-            document.getElementById('login-screen').style.display = 'none';
-            const main = document.getElementById('main-content');
-            main.classList.remove('hidden');
-            setTimeout(() => {
-                main.style.opacity = '1';
-                pindahTab('home'); 
-            }, 100);
-        }, 500);
-    } else { alert("Isi namamu dulu bos!"); }
+        localStorage.setItem('kimmMovie_user', name); // Simpan nama
+        masukKeApp();
+    }
+}
+
+// Cek otomatis pas web dibuka
+window.onload = () => {
+    const savedName = localStorage.getItem('kimmMovie_user');
+    if(savedName) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+        document.getElementById('main-content').style.opacity = '1';
+        loadSemuaKategori();
+        loadInfiniteMovies();
+    }
 }
 
 function pindahTab(tab) {
