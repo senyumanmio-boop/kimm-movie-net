@@ -3,6 +3,24 @@ const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    const query = e.target.value;
+    
+    // Kasih delay 500ms biar gak spam API setiap ketik satu huruf
+    searchTimeout = setTimeout(async () => {
+        if (query.length > 2) {
+            const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
+            const data = await res.json();
+            document.getElementById('movie-grid').innerHTML = "";
+            renderGrid(data.results, 'movie-grid');
+            document.getElementById('search-result-section').classList.remove('hidden');
+            document.getElementById('tab-home').classList.add('hidden');
+        }
+    }, 500);
+});
+
 // Variabel untuk Infinite Scroll
 let currentPage = 1;
 let isLoading = false;
