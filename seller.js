@@ -19,15 +19,19 @@ window.onload = () => {
 };
 
 function handleLogin() {
-    const name = document.getElementById('userNameInput').value;
+    const nameInput = document.getElementById('userNameInput');
+    const name = nameInput ? nameInput.value : "";
+    
     if (name.trim() !== "") {
         localStorage.setItem('kimmMovie_user', name);
         document.getElementById('login-screen').style.opacity = '0';
         setTimeout(() => {
-            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-content').classList.remove('hidden');
-            setTimeout(() => document.getElementById('main-content').style.opacity = '1', 100);
-            initApp();
+            setTimeout(() => {
+                document.getElementById('main-content').style.opacity = '1';
+                initApp();
+            }, 100);
         }, 500);
     } else { alert("Isi namamu dulu bos!"); }
 }
@@ -36,7 +40,7 @@ function initApp() {
     loadTabHome(); 
 }
 
-// 2. SEARCH OPTIMIZATION
+// 2. SEARCH
 document.getElementById('searchInput').addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const query = e.target.value;
@@ -75,16 +79,16 @@ function pindahTab(tab) {
     } else {
         btnMovie.classList.add('text-red-600');
         btnHome.classList.remove('text-red-600');
-        loadTabMovie(); // Langsung isi katalog pas diklik
+        loadTabMovie(); // Fungsi ini yang kita pakai
     }
     window.scrollTo(0,0);
 }
 
-async function loadSemuaKategori() {
+// 4. LOAD KATALOG (20 BARIS OTOMATIS)
+async function loadTabMovie() {
     const container = document.getElementById('katalog-container');
-    if (!container) return;
+    if (!container || container.innerHTML !== "") return; // Jangan load ulang kalau sudah ada isinya
 
-    // Daftar Genre & Negara (Biar dapet 20-30 baris)
     const daftarKategori = [
         { nama: "Lagi Rame (Trending)", url: `${BASE_URL}/trending/movie/week?api_key=${API_KEY}` },
         { nama: "Film Indonesia Terbaru", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=ID` },
@@ -108,32 +112,26 @@ async function loadSemuaKategori() {
         { nama: "Crime (Kriminal)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=80` }
     ];
 
-    container.innerHTML = ""; // Bersihkan
+    container.innerHTML = `<h2 class="text-2xl font-black italic uppercase mb-8 px-4 text-white">KATALOG <span class="text-red-600">FILM</span></h2>`;
 
-    // Loop Otomatis bikin baris
     for (const kat of daftarKategori) {
         const rowId = `row-${kat.nama.replace(/\s+/g, '')}`;
-        
-        // 1. Tempel Baris Baru ke HTML
         const rowHTML = `
-            <div>
-                <h3 class="text-red-600 font-black uppercase italic ml-4 mb-4 tracking-wider text-sm">${kat.nama}</h3>
+            <div class="mb-10">
+                <h3 class="text-red-600 font-black uppercase italic ml-4 mb-4 tracking-wider text-xs">${kat.nama}</h3>
                 <div id="${rowId}" class="flex overflow-x-auto gap-4 px-4 no-scrollbar pb-2 min-h-[150px]">
                     <div class="min-w-[150px] h-56 bg-white/5 animate-pulse rounded-2xl"></div>
                 </div>
-            </div>
-        `;
+            </div>`;
         container.insertAdjacentHTML('beforeend', rowHTML);
 
-        // 2. Fetch Data Film
         try {
             const res = await fetch(`${kat.url}&language=id-ID&sort_by=popularity.desc`);
             const data = await res.json();
             const rowContainer = document.getElementById(rowId);
-            
             if (rowContainer && data.results) {
-                rowContainer.innerHTML = ""; // Hapus loading
-                renderBarisFilm(data.results, rowId); // Pakai fungsi render kamu
+                rowContainer.innerHTML = "";
+                renderSlider(data.results, rowId);
             }
         } catch (e) { console.error("Error di: " + kat.nama); }
     }
@@ -142,6 +140,7 @@ async function loadSemuaKategori() {
 // 5. RENDER HELPERS
 function renderSlider(movies, containerId) {
     const list = document.getElementById(containerId);
+    if(!list) return;
     movies.forEach(movie => {
         if (!movie.poster_path) return;
         const card = document.createElement('div');
@@ -160,6 +159,7 @@ function renderSlider(movies, containerId) {
 
 function renderGrid(movies, containerId) {
     const list = document.getElementById(containerId);
+    if(!list) return;
     movies.forEach(movie => {
         if (!movie.poster_path) return;
         const card = document.createElement('div');
@@ -182,10 +182,10 @@ async function loadTabHome() {
     try {
         const resTrending = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=id-ID`);
         const dataTrending = await resTrending.json();
-        setHero(dataTrending.results[0]);
+        if(dataTrending.results.length > 0) setHero(dataTrending.results[0]);
         
         const container = document.getElementById('home-recommend');
-        if(currentPage === 1) container.innerHTML = "";
+        if(currentPage === 1 && container) container.innerHTML = "";
         renderGrid(dataTrending.results, 'home-recommend');
         currentPage++;
     } catch (e) { console.error(e); }
@@ -249,4 +249,3 @@ window.onscroll = () => {
         if (currentTab === 'home' && !isLoading) loadTabHome();
     }
 };
-
