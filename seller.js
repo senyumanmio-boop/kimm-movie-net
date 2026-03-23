@@ -64,42 +64,60 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
     }, 500); // Tunggu user berhenti ngetik selama 0.5 detik
 });
 
-// 3. INFINITE SCROLL DENGAN LOADING STATE
-async function loadInfiniteMovies() {
-    if (isLoading) return;
-    isLoading = true;
-    
-    const indicator = document.getElementById('loading-indicator');
-    indicator.innerHTML = `<div class="animate-pulse text-red-600">Mencari film buat kamu...</div>`;
+async function loadSemuaKategori() {
+    // Daftar kategori yang mau kamu tampilin
+    const daftarKategori = [
+        { nama: "Film Indonesia", id: "id-ID", region: "ID", genre: "" },
+        { nama: "Hollywood Hits", id: "en-US", region: "US", genre: "" },
+        { nama: "Horror Malam Jumat", id: "id-ID", region: "", genre: "27" }, // 27 itu ID Genre Horror
+        { nama: "Action Seru", id: "id-ID", region: "", genre: "28" },       // 28 itu ID Genre Action
+        { nama: "Animasi & Keluarga", id: "id-ID", region: "", genre: "16" }, // 16 itu ID Genre Animation
+        { nama: "Drama Bikin Mewek", id: "id-ID", region: "", genre: "18" }    // 18 itu ID Genre Drama
+    ];
 
-    try {
-        const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID&page=${currentPage}`);
-        const data = await res.json();
-        renderGrid(data.results, 'home-recommend');
-        currentPage++;
-    } catch (e) { console.log("Gagal load"); }
-    
-    isLoading = false;
-    indicator.innerText = "Scroll terus bos...";
+    const containerKatalog = document.getElementById('tab-movie'); // Pastikan ID container katalogmu ini
+    containerKatalog.innerHTML = '<h2 class="text-3xl font-black italic uppercase mb-10 px-4">KATALOG <span class="text-red-600">FILM</span></h2>';
+
+    for (const kat of daftarKategori) {
+        // Buat elemen baris baru
+        const section = document.createElement('div');
+        section.className = "mb-10";
+        section.innerHTML = `
+            <h3 class="text-red-600 font-black uppercase italic ml-4 mb-4 tracking-wider">${kat.nama}</h3>
+            <div id="kat-${kat.nama.replace(/\s+/g, '')}" class="flex overflow-x-auto gap-4 px-4 no-scrollbar pb-4">
+                </div>
+        `;
+        containerKatalog.appendChild(section);
+
+        // Ambil data dari TMDB
+        let url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${kat.id}&sort_by=popularity.desc`;
+        if (kat.region) url += `&region=${kat.region}`;
+        if (kat.genre) url += `&with_genres=${kat.genre}`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            renderBaris(data.results, `kat-${kat.nama.replace(/\s+/g, '')}`);
+        } catch (e) {
+            console.error("Gagal load " + kat.nama);
+        }
+    }
 }
 
-// 4. RENDER GRID (DENGAN LAZY LOADING)
-function renderGrid(movies, containerId) {
+// Fungsi bantu buat ngerender baris horizontal
+function renderBaris(movies, containerId) {
     const container = document.getElementById(containerId);
     movies.forEach(movie => {
         if(!movie.poster_path) return;
         const card = document.createElement('div');
-        card.className = "movie-card-grid group";
+        card.className = "min-w-[150px] md:min-w-[200px] group cursor-pointer";
         card.onclick = () => bukaDetail(movie.id);
         card.innerHTML = `
-            <div class="relative h-72 overflow-hidden rounded-2xl border border-white/10 bg-[#111]">
-                <img src="${IMG_PATH + movie.poster_path}" 
-                     loading="lazy" 
-                     class="w-full h-full object-cover transition duration-500 group-hover:scale-110 opacity-0"
-                     onload="this.style.opacity='1'">
-                <div class="absolute top-2 right-2 bg-black/70 backdrop-blur-md px-2 py-1 rounded-lg text-[9px] font-black text-yellow-500 italic">⭐ ${movie.vote_average.toFixed(1)}</div>
+            <div class="relative h-56 md:h-72 overflow-hidden rounded-2xl border border-white/10 bg-[#111]">
+                <img src="${IMG_PATH + movie.poster_path}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] text-yellow-500">⭐ ${movie.vote_average.toFixed(1)}</div>
             </div>
-            <h3 class="text-[10px] font-black mt-2 truncate uppercase group-hover:text-red-600 transition">${movie.title}</h3>
+            <p class="text-[10px] font-bold mt-2 truncate uppercase text-gray-400 group-hover:text-white">${movie.title}</p>
         `;
         container.appendChild(card);
     });
