@@ -71,3 +71,31 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+
+
+/* Container untuk list film */
+.list-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Default 2 kolom buat HP */
+    gap: 15px;
+    padding: 15px;
+}
+
+/* Ukuran poster biar gak raksasa di HP */
+.movie-card-slider img {
+    width: 100%;
+    height: 250px; /* Tinggi yang pas buat layar HP */
+    object-cover: cover;
+    border-radius: 15px;
+}
+
+/* Kalau dibuka di Laptop/Desktop, baru jadi 4-6 kolom */
+@media (min-width: 768px) {
+    .list-container {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+    .movie-card-slider img {
+        height: 300px;
+    }
+}
+
