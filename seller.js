@@ -80,40 +80,62 @@ function pindahTab(tab) {
     window.scrollTo(0,0);
 }
 
-// 4. LOAD KATALOG (BIAR RAME!)
-async function loadTabMovie() {
-    const categories = [
-        { nama: "Film Indonesia", params: "&with_origin_country=ID" },
-        { nama: "Hollywood Hits", params: "&with_origin_country=US" },
-        { nama: "Horror Malam Jumat", params: "&with_genres=27" },
-        { nama: "Action Seru", params: "&with_genres=28" },
-        { nama: "Anime & Kartun", params: "&with_genres=16" },
-        { nama: "Drama Korea", params: "&with_origin_country=KR" }
+async function loadSemuaKategori() {
+    const container = document.getElementById('katalog-container');
+    if (!container) return;
+
+    // Daftar Genre & Negara (Biar dapet 20-30 baris)
+    const daftarKategori = [
+        { nama: "Lagi Rame (Trending)", url: `${BASE_URL}/trending/movie/week?api_key=${API_KEY}` },
+        { nama: "Film Indonesia Terbaru", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=ID` },
+        { nama: "Hollywood Blockbuster", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=US` },
+        { nama: "Horror Malam Jumat", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27` },
+        { nama: "Action & Petualangan", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28` },
+        { nama: "Drakor (Korea)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=KR` },
+        { nama: "Anime & Kartun", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16` },
+        { nama: "Komedi Kocak", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=35` },
+        { nama: "Sci-Fi & Robot", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=878` },
+        { nama: "Misteri & Teka-teki", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=9648` },
+        { nama: "Romantis Bikin Baper", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10749` },
+        { nama: "Film Thailand", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=TH` },
+        { nama: "Documentary", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=99` },
+        { nama: "Family Time", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10751` },
+        { nama: "War (Perang)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10752` },
+        { nama: "Thriller Menegangkan", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=53` },
+        { nama: "Fantasy Magic", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=14` },
+        { nama: "Music & Concert", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10402` },
+        { nama: "Western (Koboi)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=37` },
+        { nama: "Crime (Kriminal)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=80` }
     ];
 
-    const containerKatalog = document.getElementById('tab-movie');
-    containerKatalog.innerHTML = '<h2 class="text-2xl font-black italic uppercase mb-6 px-4 pt-4 text-white">KATALOG <span class="text-red-600">FILM</span></h2>';
+    container.innerHTML = ""; // Bersihkan
 
-    for (const kat of categories) {
-        const sectionId = `section-${kat.nama.replace(/\s+/g, '')}`;
-        const sectionHTML = `
-            <div class="mb-8">
-                <h3 class="text-red-600 font-black uppercase italic ml-4 mb-3 tracking-wider text-sm">${kat.nama}</h3>
-                <div id="${sectionId}" class="flex overflow-x-auto gap-4 px-4 no-scrollbar pb-2">
-                    <div class="min-w-[150px] h-56 bg-white/5 animate-pulse rounded-2xl"></div>
+    // Loop Otomatis bikin baris
+    for (const kat of daftarKategori) {
+        const rowId = `row-${kat.nama.replace(/\s+/g, '')}`;
+        
+        // 1. Tempel Baris Baru ke HTML
+        const rowHTML = `
+            <div>
+                <h3 class="text-red-600 font-black uppercase italic ml-4 mb-4 tracking-wider text-sm">${kat.nama}</h3>
+                <div id="${rowId}" class="flex overflow-x-auto gap-4 px-4 no-scrollbar pb-2 min-h-[150px]">
                     <div class="min-w-[150px] h-56 bg-white/5 animate-pulse rounded-2xl"></div>
                 </div>
             </div>
         `;
-        containerKatalog.insertAdjacentHTML('beforeend', sectionHTML);
+        container.insertAdjacentHTML('beforeend', rowHTML);
 
+        // 2. Fetch Data Film
         try {
-            const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=id-ID&sort_by=popularity.desc${kat.params}`);
+            const res = await fetch(`${kat.url}&language=id-ID&sort_by=popularity.desc`);
             const data = await res.json();
-            const listContainer = document.getElementById(sectionId);
-            listContainer.innerHTML = ""; 
-            renderSlider(data.results, sectionId);
-        } catch (e) { console.error("Gagal ambil " + kat.nama); }
+            const rowContainer = document.getElementById(rowId);
+            
+            if (rowContainer && data.results) {
+                rowContainer.innerHTML = ""; // Hapus loading
+                renderBarisFilm(data.results, rowId); // Pakai fungsi render kamu
+            }
+        } catch (e) { console.error("Error di: " + kat.nama); }
     }
 }
 
@@ -227,3 +249,4 @@ window.onscroll = () => {
         if (currentTab === 'home' && !isLoading) loadTabHome();
     }
 };
+
