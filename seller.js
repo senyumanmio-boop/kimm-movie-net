@@ -18,6 +18,12 @@ window.onload = () => {
     }
 };
 
+// Di dalam fungsi bukaDetail, tambahkan tombol ini di sebelah tombol Nonton
+<button onclick="saveWatchlist(${movie.id}, '${movie.title}', '${movie.poster_path}')" 
+        class="bg-white/10 border border-white/20 px-6 py-4 rounded-full font-black text-[10px] tracking-widest hover:bg-white/20 transition uppercase">
+    + Watchlist
+</button>
+
 function handleLogin() {
     const name = document.getElementById('userNameInput').value;
     if(name.trim() !== "") {
@@ -313,4 +319,15 @@ async function getTrailer(id) {
     const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
     if(trailer) window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank');
     else alert("Trailer tidak ditemukan!");
+}
+
+function saveWatchlist(id, title, poster) {
+    let list = JSON.parse(localStorage.getItem('my_watchlist')) || [];
+    if (!list.find(m => m.id === id)) {
+        list.push({id, title, poster});
+        localStorage.setItem('my_watchlist', JSON.stringify(list));
+        alert("Film berhasil disimpan ke daftar nonton!");
+    } else {
+        alert("Film sudah ada di daftar!");
+    }
 }
