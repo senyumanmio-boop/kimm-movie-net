@@ -92,7 +92,12 @@ async function loadTabMovie() {
         { nama: "Horror Malam Jumat", params: "&with_genres=27" },
         { nama: "Action Seru", params: "&with_genres=28" },
         { nama: "Anime & Kartun", params: "&with_genres=16" },
-        { nama: "Drama Korea", params: "&with_origin_country=KR" }
+        { nama: "Drama Korea", params: "&with_origin_country=KR" },
+        { nama: "Thriller & Misteri", params: "&with_genres=53" },
+        { nama: "Komedi Lucu", params: "&with_genres=35" },
+        { nama: "Sci-Fi & Futuristik", params: "&with_genres=878" },
+        { nama: "Romantis Manis", params: "&with_genres=10749" }
+        // Tambahkan kategori lain sesuai kebutuhan
     ];
 
     const containerKatalog = document.getElementById('tab-movie');
@@ -122,6 +127,7 @@ async function loadTabMovie() {
         } catch (e) { console.error("Gagal ambil " + kat.nama); }
     }
 }
+
 // 5. RENDER HELPERS
 function renderSlider(movies, containerId) {
     const list = document.getElementById(containerId);
