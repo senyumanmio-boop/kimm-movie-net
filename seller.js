@@ -1,40 +1,112 @@
-// --- 1. KONSTANTA & KONFIGURASI ---
 const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 
+let currentPage = 1;
+let isLoading = false;
+let activeTab = 'home';
 let searchTimeout;
+
+// 1. AUTO-LOGIN (Biar gak capek ngetik nama terus)
+window.onload = () => {
+    const savedName = localStorage.getItem('kimmMovie_user');
+    if(savedName) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+        document.getElementById('main-content').style.opacity = '1';
+        initApp();
+    }
+};
+
+function handleLogin() {
+    const name = document.getElementById('userNameInput').value;
+    if(name.trim() !== "") {
+        localStorage.setItem('kimmMovie_user', name);
+        document.getElementById('login-screen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').classList.remove('hidden');
+            setTimeout(() => document.getElementById('main-content').style.opacity = '1', 100);
+            initApp();
+        }, 500);
+    } else { alert("Isi namamu dulu bos!"); }
+}
+
+function initApp() {
+    loadSemuaKategori();
+    loadInfiniteMovies();
+}
+
+// 2. SEARCH OPTIMIZATION (Gak perlu pencet Enter!)
 document.getElementById('searchInput').addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const query = e.target.value;
     
-   
-
-// Variabel untuk Infinite Scroll
-let currentPage = 1;
-let isLoading = false;
-let currentTab = 'home';
-
-// --- 2. LOGIKA LOGIN & NAVIGASI TAB ---
-function handleLogin() {
-    const name = document.getElementById('userNameInput').value;
-    if(name.trim() !== "") {
-        localStorage.setItem('kimmMovie_user', name); // Simpan nama
-        masukKeApp();
-    }
-}
-     // Kasih delay 500ms biar gak spam API setiap ketik satu huruf
     searchTimeout = setTimeout(async () => {
         if (query.length > 2) {
+            document.getElementById('tab-home').classList.add('hidden');
+            document.getElementById('tab-movie').classList.add('hidden');
+            document.getElementById('search-result-section').classList.remove('hidden');
+            
             const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
             const data = await res.json();
             document.getElementById('movie-grid').innerHTML = "";
             renderGrid(data.results, 'movie-grid');
-            document.getElementById('search-result-section').classList.remove('hidden');
-            document.getElementById('tab-home').classList.add('hidden');
+        } else if (query.length === 0) {
+            backToHome();
         }
-    }, 500);
+    }, 500); // Tunggu user berhenti ngetik selama 0.5 detik
 });
+
+// 3. INFINITE SCROLL DENGAN LOADING STATE
+async function loadInfiniteMovies() {
+    if (isLoading) return;
+    isLoading = true;
+    
+    const indicator = document.getElementById('loading-indicator');
+    indicator.innerHTML = `<div class="animate-pulse text-red-600">Mencari film buat kamu...</div>`;
+
+    try {
+        const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID&page=${currentPage}`);
+        const data = await res.json();
+        renderGrid(data.results, 'home-recommend');
+        currentPage++;
+    } catch (e) { console.log("Gagal load"); }
+    
+    isLoading = false;
+    indicator.innerText = "Scroll terus bos...";
+}
+
+// 4. RENDER GRID (DENGAN LAZY LOADING)
+function renderGrid(movies, containerId) {
+    const container = document.getElementById(containerId);
+    movies.forEach(movie => {
+        if(!movie.poster_path) return;
+        const card = document.createElement('div');
+        card.className = "movie-card-grid group";
+        card.onclick = () => bukaDetail(movie.id);
+        card.innerHTML = `
+            <div class="relative h-72 overflow-hidden rounded-2xl border border-white/10 bg-[#111]">
+                <img src="${IMG_PATH + movie.poster_path}" 
+                     loading="lazy" 
+                     class="w-full h-full object-cover transition duration-500 group-hover:scale-110 opacity-0"
+                     onload="this.style.opacity='1'">
+                <div class="absolute top-2 right-2 bg-black/70 backdrop-blur-md px-2 py-1 rounded-lg text-[9px] font-black text-yellow-500 italic">⭐ ${movie.vote_average.toFixed(1)}</div>
+            </div>
+            <h3 class="text-[10px] font-black mt-2 truncate uppercase group-hover:text-red-600 transition">${movie.title}</h3>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// 5. DETEKSI SCROLL JAUH SEBELUM MENTOK (Biar gak berasa loading)
+window.onscroll = () => {
+    if (activeTab === 'home' && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+        loadInfiniteMovies();
+    }
+};
+
+// ... (Sisa fungsi bukaDetail, tutupModal, pindahTab tetap sama) ...
 
 // Cek otomatis pas web dibuka
 window.onload = () => {
