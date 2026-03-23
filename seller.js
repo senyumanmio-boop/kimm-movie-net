@@ -4,13 +4,13 @@ const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 
 let currentPage = 1;
 let isLoading = false;
-let activeTab = 'home';
+let currentTab = 'home';
 let searchTimeout;
 
-// 1. AUTO-LOGIN (Biar gak capek ngetik nama terus)
+// 1. INITIALIZE APP (Auto-Login & Data Load)
 window.onload = () => {
     const savedName = localStorage.getItem('kimmMovie_user');
-    if(savedName) {
+    if (savedName) {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('main-content').classList.remove('hidden');
         document.getElementById('main-content').style.opacity = '1';
@@ -18,15 +18,9 @@ window.onload = () => {
     }
 };
 
-// Di dalam fungsi bukaDetail, tambahkan tombol ini di sebelah tombol Nonton
-<button onclick="saveWatchlist(${movie.id}, '${movie.title}', '${movie.poster_path}')" 
-        class="bg-white/10 border border-white/20 px-6 py-4 rounded-full font-black text-[10px] tracking-widest hover:bg-white/20 transition uppercase">
-    + Watchlist
-</button>
-
 function handleLogin() {
     const name = document.getElementById('userNameInput').value;
-    if(name.trim() !== "") {
+    if (name.trim() !== "") {
         localStorage.setItem('kimmMovie_user', name);
         document.getElementById('login-screen').style.opacity = '0';
         setTimeout(() => {
@@ -39,286 +33,168 @@ function handleLogin() {
 }
 
 function initApp() {
-    loadSemuaKategori();
-    loadInfiniteMovies();
+    loadTabHome(); // Load Home (Hero & Trending)
 }
 
-// 2. SEARCH OPTIMIZATION (Gak perlu pencet Enter!)
+// 2. SEARCH OPTIMIZATION (Live Search)
 document.getElementById('searchInput').addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const query = e.target.value;
-    
+
     searchTimeout = setTimeout(async () => {
         if (query.length > 2) {
-            document.getElementById('tab-home').classList.add('hidden');
-            document.getElementById('tab-movie').classList.add('hidden');
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.getElementById('search-result-section').classList.remove('hidden');
-            
+
             const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
             const data = await res.json();
-            document.getElementById('movie-grid').innerHTML = "";
-            renderGrid(data.results, 'movie-grid');
+            const container = document.getElementById('movie-list');
+            container.innerHTML = "";
+            renderGrid(data.results, 'movie-list');
         } else if (query.length === 0) {
-            backToHome();
+            pindahTab('home');
         }
-    }, 500); // Tunggu user berhenti ngetik selama 0.5 detik
+    }, 500);
 });
 
-async function loadSemuaKategori() {
-    // Daftar kategori yang mau kamu tampilin
-    const daftarKategori = [
-        { nama: "Film Indonesia", id: "id-ID", region: "ID", genre: "" },
-        { nama: "Hollywood Hits", id: "en-US", region: "US", genre: "" },
-        { nama: "Horror Malam Jumat", id: "id-ID", region: "", genre: "27" }, // 27 itu ID Genre Horror
-        { nama: "Action Seru", id: "id-ID", region: "", genre: "28" },       // 28 itu ID Genre Action
-        { nama: "Animasi & Keluarga", id: "id-ID", region: "", genre: "16" }, // 16 itu ID Genre Animation
-        { nama: "Drama Bikin Mewek", id: "id-ID", region: "", genre: "18" }    // 18 itu ID Genre Drama
-    ];
-
-    const containerKatalog = document.getElementById('tab-movie'); // Pastikan ID container katalogmu ini
-    containerKatalog.innerHTML = '<h2 class="text-3xl font-black italic uppercase mb-10 px-4">KATALOG <span class="text-red-600">FILM</span></h2>';
-
-    for (const kat of daftarKategori) {
-        // Buat elemen baris baru
-        const section = document.createElement('div');
-        section.className = "mb-10";
-        section.innerHTML = `
-            <h3 class="text-red-600 font-black uppercase italic ml-4 mb-4 tracking-wider">${kat.nama}</h3>
-            <div id="kat-${kat.nama.replace(/\s+/g, '')}" class="flex overflow-x-auto gap-4 px-4 no-scrollbar pb-4">
-                </div>
-        `;
-        containerKatalog.appendChild(section);
-
-        // Ambil data dari TMDB
-        let url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=${kat.id}&sort_by=popularity.desc`;
-        if (kat.region) url += `&region=${kat.region}`;
-        if (kat.genre) url += `&with_genres=${kat.genre}`;
-
-        try {
-            const res = await fetch(url);
-            const data = await res.json();
-            renderBaris(data.results, `kat-${kat.nama.replace(/\s+/g, '')}`);
-        } catch (e) {
-            console.error("Gagal load " + kat.nama);
-        }
-    }
-}
-
-// Fungsi bantu buat ngerender baris horizontal
-function renderBaris(movies, containerId) {
-    const container = document.getElementById(containerId);
-    movies.forEach(movie => {
-        if(!movie.poster_path) return;
-        const card = document.createElement('div');
-        card.className = "min-w-[150px] md:min-w-[200px] group cursor-pointer";
-        card.onclick = () => bukaDetail(movie.id);
-        card.innerHTML = `
-            <div class="relative h-56 md:h-72 overflow-hidden rounded-2xl border border-white/10 bg-[#111]">
-                <img src="${IMG_PATH + movie.poster_path}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] text-yellow-500">⭐ ${movie.vote_average.toFixed(1)}</div>
-            </div>
-            <p class="text-[10px] font-bold mt-2 truncate uppercase text-gray-400 group-hover:text-white">${movie.title}</p>
-        `;
-        container.appendChild(card);
-    });
-}
-
-// 5. DETEKSI SCROLL JAUH SEBELUM MENTOK (Biar gak berasa loading)
-window.onscroll = () => {
-    if (activeTab === 'home' && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-        loadInfiniteMovies();
-    }
-};
-
-// ... (Sisa fungsi bukaDetail, tutupModal, pindahTab tetap sama) ...
-
-// Cek otomatis pas web dibuka
-window.onload = () => {
-    const savedName = localStorage.getItem('kimmMovie_user');
-    if(savedName) {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('main-content').classList.remove('hidden');
-        document.getElementById('main-content').style.opacity = '1';
-        loadSemuaKategori();
-        loadInfiniteMovies();
-    }
-}
-
+// 3. TAB NAVIGATION
 function pindahTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.getElementById('search-result-section').classList.add('hidden');
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
-    
+
     const btnHome = document.getElementById('btn-home');
     const btnMovie = document.getElementById('btn-movie');
-    
-    if(tab === 'home') {
-        btnHome.classList.replace('text-gray-500', 'text-red-600');
-        btnMovie.classList.replace('text-red-600', 'text-gray-500');
-        // Reset page saat balik ke home
+
+    if (tab === 'home') {
+        btnHome.classList.add('text-red-600');
+        btnMovie.classList.remove('text-red-600');
         currentPage = 1;
-        document.getElementById('home-recommend').innerHTML = ""; 
         loadTabHome();
     } else {
-        btnMovie.classList.replace('text-gray-500', 'text-red-600');
-        btnHome.classList.replace('text-red-600', 'text-gray-500');
-        loadTabMovie();
+        btnMovie.classList.add('text-red-600');
+        btnHome.classList.remove('text-red-600');
+        loadTabMovie(); // Ini fungsi biar Katalog penuh
     }
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
 }
 
-// --- 3. MUAT DATA HOME (WITH INFINITE SCROLL) ---
-async function loadTabHome() {
-    if (isLoading) return;
-    isLoading = true;
-
-    try {
-        // Ambil film populer untuk daftar yang bisa di-scroll terus
-        const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID&page=${currentPage}`);
-        const data = await res.json();
-        
-        // Render data tambahan
-        renderBarisFilm(data.results, 'home-recommend', true);
-
-        // Jika ini halaman pertama, muat juga Trending & Hero
-        if (currentPage === 1) {
-            const resTrending = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=id-ID`);
-            const dataTrending = await resTrending.json();
-            renderBarisFilm(dataTrending.results, 'trending-list');
-            setHero(dataTrending.results[0]);
-        }
-
-        currentPage++; // Siapkan halaman berikutnya
-    } catch (e) {
-        console.error("Gagal muat data home", e);
-    } finally {
-        isLoading = false;
-    }
-}
-
-// --- 4. MUAT DATA MOVIE (VERSI MULTI PAGE) ---
+// 4. LOAD KATALOG (Biar Banyak Baris)
 async function loadTabMovie() {
     const categories = [
-        ['list-indo', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=ID&language=id-ID`],
-        ['list-hollywood', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=US&language=id-ID`],
-        ['list-korea', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=KR&language=id-ID`],
-        ['list-thailand', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=TH&language=id-ID`],
-        ['list-action', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&language=id-ID`],
-        ['list-horror', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&language=id-ID`],
-        ['list-anime', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16&language=id-ID`]
+        { nama: "Film Indonesia", params: "&with_origin_country=ID" },
+        { nama: "Hollywood Terpopuler", params: "&with_origin_country=US" },
+        { nama: "Horror Paling Seram", params: "&with_genres=27" },
+        { nama: "Aksi Menegangkan", params: "&with_genres=28" },
+        { nama: "Animasi Pilihan", params: "&with_genres=16" },
+        { nama: "Drama Korea", params: "&with_origin_country=KR" },
+        { nama: "Thailand Movie", params: "&with_origin_country=TH" }
     ];
 
-    for (const [id, url] of categories) {
-        let allMovies = [];
-        for(let p = 1; p <= 4; p++) {
-            try {
-                const res = await fetch(`${url}&page=${p}`);
-                const data = await res.json();
-                allMovies = [...allMovies, ...data.results];
-            } catch(e) { console.error("Error fetch page", p); }
-        }
-        renderBarisFilm(allMovies, id);
+    const containerKatalog = document.getElementById('tab-movie');
+    containerKatalog.innerHTML = '<h2 class="text-2xl font-black italic uppercase mb-6 px-4 pt-4">Katalog <span class="text-red-600">Lengkap</span></h2>';
+
+    for (const kat of categories) {
+        const sectionId = `kat-${kat.nama.replace(/\s+/g, '')}`;
+        const section = document.createElement('div');
+        section.className = "mb-8";
+        section.innerHTML = `
+            <h3 class="text-xs font-black uppercase italic ml-4 mb-3 tracking-tighter text-gray-400">${kat.nama}</h3>
+            <div id="${sectionId}" class="flex overflow-x-auto gap-3 px-4 no-scrollbar pb-2"></div>
+        `;
+        containerKatalog.appendChild(section);
+
+        try {
+            const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=id-ID&sort_by=popularity.desc${kat.params}`);
+            const data = await res.json();
+            renderSlider(data.results, sectionId);
+        } catch (e) { console.error("Gagal load " + kat.nama); }
     }
 }
 
-// --- 5. RENDER & UI HELPER ---
-// Ditambah parameter 'append' agar data tidak terhapus saat scroll
-function renderBarisFilm(movies, containerId, append = false) {
+// 5. RENDER HELPERS
+function renderSlider(movies, containerId) {
     const list = document.getElementById(containerId);
-    if (!list) return;
-    if (!append) list.innerHTML = "";
-    
     movies.forEach(movie => {
-        if(!movie.poster_path) return;
+        if (!movie.poster_path) return;
         const card = document.createElement('div');
-        card.className = "movie-card-slider";
+        card.className = "min-w-[130px] md:min-w-[180px] group cursor-pointer";
         card.onclick = () => bukaDetail(movie.id);
-        
         card.innerHTML = `
-            <div class="relative h-64 overflow-hidden rounded-2xl border border-white/5 bg-[#111] group">
-                <img src="${IMG_PATH + movie.poster_path}" loading="lazy" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                    <span class="text-[8px] font-black text-white uppercase tracking-widest">Nonton</span>
-                </div>
-                <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[9px] font-black text-yellow-500 italic">⭐ ${movie.vote_average.toFixed(1)}</div>
+            <div class="relative h-48 md:h-64 overflow-hidden rounded-xl border border-white/5 bg-[#111]">
+                <img src="${IMG_PATH + movie.poster_path}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[8px] font-black text-yellow-500">⭐ ${movie.vote_average.toFixed(1)}</div>
             </div>
-            <h3 class="text-[10px] font-bold mt-2 truncate uppercase tracking-tighter text-gray-200 group-hover:text-red-600 transition-colors">${movie.title}</h3>
+            <h4 class="text-[9px] font-bold mt-2 truncate text-gray-300 uppercase">${movie.title}</h4>
         `;
         list.appendChild(card);
     });
 }
 
+function renderGrid(movies, containerId) {
+    const list = document.getElementById(containerId);
+    movies.forEach(movie => {
+        if (!movie.poster_path) return;
+        const card = document.createElement('div');
+        card.className = "cursor-pointer group";
+        card.onclick = () => bukaDetail(movie.id);
+        card.innerHTML = `
+            <div class="relative h-64 rounded-2xl overflow-hidden border border-white/10">
+                <img src="${IMG_PATH + movie.poster_path}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            </div>
+            <h3 class="text-[10px] font-black mt-2 truncate uppercase text-white">${movie.title}</h3>
+        `;
+        list.appendChild(card);
+    });
+}
+
+// 6. HOME & HERO LOGIC
+async function loadTabHome() {
+    if (isLoading) return;
+    isLoading = true;
+    try {
+        const resTrending = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=id-ID`);
+        const dataTrending = await resTrending.json();
+        setHero(dataTrending.results[0]);
+        
+        const container = document.getElementById('home-recommend');
+        if(currentPage === 1) container.innerHTML = "";
+        renderGrid(dataTrending.results, 'home-recommend');
+        currentPage++;
+    } catch (e) { console.error(e); }
+    isLoading = false;
+}
+
 function setHero(movie) {
     const banner = document.getElementById('hero-banner');
-    banner.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
+    banner.style.backgroundImage = `linear-gradient(to top, #000 10%, transparent 90%), url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
     document.getElementById('hero-title').innerText = movie.title;
     document.getElementById('hero-desc').innerText = movie.overview;
     document.getElementById('hero-btn-nonton').onclick = () => bukaDetail(movie.id);
-    document.getElementById('hero-btn-trailer').onclick = () => getTrailer(movie.id);
 }
 
-// --- 6. LOGIKA INFINITE SCROLL ---
-window.onscroll = function() {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 700) {
-        if (currentTab === 'home' && !isLoading) {
-            loadTabHome();
-        }
-    }
-};
-
-// --- 7. FITUR SEARCH ---
-document.getElementById('searchInput').addEventListener('keypress', async (e) => {
-    if (e.key === 'Enter') {
-        const query = e.target.value.toLowerCase();
-        if (query) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            document.getElementById('search-result-section').classList.remove('hidden');
-            
-            const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
-            const data = await res.json();
-            
-            const container = document.getElementById('movie-list');
-            container.innerHTML = "";
-            data.results.forEach(movie => {
-                if(!movie.poster_path) return;
-                const card = document.createElement('div');
-                card.className = "cursor-pointer group";
-                card.onclick = () => bukaDetail(movie.id);
-                card.innerHTML = `
-                    <div class="relative h-72 rounded-2xl overflow-hidden border border-white/10 group-hover:border-red-600 transition-all">
-                        <img src="${IMG_PATH + movie.poster_path}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    </div>
-                    <h3 class="text-[11px] font-black mt-3 truncate uppercase text-white">${movie.title}</h3>
-                `;
-                container.appendChild(card);
-            });
-        }
-    }
-});
-
-function backToHome() {
-    document.getElementById('searchInput').value = "";
-    pindahTab('home');
-}
-
-// --- 8. MODAL DETAIL ---
+// 7. MODAL DETAIL + WATCHLIST
 async function bukaDetail(id) {
-    const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits`);
+    const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=id-ID`);
     const movie = await res.json();
-    const casts = movie.credits.cast.slice(0, 5).map(c => c.name).join(", ");
     
     document.getElementById('modalContent').innerHTML = `
-        <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-2/5 object-cover h-[450px] md:h-auto">
-        <div class="p-8 flex flex-col justify-center bg-gradient-to-br from-[#111] to-black">
-            <h2 class="text-4xl font-black mb-4 italic leading-none uppercase tracking-tighter text-white">${movie.title}</h2>
-            <div class="flex gap-4 mb-6 text-xs font-black text-red-600 italic">
+        <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-2/5 object-cover h-[400px] md:h-auto">
+        <div class="p-8 flex flex-col justify-center bg-[#0a0a0a]">
+            <h2 class="text-3xl font-black mb-2 italic uppercase text-white">${movie.title}</h2>
+            <div class="flex gap-4 mb-4 text-[10px] font-black text-red-600 italic">
                 <span>⭐ ${movie.vote_average.toFixed(1)}</span>
-                <span>📅 ${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</span>
+                <span>📅 ${movie.release_date.split('-')[0]}</span>
             </div>
-            <p class="text-gray-400 text-xs mb-8 leading-relaxed line-clamp-5">${movie.overview}</p>
-            <div class="flex gap-4">
-                <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-8 py-4 rounded-full font-black text-[10px] tracking-widest hover:scale-105 transition uppercase shadow-[0_0_20px_rgba(220,38,38,0.4)] text-white">Mulai Nonton</button>
+            <p class="text-gray-400 text-[11px] mb-6 leading-relaxed line-clamp-4">${movie.overview}</p>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" 
+                    class="bg-red-600 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white">Mulai Nonton</button>
+                <button onclick="saveWatchlist(${movie.id}, '${movie.title.replace(/'/g, "\\'")}', '${movie.poster_path}')" 
+                    class="bg-white/10 border border-white/20 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white hover:bg-white/20">
+                    + Watchlist
+                </button>
             </div>
         </div>
     `;
@@ -326,26 +202,25 @@ async function bukaDetail(id) {
     document.body.style.overflow = 'hidden';
 }
 
-function tutupModal() {
-    document.getElementById('movieModal').classList.add('hidden');
-    document.body.style.overflow = 'auto';
-}
-
-async function getTrailer(id) {
-    const res = await fetch(`${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}`);
-    const data = await res.json();
-    const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-    if(trailer) window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank');
-    else alert("Trailer tidak ditemukan!");
-}
-
 function saveWatchlist(id, title, poster) {
     let list = JSON.parse(localStorage.getItem('my_watchlist')) || [];
     if (!list.find(m => m.id === id)) {
         list.push({id, title, poster});
         localStorage.setItem('my_watchlist', JSON.stringify(list));
-        alert("Film berhasil disimpan ke daftar nonton!");
+        alert("Sip! Film tersimpan di Watchlist.");
     } else {
-        alert("Film sudah ada di daftar!");
+        alert("Udah ada di daftar kamu, Kim!");
     }
 }
+
+function tutupModal() {
+    document.getElementById('movieModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// 8. INFINITE SCROLL
+window.onscroll = () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
+        if (currentTab === 'home' && !isLoading) loadTabHome();
+    }
+};
