@@ -8,65 +8,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap');
-        
         body { background-color: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
-
-        /* HERO BANNER */
-        #hero-banner {
-            height: 85vh;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            position: relative;
-            padding: 0 5%;
-            transition: background 0.8s ease-in-out;
-        }
-
-        #hero-banner::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to right, #000 20%, transparent 100%), 
-                        linear-gradient(to top, #000 10%, transparent 40%);
-        }
-
+        #hero-banner { height: 85vh; background-size: cover; background-position: center; display: flex; align-items: center; position: relative; padding: 0 5%; transition: background 0.8s ease-in-out; }
+        #hero-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, #000 20%, transparent 100%), linear-gradient(to top, #000 10%, transparent 40%); }
         .hero-content { position: relative; z-index: 20; max-width: 700px; }
-
-        /* SEARCH BAR */
-        .search-container {
-            position: absolute;
-            top: 30px;
-            right: 5%;
-            z-index: 100;
-            width: 300px;
-        }
-
-        /* MOVIE CARD SLIDER (Horizontal) */
-        .movie-card-slider {
-            min-width: 160px;
-            max-width: 160px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
+        .search-container { position: absolute; top: 30px; right: 5%; z-index: 100; width: 300px; }
+        .movie-card-slider { min-width: 160px; max-width: 160px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; flex-shrink: 0; }
         .movie-card-slider:hover { transform: scale(1.1); z-index: 50; }
-
-        /* MOVIE CARD GRID (Vertical) */
-        .movie-card-grid {
-            width: 100%;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
+        .movie-card-grid { width: 100%; transition: all 0.3s ease; cursor: pointer; }
         .movie-card-grid:hover { transform: translateY(-10px); }
-
-        /* HIDE SCROLLBAR */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
-        
-        /* MODAL */
         #movieModal { backdrop-filter: blur(15px); }
     </style>
 </head>
@@ -83,7 +36,6 @@
     </div>
 
     <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000 pb-32">
-        
         <div class="search-container">
             <input type="text" id="searchInput" placeholder="Cari Film..." class="w-full bg-black/40 backdrop-blur-md border border-white/20 py-3 px-6 rounded-full outline-none focus:border-red-600 transition text-sm text-white">
         </div>
@@ -98,8 +50,7 @@
                         <button id="hero-btn-nonton" class="bg-white text-black px-10 py-4 rounded-full font-black hover:bg-red-600 hover:text-white transition duration-500 shadow-xl text-xs tracking-widest uppercase">Play Now</button>
                         <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full font-black hover:bg-white/20 transition duration-500 text-xs tracking-widest uppercase">Trailer</button>
                     </div>
-                    <div id="katalog-container" class="space-y-10">
-                
+                </div>
             </div>
 
             <div class="py-10 space-y-12">
@@ -107,14 +58,10 @@
                     <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Trending <span class="text-red-600">Minggu Ini</span></h2>
                     <div id="trending-list" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
                 </div>
-
                 <div class="px-8">
                     <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-6">Eksplorasi <span class="text-red-600">Film</span></h2>
-                    <div id="home-recommend" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                        </div>
-                    <div id="loading-indicator" class="py-10 text-center text-gray-500 font-bold text-xs uppercase tracking-widest">
-                        Memuat lebih banyak...
-                    </div>
+                    <div id="home-recommend" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6"></div>
+                    <div id="loading-indicator" class="py-10 text-center text-gray-500 font-bold text-xs uppercase tracking-widest">Memuat lebih banyak...</div>
                 </div>
             </div>
         </div>
@@ -180,13 +127,18 @@
                     const main = document.getElementById('main-content');
                     main.classList.remove('hidden');
                     setTimeout(() => main.style.opacity = '1', 100);
-                    loadSemuaKategori(); // Load data awal
-                    loadInfiniteMovies(); // Load data eksplorasi pertama
+                    loadSemuaKategori(); 
+                    loadInfiniteMovies(); 
                 }, 500);
             } else { alert("Isi namamu dulu bos!"); }
         }
 
-      
+        async function loadSemuaKategori() {
+            const kategori = [
+                ['trending-list', `${BASE_URL}/trending/movie/week?api_key=${API_KEY}`],
+                ['list-indo', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_original_language=id`],
+                ['list-hollywood', `${BASE_URL}/movie/top_rated?api_key=${API_KEY}`]
+            ];
 
             for (const [id, url] of kategori) {
                 try {
@@ -198,21 +150,16 @@
             }
         }
 
-        // LOGIKA INFINITE SCROLL (EKSPLORASI FILM)
         async function loadInfiniteMovies() {
             if (isLoading) return;
             isLoading = true;
-            document.getElementById('loading-indicator').innerText = "Mencari film seru...";
-
             try {
                 const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID&page=${currentPage}`);
                 const data = await res.json();
                 renderGrid(data.results, 'home-recommend');
                 currentPage++;
             } catch (e) { console.log("Gagal muat eksplorasi"); }
-            
             isLoading = false;
-            document.getElementById('loading-indicator').innerText = "Scroll lagi bos, masih banyak...";
         }
 
         function renderBaris(movies, containerId) {
@@ -250,7 +197,6 @@
             });
         }
 
-        // DETEKSI SCROLL
         window.onscroll = () => {
             if (activeTab === 'home' && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
                 loadInfiniteMovies();
@@ -262,22 +208,19 @@
             document.getElementById('tab-home').classList.add('hidden');
             document.getElementById('tab-movie').classList.add('hidden');
             document.getElementById('search-result-section').classList.add('hidden');
-            
             document.getElementById('btn-home').classList.replace('text-red-600', 'text-gray-500');
             document.getElementById('btn-movie').classList.replace('text-red-600', 'text-gray-500');
-
             document.getElementById(`tab-${tab}`).classList.remove('hidden');
             document.getElementById(`btn-${tab}`).classList.replace('text-gray-500', 'text-red-600');
             window.scrollTo(0,0);
         }
 
-        // SEARCH
         document.getElementById('searchInput').addEventListener('keypress', async (e) => {
             if (e.key === 'Enter') {
                 const query = e.target.value;
                 if(query) {
-                    pindahTab('home'); // Logic visual saja
                     document.getElementById('tab-home').classList.add('hidden');
+                    document.getElementById('tab-movie').classList.add('hidden');
                     document.getElementById('search-result-section').classList.remove('hidden');
                     const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
                     const data = await res.json();
@@ -304,8 +247,6 @@
         async function bukaDetail(id) {
             const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits`);
             const movie = await res.json();
-            const casts = movie.credits.cast.slice(0, 5).map(c => c.name).join(", ");
-            
             document.getElementById('modalContent').innerHTML = `
                 <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-2/5 object-cover h-[500px] md:h-auto">
                 <div class="p-10 flex flex-col justify-center bg-black">
