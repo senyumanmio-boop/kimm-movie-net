@@ -98,7 +98,8 @@
                         <button id="hero-btn-nonton" class="bg-white text-black px-10 py-4 rounded-full font-black hover:bg-red-600 hover:text-white transition duration-500 shadow-xl text-xs tracking-widest uppercase">Play Now</button>
                         <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full font-black hover:bg-white/20 transition duration-500 text-xs tracking-widest uppercase">Trailer</button>
                     </div>
-                </div>
+                    <div id="katalog-container" class="space-y-10">
+                
             </div>
 
             <div class="py-10 space-y-12">
@@ -185,13 +186,7 @@
             } else { alert("Isi namamu dulu bos!"); }
         }
 
-        // LOAD DATA AWAL (SLIDER)
-        async function loadSemuaKategori() {
-            const kategori = [
-                ['trending-list', `${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=id-ID`],
-                ['list-indo', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=ID&language=id-ID`],
-                ['list-hollywood', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=US&language=id-ID`]
-            ];
+      
 
             for (const [id, url] of kategori) {
                 try {
