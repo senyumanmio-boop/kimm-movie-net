@@ -9,105 +9,123 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap');
+        
         body { background-color: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
-        #hero-banner { height: 85vh; background-size: cover; background-position: center; display: flex; align-items: center; position: relative; padding: 0 5%; transition: background 0.8s ease-in-out; }
-        #hero-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, #000 20%, transparent 100%), linear-gradient(to top, #000 10%, transparent 40%); }
+
+        /* HERO BANNER RESPONSIVE */
+        #hero-banner {
+            height: 50vh; /* Di HP lebih pendek biar gak raksasa */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end; /* Tulisan di bawah biar gak ketutup search */
+            position: relative;
+            padding: 20px 5%;
+            transition: background 0.8s ease-in-out;
+        }
+
+        @media (min-width: 768px) {
+            #hero-banner { height: 85vh; align-items: center; }
+        }
+
+        #hero-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, #000 10%, transparent 90%), 
+                        linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
         .hero-content { position: relative; z-index: 20; max-width: 700px; }
-        .search-container { position: absolute; top: 30px; right: 5%; z-index: 100; width: 300px; }
-        .movie-card-slider { min-width: 160px; max-width: 160px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; flex-shrink: 0; }
-        .movie-card-slider:hover { transform: scale(1.1); z-index: 50; }
-        .movie-card-grid { width: 100%; transition: all 0.3s ease; cursor: pointer; }
-        .movie-card-grid:hover { transform: translateY(-10px); }
+
+        /* SEARCH BAR FIX */
+        .search-container {
+            position: absolute;
+            top: 20px;
+            left: 5%;
+            right: 5%;
+            z-index: 100;
+        }
+
+        /* MOVIE CARD GRID (2 Kolom di HP) */
+        .movie-card-grid {
+            width: 100%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        /* Gambar Poster Pas di Layar HP */
+        .poster-img {
+            height: 240px; /* Tinggi ideal buat HP */
+            width: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .poster-img { height: 350px; }
+            .search-container { width: 300px; left: auto; right: 5%; }
+        }
+
+        /* HIDE SCROLLBAR */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
-        #movieModal { backdrop-filter: blur(15px); }
+
+        #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="text-center px-6">
-            <h1 class="text-7xl font-black italic text-red-600 mb-2 tracking-tighter">Kimm<span class="text-white">Movie</span></h1>
-            <p class="text-gray-500 mb-8 font-bold tracking-widest text-xs uppercase">Ultimate Streaming Portal</p>
-            <input type="text" id="userNameInput" placeholder="Siapa namamu, bos?" class="bg-white/5 p-4 rounded-2xl mb-4 w-72 text-center border border-white/10 outline-none focus:border-red-600 transition text-white font-bold">
+            <h1 class="text-5xl md:text-7xl font-black italic text-red-600 mb-2 tracking-tighter">Kimm<span class="text-white">Movie</span></h1>
+            <p class="text-gray-500 mb-8 font-bold tracking-widest text-[10px] uppercase">Ultimate Streaming Portal</p>
+            <input type="text" id="userNameInput" placeholder="Siapa namamu, bos?" class="bg-white/5 p-4 rounded-2xl mb-4 w-full max-w-xs text-center border border-white/10 outline-none focus:border-red-600 transition text-white font-bold">
             <br>
-            <button onclick="handleLogin()" class="bg-red-600 px-16 py-4 rounded-2xl font-black hover:bg-red-700 transition tracking-widest uppercase text-sm">Masuk</button>
+            <button onclick="handleLogin()" class="bg-red-600 w-full max-w-xs py-4 rounded-2xl font-black hover:bg-red-700 transition tracking-widest uppercase text-sm">Masuk</button>
         </div>
     </div>
 
     <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000 pb-32">
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Cari Film..." class="w-full bg-black/40 backdrop-blur-md border border-white/20 py-3 px-6 rounded-full outline-none focus:border-red-600 transition text-sm text-white">
+            <input type="text" id="searchInput" placeholder="Cari Film..." class="w-full bg-black/60 backdrop-blur-md border border-white/20 py-3 px-6 rounded-full outline-none focus:border-red-600 transition text-sm text-white">
         </div>
 
         <div id="tab-home" class="tab-content">
             <div id="hero-banner">
                 <div class="hero-content">
-                    <span class="bg-red-600 text-[10px] font-black px-3 py-1 rounded-sm mb-4 inline-block tracking-tighter uppercase">Hot Picks</span>
-                    <h1 id="hero-title" class="text-6xl md:text-8xl font-black italic mb-4 leading-none uppercase tracking-tighter text-white">...</h1>
-                    <p id="hero-desc" class="text-gray-300 text-sm md:text-base mb-8 line-clamp-3 max-w-xl font-medium"></p>
-                    <div class="flex gap-4">
-                        <button id="hero-btn-nonton" class="bg-white text-black px-10 py-4 rounded-full font-black hover:bg-red-600 hover:text-white transition duration-500 shadow-xl text-xs tracking-widest uppercase">Play Now</button>
-                        <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-10 py-4 rounded-full font-black hover:bg-white/20 transition duration-500 text-xs tracking-widest uppercase">Trailer</button>
+                    <h1 id="hero-title" class="text-3xl md:text-7xl font-black italic mb-2 leading-none uppercase tracking-tighter text-white">...</h1>
+                    <p id="hero-desc" class="text-gray-300 text-[10px] md:text-base mb-4 line-clamp-2 max-w-xl font-medium"></p>
+                    <div class="flex gap-2">
+                        <button id="hero-btn-nonton" class="bg-white text-black px-6 py-3 rounded-full font-black text-[10px] tracking-widest uppercase">Play</button>
+                        <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 rounded-full font-black text-[10px] tracking-widest uppercase">Trailer</button>
                     </div>
                 </div>
             </div>
 
-            <div class="py-10 space-y-12">
-                <div class="px-8">
-                    <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-4">Trending <span class="text-red-600">Minggu Ini</span></h2>
-                    <div id="trending-list" class="flex gap-5 overflow-x-auto no-scrollbar scroll-smooth"></div>
+            <div class="py-6 space-y-8">
+                <div class="px-5">
+                    <h2 class="text-lg font-black italic uppercase tracking-tighter mb-4">Trending <span class="text-red-600">Minggu Ini</span></h2>
+                    <div id="trending-list" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth"></div>
                 </div>
-                <div class="px-8">
-                    <h2 class="text-2xl font-black italic uppercase tracking-tighter mb-6">Eksplorasi <span class="text-red-600">Film</span></h2>
-                    <div id="home-recommend" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6"></div>
-                    <div id="loading-indicator" class="py-10 text-center text-gray-500 font-bold text-xs uppercase tracking-widest">Memuat lebih banyak...</div>
+
+                <div class="px-5">
+                    <h2 class="text-lg font-black italic uppercase tracking-tighter mb-4">Eksplorasi <span class="text-red-600">Film</span></h2>
+                    <div id="home-recommend" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
                 </div>
             </div>
         </div>
-
-        <div id="tab-movie" class="tab-content hidden pt-24 pb-20">
-            <div class="px-8 mb-10">
-                <h1 class="text-5xl font-black italic tracking-tighter uppercase leading-none">Katalog <span class="text-red-600">Film</span></h1>
-            </div>
-            <div class="space-y-12">
-                <div class="px-8">
-                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter text-red-600">Film Indonesia</h2>
-                    <div id="list-indo" class="flex gap-5 overflow-x-auto no-scrollbar"></div>
-                </div>
-                <div class="px-8">
-                    <h2 class="text-xl font-black uppercase mb-4 tracking-tighter text-red-600">Hollywood Hits</h2>
-                    <div id="list-hollywood" class="flex gap-5 overflow-x-auto no-scrollbar"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="search-result-section" class="hidden p-8 pt-24 min-h-screen">
-            <div class="flex items-center justify-between mb-10">
-                <h2 class="text-3xl font-black italic uppercase tracking-tighter text-red-600">Hasil Pencarian</h2>
-                <button onclick="backToHome()" class="text-[10px] font-black text-gray-400 hover:text-white underline uppercase">Tutup</button>
-            </div>
-            <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-8"></div>
-        </div>
-
+        
         <nav class="fixed bottom-0 left-0 right-0 bg-black/90 backdrop-blur-2xl border-t border-white/5 z-[1000] py-4 flex justify-around items-center">
-            <button onclick="pindahTab('home')" id="btn-home" class="flex flex-col items-center gap-1 text-red-600 transition-all">
+            <button onclick="pindahTab('home')" id="btn-home" class="flex flex-col items-center gap-1 text-red-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span class="text-[9px] font-black uppercase">Home</span>
+                <span class="text-[9px] font-black">Home</span>
             </button>
-            <button onclick="pindahTab('movie')" id="btn-movie" class="flex flex-col items-center gap-1 text-gray-500 transition-all">
+            <button onclick="pindahTab('movie')" id="btn-movie" class="flex flex-col items-center gap-1 text-gray-500">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
-                <span class="text-[9px] font-black uppercase">Movies</span>
+                <span class="text-[9px] font-black">Movies</span>
             </button>
         </nav>
-    </div>
-
-    <div id="movieModal" class="hidden fixed inset-0 bg-black/95 z-[10000] flex items-center justify-center p-4">
-        <div class="bg-[#111] max-w-5xl w-full rounded-3xl overflow-hidden relative border border-white/10 shadow-2xl">
-            <button onclick="tutupModal()" class="absolute top-5 right-5 z-50 bg-black/50 w-10 h-10 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-red-600 transition">&times;</button>
-            <div id="modalContent" class="flex flex-col md:flex-row"></div>
-        </div>
     </div>
 
     <script>
@@ -115,166 +133,59 @@
         const BASE_URL = 'https://api.themoviedb.org/3';
         const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
 
-        let currentPage = 1;
-        let isLoading = false;
-        let activeTab = 'home';
-
         function handleLogin() {
             const name = document.getElementById('userNameInput').value;
             if(name.trim() !== "") {
-                document.getElementById('login-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('login-screen').style.display = 'none';
-                    const main = document.getElementById('main-content');
-                    main.classList.remove('hidden');
-                    setTimeout(() => main.style.opacity = '1', 100);
-                    loadSemuaKategori(); 
-                    loadInfiniteMovies(); 
-                }, 500);
-            } else { alert("Isi namamu dulu bos!"); }
+                document.getElementById('login-screen').style.display = 'none';
+                const main = document.getElementById('main-content');
+                main.classList.remove('hidden');
+                main.style.opacity = '1';
+                loadSemuaKategori();
+                loadInfiniteMovies();
+            }
         }
 
         async function loadSemuaKategori() {
-            const kategori = [
-                ['trending-list', `${BASE_URL}/trending/movie/week?api_key=${API_KEY}`],
-                ['list-indo', `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_original_language=id`],
-                ['list-hollywood', `${BASE_URL}/movie/top_rated?api_key=${API_KEY}`]
-            ];
-
-            for (const [id, url] of kategori) {
-                try {
-                    const res = await fetch(url);
-                    const data = await res.json();
-                    renderBaris(data.results, id);
-                    if(id === 'trending-list') setHero(data.results[0]);
-                } catch (e) { console.log("Gagal muat " + id); }
-            }
+            const res = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
+            const data = await res.json();
+            setHero(data.results[0]);
+            renderHorizontal(data.results, 'trending-list');
         }
 
         async function loadInfiniteMovies() {
-            if (isLoading) return;
-            isLoading = true;
-            try {
-                const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID&page=${currentPage}`);
-                const data = await res.json();
-                renderGrid(data.results, 'home-recommend');
-                currentPage++;
-            } catch (e) { console.log("Gagal muat eksplorasi"); }
-            isLoading = false;
-        }
-
-        function renderBaris(movies, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = "";
-            movies.forEach(movie => {
-                const card = document.createElement('div');
-                card.className = "movie-card-slider";
-                card.onclick = () => bukaDetail(movie.id);
-                card.innerHTML = `
-                    <div class="relative h-64 overflow-hidden rounded-2xl border border-white/5 bg-[#111]">
-                        <img src="${movie.poster_path ? IMG_PATH + movie.poster_path : 'https://via.placeholder.com/500'}" class="w-full h-full object-cover">
-                    </div>
-                    <h3 class="text-[10px] font-bold mt-2 truncate uppercase text-gray-400">${movie.title}</h3>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function renderGrid(movies, containerId) {
-            const container = document.getElementById(containerId);
-            movies.forEach(movie => {
-                if(!movie.poster_path) return;
-                const card = document.createElement('div');
-                card.className = "movie-card-grid group";
-                card.onclick = () => bukaDetail(movie.id);
-                card.innerHTML = `
-                    <div class="relative h-72 overflow-hidden rounded-2xl border border-white/10 bg-[#111]">
-                        <img src="${IMG_PATH + movie.poster_path}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                        <div class="absolute top-2 right-2 bg-black/70 backdrop-blur-md px-2 py-1 rounded-lg text-[9px] font-black text-yellow-500 italic">⭐ ${movie.vote_average.toFixed(1)}</div>
-                    </div>
-                    <h3 class="text-[10px] font-black mt-2 truncate uppercase group-hover:text-red-600 transition">${movie.title}</h3>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        window.onscroll = () => {
-            if (activeTab === 'home' && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
-                loadInfiniteMovies();
-            }
-        };
-
-        function pindahTab(tab) {
-            activeTab = tab;
-            document.getElementById('tab-home').classList.add('hidden');
-            document.getElementById('tab-movie').classList.add('hidden');
-            document.getElementById('search-result-section').classList.add('hidden');
-            document.getElementById('btn-home').classList.replace('text-red-600', 'text-gray-500');
-            document.getElementById('btn-movie').classList.replace('text-red-600', 'text-gray-500');
-            document.getElementById(`tab-${tab}`).classList.remove('hidden');
-            document.getElementById(`btn-${tab}`).classList.replace('text-gray-500', 'text-red-600');
-            window.scrollTo(0,0);
-        }
-
-        document.getElementById('searchInput').addEventListener('keypress', async (e) => {
-            if (e.key === 'Enter') {
-                const query = e.target.value;
-                if(query) {
-                    document.getElementById('tab-home').classList.add('hidden');
-                    document.getElementById('tab-movie').classList.add('hidden');
-                    document.getElementById('search-result-section').classList.remove('hidden');
-                    const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
-                    const data = await res.json();
-                    document.getElementById('movie-grid').innerHTML = "";
-                    renderGrid(data.results, 'movie-grid');
-                }
-            }
-        });
-
-        function backToHome() {
-            document.getElementById('searchInput').value = "";
-            pindahTab('home');
-        }
-
-        function setHero(movie) {
-            const banner = document.getElementById('hero-banner');
-            banner.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
-            document.getElementById('hero-title').innerText = movie.title;
-            document.getElementById('hero-desc').innerText = movie.overview;
-            document.getElementById('hero-btn-nonton').onclick = () => window.open(`https://vidsrc.to/embed/movie/${movie.id}`, '_blank');
-            document.getElementById('hero-btn-trailer').onclick = () => getTrailer(movie.id);
-        }
-
-        async function bukaDetail(id) {
-            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=credits`);
-            const movie = await res.json();
-            document.getElementById('modalContent').innerHTML = `
-                <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-2/5 object-cover h-[500px] md:h-auto">
-                <div class="p-10 flex flex-col justify-center bg-black">
-                    <h2 class="text-4xl font-black mb-4 italic leading-none uppercase text-white">${movie.title}</h2>
-                    <div class="flex gap-4 mb-6 text-sm font-bold text-red-600">
-                        <span>⭐ ${movie.vote_average.toFixed(1)}</span>
-                        <span>📅 ${movie.release_date.split('-')[0]}</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mb-8 leading-relaxed">${movie.overview}</p>
-                    <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-10 py-4 rounded-full font-black text-[10px] tracking-widest uppercase text-white">Nonton Sekarang</button>
-                </div>
-            `;
-            document.getElementById('movieModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function tutupModal() {
-            document.getElementById('movieModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        async function getTrailer(id) {
-            const res = await fetch(`${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}`);
+            const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID&page=1`);
             const data = await res.json();
-            const trailer = data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube');
-            if(trailer) window.open(`https://www.youtube.com/watch?v=${trailer.key}`, '_blank');
-            else alert("Trailer tidak tersedia!");
+            renderGrid(data.results, 'home-recommend');
+        }
+
+        function renderHorizontal(movies, id) {
+            const container = document.getElementById(id);
+            container.innerHTML = movies.map(m => `
+                <div onclick="window.open('https://vidsrc.to/embed/movie/${m.id}', '_blank')" class="min-w-[140px] max-w-[140px]">
+                    <img src="${IMG_PATH + m.poster_path}" class="w-full h-48 object-cover rounded-xl border border-white/10">
+                    <h3 class="text-[9px] font-bold mt-2 truncate uppercase">${m.title}</h3>
+                </div>
+            `).join('');
+        }
+
+        function renderGrid(movies, id) {
+            const container = document.getElementById(id);
+            container.innerHTML += movies.map(m => `
+                <div onclick="window.open('https://vidsrc.to/embed/movie/${m.id}', '_blank')" class="movie-card-grid">
+                    <img src="${IMG_PATH + m.poster_path}" class="poster-img border border-white/10">
+                    <h3 class="text-[10px] font-black mt-2 truncate uppercase text-red-600">${m.title}</h3>
+                </div>
+            `).join('');
+        }
+
+        function setHero(m) {
+            document.getElementById('hero-banner').style.backgroundImage = `url(https://image.tmdb.org/t/p/original${m.backdrop_path})`;
+            document.getElementById('hero-title').innerText = m.title;
+            document.getElementById('hero-desc').innerText = m.overview;
+        }
+
+        function pindahTab(t) {
+            alert("Fitur tab menyusul, fokus benerin tampilan HP dulu bos!");
         }
     </script>
 </body>
