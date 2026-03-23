@@ -7,7 +7,7 @@ let isLoading = false;
 let currentTab = 'home';
 let searchTimeout;
 
-// 1. INITIALIZE APP (Auto-Login & Data Load)
+// 1. INITIALIZE APP
 window.onload = () => {
     const savedName = localStorage.getItem('kimmMovie_user');
     if (savedName) {
@@ -33,10 +33,10 @@ function handleLogin() {
 }
 
 function initApp() {
-    loadTabHome(); // Load Home (Hero & Trending)
+    loadTabHome(); 
 }
 
-// 2. SEARCH OPTIMIZATION (Live Search)
+// 2. SEARCH OPTIMIZATION
 document.getElementById('searchInput').addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const query = e.target.value;
@@ -57,18 +57,15 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
     }, 500);
 });
 
-// --- FIX NAVIGASI & KATALOG ---
+// 3. NAVIGASI TAB
 function pindahTab(tab) {
-    activeTab = tab; // Update status tab aktif
+    currentTab = tab;
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
     document.getElementById('search-result-section').classList.add('hidden');
     
     const targetTab = document.getElementById(`tab-${tab}`);
-    if (targetTab) {
-        targetTab.classList.remove('hidden');
-    }
+    if (targetTab) targetTab.classList.remove('hidden');
     
-    // Update warna icon navigasi
     const btnHome = document.getElementById('btn-home');
     const btnMovie = document.getElementById('btn-movie');
     
@@ -78,13 +75,12 @@ function pindahTab(tab) {
     } else {
         btnMovie.classList.add('text-red-600');
         btnHome.classList.remove('text-red-600');
-        // PAKSA LOAD KATALOG BIAR LANGSUNG BANYAK
-        loadTabMovie(); 
+        loadTabMovie(); // Langsung isi katalog pas diklik
     }
     window.scrollTo(0,0);
 }
 
-// --- FIX KATALOG BIAR FULL BARIS ---
+// 4. LOAD KATALOG (BIAR RAME!)
 async function loadTabMovie() {
     const categories = [
         { nama: "Film Indonesia", params: "&with_origin_country=ID" },
@@ -92,17 +88,11 @@ async function loadTabMovie() {
         { nama: "Horror Malam Jumat", params: "&with_genres=27" },
         { nama: "Action Seru", params: "&with_genres=28" },
         { nama: "Anime & Kartun", params: "&with_genres=16" },
-        { nama: "Drama Korea", params: "&with_origin_country=KR" },
-        { nama: "Thriller & Misteri", params: "&with_genres=53" },
-        { nama: "Komedi Lucu", params: "&with_genres=35" },
-        { nama: "Sci-Fi & Futuristik", params: "&with_genres=878" },
-        { nama: "Romantis Manis", params: "&with_genres=10749" }
-        // Tambahkan kategori lain sesuai kebutuhan
+        { nama: "Drama Korea", params: "&with_origin_country=KR" }
     ];
 
     const containerKatalog = document.getElementById('tab-movie');
-    // Bersihkan dulu tapi sisain judul atasnya
-    containerKatalog.innerHTML = '<h2 class="text-2xl font-black italic uppercase mb-6 px-4 pt-4">KATALOG <span class="text-red-600">FILM</span></h2>';
+    containerKatalog.innerHTML = '<h2 class="text-2xl font-black italic uppercase mb-6 px-4 pt-4 text-white">KATALOG <span class="text-red-600">FILM</span></h2>';
 
     for (const kat of categories) {
         const sectionId = `section-${kat.nama.replace(/\s+/g, '')}`;
@@ -117,12 +107,11 @@ async function loadTabMovie() {
         `;
         containerKatalog.insertAdjacentHTML('beforeend', sectionHTML);
 
-        // Ambil data asli
         try {
             const res = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&language=id-ID&sort_by=popularity.desc${kat.params}`);
             const data = await res.json();
             const listContainer = document.getElementById(sectionId);
-            listContainer.innerHTML = ""; // Hapus shimmer
+            listContainer.innerHTML = ""; 
             renderSlider(data.results, sectionId);
         } catch (e) { console.error("Gagal ambil " + kat.nama); }
     }
@@ -155,7 +144,7 @@ function renderGrid(movies, containerId) {
         card.className = "cursor-pointer group";
         card.onclick = () => bukaDetail(movie.id);
         card.innerHTML = `
-            <div class="relative h-64 rounded-2xl overflow-hidden border border-white/10">
+            <div class="relative h-64 rounded-2xl overflow-hidden border border-white/10 group-hover:border-red-600 transition-all">
                 <img src="${IMG_PATH + movie.poster_path}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             </div>
             <h3 class="text-[10px] font-black mt-2 truncate uppercase text-white">${movie.title}</h3>
@@ -164,7 +153,7 @@ function renderGrid(movies, containerId) {
     });
 }
 
-// 6. HOME & HERO LOGIC
+// 6. HOME & HERO
 async function loadTabHome() {
     if (isLoading) return;
     isLoading = true;
@@ -183,13 +172,14 @@ async function loadTabHome() {
 
 function setHero(movie) {
     const banner = document.getElementById('hero-banner');
-    banner.style.backgroundImage = `linear-gradient(to top, #000 10%, transparent 90%), url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
+    if(!banner || !movie) return;
+    banner.style.backgroundImage = `linear-gradient(to top, #000 15%, transparent 95%), url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
     document.getElementById('hero-title').innerText = movie.title;
     document.getElementById('hero-desc').innerText = movie.overview;
     document.getElementById('hero-btn-nonton').onclick = () => bukaDetail(movie.id);
 }
 
-// 7. MODAL DETAIL + WATCHLIST
+// 7. DETAIL & WATCHLIST
 async function bukaDetail(id) {
     const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=id-ID`);
     const movie = await res.json();
@@ -197,7 +187,7 @@ async function bukaDetail(id) {
     document.getElementById('modalContent').innerHTML = `
         <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-2/5 object-cover h-[400px] md:h-auto">
         <div class="p-8 flex flex-col justify-center bg-[#0a0a0a]">
-            <h2 class="text-3xl font-black mb-2 italic uppercase text-white">${movie.title}</h2>
+            <h2 class="text-3xl font-black mb-2 italic uppercase text-white leading-tight">${movie.title}</h2>
             <div class="flex gap-4 mb-4 text-[10px] font-black text-red-600 italic">
                 <span>⭐ ${movie.vote_average.toFixed(1)}</span>
                 <span>📅 ${movie.release_date.split('-')[0]}</span>
@@ -205,9 +195,9 @@ async function bukaDetail(id) {
             <p class="text-gray-400 text-[11px] mb-6 leading-relaxed line-clamp-4">${movie.overview}</p>
             <div class="flex flex-wrap gap-3">
                 <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" 
-                    class="bg-red-600 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white">Mulai Nonton</button>
+                    class="bg-red-600 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white shadow-lg shadow-red-600/20">Mulai Nonton</button>
                 <button onclick="saveWatchlist(${movie.id}, '${movie.title.replace(/'/g, "\\'")}', '${movie.poster_path}')" 
-                    class="bg-white/10 border border-white/20 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white hover:bg-white/20">
+                    class="bg-white/10 border border-white/20 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white hover:bg-white/20 transition">
                     + Watchlist
                 </button>
             </div>
@@ -223,9 +213,7 @@ function saveWatchlist(id, title, poster) {
         list.push({id, title, poster});
         localStorage.setItem('my_watchlist', JSON.stringify(list));
         alert("Sip! Film tersimpan di Watchlist.");
-    } else {
-        alert("Udah ada di daftar kamu, Kim!");
-    }
+    } else { alert("Udah ada di daftar kamu, Kim!"); }
 }
 
 function tutupModal() {
@@ -233,7 +221,7 @@ function tutupModal() {
     document.body.style.overflow = 'auto';
 }
 
-// 8. INFINITE SCROLL
+// 8. SCROLL
 window.onscroll = () => {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
         if (currentTab === 'home' && !isLoading) loadTabHome();
