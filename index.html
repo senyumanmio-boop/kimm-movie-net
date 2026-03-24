@@ -3,295 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KimmMovie Net - Ultimate Hub</title>
+    <title>KimmMovie Net - The Ultimate Experience</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/DZ3yMyM3/lalala-removebg-preview.png">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
-
-        /* Kustom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #e50914; border-radius: 10px; }
-
-        .hero-gradient {
-            background: linear-gradient(to top, #050505 10%, transparent 90%), 
-                        linear-gradient(to right, rgba(0,0,0,0.9) 0%, transparent 100%);
-        }
-
-        /* Animasi Glow */
-        .glow-hover:hover { box-shadow: 0 0 20px rgba(229, 9, 20, 0.4); transform: scale(1.03); }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         
-        /* Modal Video Responsif */
-        .video-aspect { position: relative; padding-bottom: 56.25%; height: 0; }
-        .video-aspect iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
+        :root { --accent: #ff0000; --bg: #030303; --glass: rgba(255, 255, 255, 0.05); }
+        body { background-color: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
 
-        #main-tab-content > div { display: none; }
-        #main-tab-content > div.active { display: block; }
+        /* Smooth UI Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 50px; }
+
+        .glass { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .hero-shadow { background: linear-gradient(0deg, var(--bg) 5%, transparent 100%), linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 60%); }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-pop { animation: fadeIn 0.6s ease forwards; }
+        
+        .card-hover { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card-hover:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15); border-color: var(--accent); }
+
+        /* Tab Content Logic */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn 0.5s ease; }
+
+        /* Floating Music Player Style */
+        .music-visualizer span { display: inline-block; width: 3px; background: var(--accent); animation: bounce 1s infinite alternate; }
+        @keyframes bounce { from { height: 2px; } to { height: 15px; } }
     </style>
 </head>
-<body>
+<body class="pb-24">
 
-    <div id="login-screen" class="fixed inset-0 bg-black z-[10000] flex items-center justify-center transition-all duration-700">
-        <div class="text-center px-6 animate-pulse">
-            <h1 class="text-7xl font-black italic text-red-600 mb-8 tracking-tighter">Kimm<span class="text-white">Movie</span></h1>
-            <input type="text" id="userNameInput" placeholder="Ketik nama lo..." class="bg-white/5 p-4 rounded-2xl mb-4 w-full max-w-xs text-center border border-white/10 text-white font-bold outline-none focus:border-red-600 focus:ring-2 focus:ring-red-600 transition-all">
-            <br>
-            <button onclick="handleLogin()" class="bg-red-600 hover:bg-red-700 w-full max-w-xs py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-transform active:scale-95 shadow-lg shadow-red-600/20">Mulai Petualangan</button>
+    <div id="login-screen" class="fixed inset-0 bg-black z-[99999] flex flex-col items-center justify-center transition-all duration-1000">
+        <div class="relative mb-8">
+            <h1 class="text-8xl font-black italic text-red-600 tracking-tighter opacity-20 absolute -top-4 -left-4">KIM</h1>
+            <h1 class="text-7xl font-black italic relative z-10 tracking-tighter">Kimm<span class="text-red-600">Movie</span></h1>
         </div>
+        <input type="text" id="userNameInput" placeholder="Siapa nama kodinger hari ini?" class="bg-white/5 border border-white/10 p-5 rounded-2xl w-80 text-center text-xl font-bold outline-none focus:border-red-600 focus:ring-4 focus:ring-red-600/20 transition-all mb-6">
+        <button onclick="handleLogin()" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-red-600/30">Enter Workspace</button>
     </div>
 
-    <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000">
+    <div id="app" class="hidden opacity-0 transition-opacity duration-1000">
         
-        <header class="p-4 sticky top-0 z-[100] bg-black/80 backdrop-blur-xl border-b border-white/5 flex items-center gap-4">
-            <div class="text-2xl font-black italic text-red-600 tracking-tighter">K<span class="text-white">M</span></div>
-            <input type="text" id="searchInput" onkeyup="searchMovies(this.value)" placeholder="Cari film atau judul novel..." class="flex-1 bg-white/5 border border-white/10 py-2.5 px-6 rounded-full outline-none focus:border-red-600 focus:bg-white/10 text-white text-sm transition-all">
-            <div id="userGreeting" class="text-[10px] font-bold text-gray-400 hidden md:block">Halo, <span class="text-white" id="display-name">Guest</span>!</div>
-        </header>
+        <nav class="fixed top-0 w-full z-[1000] glass px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <span class="text-3xl font-black italic text-red-600">K<span class="text-white">M</span></span>
+                <div class="hidden md:flex gap-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <span class="text-green-500">● Live Server Batam</span>
+                    <span id="user-display">User: Kim</span>
+                </div>
+            </div>
+            <div class="relative w-1/2 max-w-md">
+                <i class="fa fa-search absolute left-4 top-3 text-gray-500 text-xs"></i>
+                <input type="text" id="searchInput" onkeyup="searchContent(this.value)" placeholder="Cari Film, Novel, atau Musik..." class="w-full bg-white/5 border border-white/10 py-2.5 pl-12 pr-6 rounded-xl text-sm outline-none focus:bg-white/10 focus:border-red-600 transition-all">
+            </div>
+        </nav>
 
-        <main id="main-tab-content">
+        <main class="pt-20">
             
-            <div id="tab-movies" class="active">
-                <div id="hero-banner" class="relative h-[60vh] md:h-[85vh] bg-cover bg-center flex items-center px-[5%] transition-all duration-1000">
-                    <div class="absolute inset-0 hero-gradient"></div>
-                    <div class="relative z-20 max-w-2xl">
-                        <span class="bg-red-600 text-[10px] font-black px-2 py-1 rounded mb-4 inline-block">TRENDING SEKARANG</span>
-                        <h1 id="hero-title" class="text-4xl md:text-7xl font-black italic mb-4 leading-none uppercase tracking-tighter">...</h1>
-                        <p id="hero-desc" class="text-gray-300 text-xs md:text-base mb-6 line-clamp-3 opacity-80 font-medium leading-relaxed"></p>
-                        <div class="flex gap-3">
-                            <button id="hero-btn-play" class="bg-white text-black px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Play Now</button>
-                            <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-white/20 transition-all">Trailer</button>
+            <section id="pane-movies" class="tab-panel active">
+                <div id="hero" class="relative h-[85vh] w-full flex items-center px-[5%] overflow-hidden bg-cover bg-center transition-all duration-700">
+                    <div class="absolute inset-0 hero-shadow"></div>
+                    <div class="relative z-10 max-w-3xl">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-red-600 text-[10px] font-black px-3 py-1 rounded-full uppercase italic">Featured Movie</span>
+                            <span class="text-white/50 text-xs font-bold">4K Ultra HD</span>
+                        </div>
+                        <h1 id="hero-title" class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">...</h1>
+                        <p id="hero-desc" class="text-gray-400 text-sm md:text-lg mb-8 line-clamp-3 font-medium leading-relaxed"></p>
+                        <div class="flex gap-4">
+                            <button id="play-btn" class="bg-white text-black px-10 py-4 rounded-2xl font-black text-xs uppercase flex items-center gap-3 hover:bg-red-600 hover:text-white transition-all"><i class="fa fa-play"></i> Nonton Sekarang</button>
+                            <button id="trailer-btn" class="bg-white/10 border border-white/20 px-10 py-4 rounded-2xl font-black text-xs uppercase backdrop-blur-md hover:bg-white/20 transition-all">Trailer</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="py-10 space-y-12">
-                    <div class="pl-5">
-                        <h2 class="text-xl font-black italic uppercase tracking-tighter mb-5 flex items-center gap-2">
-                            <span class="w-1 h-6 bg-red-600 rounded-full"></span> Trending <span class="text-red-600">Minggu Ini</span>
-                        </h2>
-                        <div id="trending-list" class="flex gap-4 overflow-x-auto no-scrollbar pb-4 pr-5"></div>
+                <div class="p-6 space-y-12">
+                    <div>
+                        <h2 class="text-2xl font-black italic uppercase mb-6 flex items-center gap-3"><i class="fa fa-fire text-red-600"></i> Trending <span class="text-red-600">Terhangat</span></h2>
+                        <div id="trending-row" class="flex gap-6 overflow-x-auto no-scrollbar pb-6 pr-6"></div>
                     </div>
-
-                    <div class="px-5">
-                        <h2 id="section-title" class="text-xl font-black italic uppercase tracking-tighter mb-5 flex items-center gap-2">
-                            <span class="w-1 h-6 bg-red-600 rounded-full"></span> Eksplorasi <span class="text-red-600">Katalog</span>
-                        </h2>
-                        <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5"></div>
-                        <div id="loading-indicator" class="text-center py-20 text-gray-500 animate-pulse font-bold text-xs uppercase tracking-[0.3em]">Menyiapkan lebih banyak keseruan...</div>
+                    <div>
+                        <h2 id="grid-title" class="text-2xl font-black italic uppercase mb-6 flex items-center gap-3"><i class="fa fa-th-large text-red-600"></i> Koleksi <span class="text-red-600">Terbaru</span></h2>
+                        <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-6"></div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div id="tab-novels" class="px-5 py-8 min-h-screen">
-                <h1 class="text-4xl font-black italic text-white mb-2 uppercase">Kimm<span class="text-red-600">Library</span></h1>
-                <p class="text-gray-400 text-sm mb-10">Baca novel populer secara gratis.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white/5 border border-white/10 p-6 rounded-3xl flex gap-5 hover:bg-white/10 transition-all cursor-pointer group">
-                        <div class="w-24 h-36 bg-gray-800 rounded-xl overflow-hidden flex-shrink-0 shadow-2xl">
-                            <img src="https://images.unsplash.com/photo-1543004629-142a4446302a?auto=format&fit=crop&w=200" class="w-full h-full object-cover group-hover:scale-110 transition-duration-500">
-                        </div>
-                        <div>
-                            <span class="text-[10px] text-red-600 font-bold tracking-widest uppercase">Best Seller</span>
-                            <h3 class="text-xl font-bold mt-1">Dunia Dalam Koding</h3>
-                            <p class="text-xs text-gray-400 mt-2 line-clamp-3">Kisah seorang remaja di Batam yang membangun kerajaan AI...</p>
-                            <button class="mt-4 text-xs font-black uppercase tracking-tighter border-b-2 border-red-600 pb-1">Baca Sekarang</button>
+            <section id="pane-novels" class="tab-panel p-8 max-w-6xl mx-auto mt-10">
+                <div class="flex justify-between items-end mb-12">
+                    <div>
+                        <h1 class="text-6xl font-black italic tracking-tighter">Kimm<span class="text-red-600">Lib</span></h1>
+                        <p class="text-gray-500 font-bold uppercase text-xs tracking-widest mt-2">Daftar Bacaan Exclusive Untukmu</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="bg-white/5 p-3 rounded-lg border border-white/10 text-xs font-bold uppercase">All Genres</button>
+                        <button class="bg-red-600 p-3 rounded-lg text-xs font-bold uppercase">Trending</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="glass p-6 rounded-[32px] flex gap-6 hover:border-red-600 transition-all cursor-pointer group">
+                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=300" class="w-32 h-48 object-cover rounded-2xl shadow-2xl group-hover:scale-105 transition-all">
+                        <div class="flex flex-col justify-center">
+                            <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">Psychology</span>
+                            <h3 class="text-2xl font-black mb-2">The Art of Coding</h3>
+                            <p class="text-gray-500 text-xs mb-4 line-clamp-3">Bagaimana Kim membangun KimmMovie dari nol dengan JavaScript dan ketekunan tingkat tinggi.</p>
+                            <div class="flex items-center gap-4">
+                                <span class="text-[10px] font-bold text-gray-400"><i class="fa fa-book-open"></i> 240 Hal</span>
+                                <span class="text-[10px] font-bold text-gray-400"><i class="fa fa-star text-yellow-500"></i> 4.9</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
+            <section id="pane-music" class="tab-panel p-8 max-w-4xl mx-auto text-center mt-20">
+                <div class="bg-red-600/10 border border-red-600/20 p-12 rounded-[50px] relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="music-visualizer mb-8 flex items-end justify-center gap-1 h-16">
+                            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <h2 class="text-4xl font-black italic mb-2 tracking-tighter uppercase">Kimm<span class="text-red-600">Lofi</span> Radio</h2>
+                        <p class="text-gray-400 text-sm mb-10 italic">"Temani koding dan bacamu dengan musik relaksasi 24/7"</p>
+                        
+                        <div class="flex items-center justify-center gap-8">
+                            <button class="text-2xl opacity-50"><i class="fa fa-backward"></i></button>
+                            <button class="bg-red-600 w-20 h-20 rounded-full text-3xl shadow-2xl shadow-red-600/40 hover:scale-110 active:scale-90 transition-all"><i class="fa fa-play pl-1"></i></button>
+                            <button class="text-2xl opacity-50"><i class="fa fa-forward"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </main>
 
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full z-[1000] py-3 px-8 flex gap-10 shadow-2xl shadow-black">
-            <button onclick="switchTab('tab-movies', this)" class="tab-btn flex flex-col items-center gap-1 text-red-600 transition-all scale-110">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span class="text-[8px] font-black uppercase">Stream</span>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 glass rounded-full px-8 py-4 flex items-center gap-10 shadow-2xl shadow-red-600/10 z-[1000]">
+            <button onclick="switchTab('pane-movies', this)" class="nav-btn text-red-600 flex flex-col items-center gap-1 transition-all">
+                <i class="fa fa-tv text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">Stream</span>
             </button>
-            <button onclick="switchTab('tab-novels', this)" class="tab-btn flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                <span class="text-[8px] font-black uppercase">Novel</span>
+            <button onclick="switchTab('pane-novels', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-1 transition-all">
+                <i class="fa fa-book text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">Novels</span>
             </button>
+            <button onclick="switchTab('pane-music', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-1 transition-all">
+                <i class="fa fa-headphones text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">Lofi</span>
+            </button>
+            <div class="w-px h-6 bg-white/10 mx-2"></div>
+            <button class="text-gray-500 flex flex-col items-center gap-1"><i class="fa fa-user text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">Profile</span></button>
         </nav>
     </div>
 
-    <div id="movieModal" class="hidden fixed inset-0 bg-black/95 z-[10000] overflow-y-auto overflow-x-hidden p-4 md:p-10 backdrop-blur-3xl">
-        <button onclick="tutupModal()" class="fixed top-6 right-6 z-[11000] bg-red-600 w-12 h-12 rounded-full text-white text-3xl shadow-xl active:scale-90 transition-all">&times;</button>
+    <div id="movieModal" class="hidden fixed inset-0 bg-black/98 z-[9999] p-4 md:p-10 overflow-y-auto backdrop-blur-2xl">
+        <button onclick="closeModal()" class="fixed top-8 right-8 z-[10001] bg-red-600 hover:bg-white hover:text-red-600 w-12 h-12 rounded-full text-white text-2xl transition-all shadow-xl">&times;</button>
         
-        <div class="max-w-6xl mx-auto mt-10">
-            <div id="modalContent" class="flex flex-col lg:flex-row gap-10 bg-[#0a0a0a] rounded-[40px] overflow-hidden border border-white/5 shadow-2xl">
-                </div>
-
-            <div class="mt-10 mb-20">
-                <h3 class="text-2xl font-black italic uppercase mb-6 tracking-tighter">Official <span class="text-red-600">Trailer</span></h3>
-                <div id="trailerPlaceholder" class="video-aspect shadow-2xl shadow-red-600/10">
-                    </div>
+        <div id="modalData" class="max-w-7xl mx-auto animate-pop">
             </div>
-        </div>
     </div>
 
     <script>
         const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
         const BASE_URL = 'https://api.themoviedb.org/3';
-        const IMG_PATH = 'https://image.tmdb.org/t/p/w1280';
-        const POSTER_PATH = 'https://image.tmdb.org/t/p/w500';
+        const IMG_URL = 'https://image.tmdb.org/t/p/original';
+        const POSTER_URL = 'https://image.tmdb.org/t/p/w500';
 
-        let currentPage = 1;
-        let isLoading = false;
-        let isSearching = false;
+        let moviePage = 1;
 
         function handleLogin() {
-            const name = document.getElementById('userNameInput').value;
-            if(name.trim() !== "") {
-                document.getElementById('display-name').innerText = name;
-                document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
-                setTimeout(() => {
-                    document.getElementById('login-screen').style.display = 'none';
-                    const main = document.getElementById('main-content');
-                    main.classList.remove('hidden');
-                    setTimeout(() => main.style.opacity = '1', 100);
-                    initApp();
-                }, 700);
-            }
+            const name = document.getElementById('userNameInput').value || 'Kim';
+            document.getElementById('user-display').innerText = `User: ${name}`;
+            document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                document.getElementById('login-screen').remove();
+                document.getElementById('app').classList.remove('hidden');
+                setTimeout(() => document.getElementById('app').style.opacity = '1', 100);
+                initApp();
+            }, 800);
         }
 
         async function initApp() {
-            const res = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}`);
+            const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}`);
             const data = await res.json();
             setHero(data.results[0]);
-            renderHorizontal(data.results);
-            loadMovies(currentPage);
+            renderTrending(data.results);
+            loadMoreMovies();
         }
 
-        function switchTab(tabId, btn) {
-            // Update active content
-            document.querySelectorAll('#main-tab-content > div').forEach(div => div.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-
-            // Update btn style
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-red-600', 'text-gray-500'));
+        function switchTab(paneId, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(paneId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-red-600', 'text-gray-500'));
             btn.classList.replace('text-gray-500', 'text-red-600');
             window.scrollTo({top:0, behavior:'smooth'});
         }
 
-        async function loadMovies(page) {
-            if (isLoading || isSearching) return;
-            isLoading = true;
-            const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=id-ID&page=${page}`);
+        async function loadMoreMovies() {
+            const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${moviePage}`);
             const data = await res.json();
-            renderGrid(data.results);
-            isLoading = false;
-        }
-
-        async function searchMovies(query) {
             const grid = document.getElementById('movie-grid');
-            const title = document.getElementById('section-title');
-            if (query.length < 3) {
-                if(isSearching) {
-                    isSearching = false;
-                    grid.innerHTML = "";
-                    currentPage = 1;
-                    loadMovies(currentPage);
-                    title.innerHTML = "<span class='w-1 h-6 bg-red-600 rounded-full'></span> Eksplorasi <span class='text-red-600'>Katalog</span>";
-                }
-                return;
-            }
-            isSearching = true;
-            title.innerHTML = `Hasil Pencarian: <span class='text-red-600'>${query}</span>`;
-            const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
-            const data = await res.json();
-            grid.innerHTML = "";
-            renderGrid(data.results);
-        }
-
-        function renderHorizontal(movies) {
-            const container = document.getElementById('trending-list');
-            container.innerHTML = movies.map(m => `
-                <div onclick="bukaDetail(${m.id})" class="min-w-[150px] md:min-w-[200px] cursor-pointer group">
-                    <div class="overflow-hidden rounded-2xl border border-white/5 glow-hover">
-                        <img src="${POSTER_PATH + m.poster_path}" class="w-full h-56 md:h-72 object-cover transition duration-500 group-hover:scale-110">
-                    </div>
-                    <h3 class="text-[10px] font-bold mt-3 truncate uppercase tracking-widest text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
-                </div>
-            `).join('');
-        }
-
-        function renderGrid(movies) {
-            const container = document.getElementById('movie-grid');
-            container.innerHTML += movies.map(m => `
-                <div onclick="bukaDetail(${m.id})" class="cursor-pointer group">
-                    <div class="relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 shadow-2xl glow-hover">
-                        <img src="${m.poster_path ? POSTER_PATH + m.poster_path : 'https://via.placeholder.com/500x750'}" class="w-full aspect-[2/3] object-cover transition duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+            data.results.forEach(m => {
+                const card = document.createElement('div');
+                card.className = 'card-hover cursor-pointer group';
+                card.onclick = () => openMovie(m.id);
+                card.innerHTML = `
+                    <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+                        <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-0 group-hover:opacity-100 transition-all flex items-end p-4">
                             <span class="bg-red-600 text-[8px] font-black px-2 py-1 rounded">DETAIL</span>
                         </div>
                     </div>
-                    <h3 class="text-[11px] font-black mt-3 truncate uppercase text-white group-hover:text-red-600 transition">${m.title}</h3>
-                    <p class="text-[9px] text-gray-500 font-bold">${m.release_date ? m.release_date.split('-')[0] : 'N/A'}</p>
+                    <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+                `;
+                grid.appendChild(card);
+            });
+            moviePage++;
+        }
+
+        function renderTrending(movies) {
+            const row = document.getElementById('trending-row');
+            row.innerHTML = movies.map(m => `
+                <div onclick="openMovie(${m.id})" class="min-w-[200px] md:min-w-[280px] card-hover cursor-pointer rounded-3xl overflow-hidden bg-white/5 border border-white/5">
+                    <img src="${IMG_URL + m.backdrop_path}" class="w-full h-40 object-cover">
+                    <div class="p-4">
+                        <h3 class="text-xs font-black truncate uppercase tracking-tighter">${m.title}</h3>
+                        <p class="text-[9px] text-red-600 font-black mt-1">Trending #1</p>
+                    </div>
                 </div>
             `).join('');
         }
 
-        async function bukaDetail(id) {
-            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=id-ID&append_to_response=videos`);
+        async function openMovie(id) {
+            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos,credits`);
             const m = await res.json();
-            
-            // Get Trailer ID
             const trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
-            const trailerHtml = trailer ? 
-                `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=0&rel=0" frameborder="0" allowfullscreen></iframe>` :
-                `<div class="flex items-center justify-center bg-gray-900 h-full text-gray-500 font-bold italic">Trailer Belum Tersedia</div>`;
 
-            document.getElementById('modalContent').innerHTML = `
-                <div class="w-full lg:w-2/5 relative">
-                    <img src="${IMG_PATH + (m.poster_path || m.backdrop_path)}" class="w-full h-full object-cover shadow-2xl">
-                    <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-transparent hidden lg:block text-white"></div>
-                </div>
-                <div class="w-full lg:w-3/5 p-8 md:p-12 flex flex-col justify-center">
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="bg-yellow-500 text-black px-2 py-1 rounded text-[10px] font-black">⭐ ${m.vote_average.toFixed(1)}</span>
-                        <span class="text-gray-400 text-[10px] font-black uppercase tracking-widest">${m.runtime} MIN | ${m.release_date.split('-')[0]}</span>
+            document.getElementById('modalData').innerHTML = `
+                <div class="flex flex-col lg:flex-row gap-12 mb-16">
+                    <div class="w-full lg:w-1/3">
+                        <img src="${POSTER_URL + m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10">
                     </div>
-                    <h2 class="text-4xl md:text-6xl font-black italic mb-4 uppercase text-white leading-none tracking-tighter">${m.title}</h2>
-                    <p class="text-gray-400 text-sm mb-8 leading-relaxed font-medium italic">"${m.tagline || 'No tagline available'}"</p>
-                    <p class="text-white/70 text-sm mb-10 leading-relaxed line-clamp-6">${m.overview}</p>
-                    
-                    <div class="flex flex-wrap gap-4 mt-auto">
-                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="flex-1 min-w-[200px] bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] text-white transition-all transform hover:scale-105 active:scale-95 shadow-xl shadow-red-600/20">Mulai Menonton</button>
-                        <button class="bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        </button>
+                    <div class="w-full lg:w-2/3 flex flex-col justify-center">
+                        <div class="flex items-center gap-4 mb-6">
+                            <span class="text-yellow-500 font-black tracking-widest uppercase text-xs italic">Rating: ${m.vote_average.toFixed(1)}</span>
+                            <span class="text-gray-500">|</span>
+                            <span class="text-white font-black tracking-widest uppercase text-xs">${m.release_date.split('-')[0]}</span>
+                        </div>
+                        <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
+                        <p class="text-xl text-gray-400 font-medium mb-10 leading-relaxed italic border-l-4 border-red-600 pl-6">"${m.tagline || 'No tagline available'}"</p>
+                        <p class="text-gray-300 text-lg mb-12 leading-relaxed opacity-80">${m.overview}</p>
+                        
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 active:scale-95 transition-all">Play Movie</button>
+                            <button class="bg-white/5 border border-white/10 px-8 py-5 rounded-2xl font-black uppercase text-sm"><i class="fa fa-heart"></i> Favorit</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-20">
+                    <h2 class="text-2xl font-black italic uppercase mb-8 tracking-tighter"><i class="fa fa-play text-red-600"></i> Official <span class="text-red-600">Trailer</span></h2>
+                    <div class="relative w-full aspect-video rounded-[40px] overflow-hidden shadow-2xl border border-white/10 bg-white/5">
+                        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key || ''}" frameborder="0" allowfullscreen></iframe>
                     </div>
                 </div>
             `;
-
-            document.getElementById('trailerPlaceholder').innerHTML = trailerHtml;
             document.getElementById('movieModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
 
-        function tutupModal() {
+        function closeModal() {
             document.getElementById('movieModal').classList.add('hidden');
-            document.getElementById('trailerPlaceholder').innerHTML = ""; // Stop video
+            document.getElementById('modalData').innerHTML = ""; 
             document.body.style.overflow = 'auto';
         }
 
         function setHero(m) {
-            const banner = document.getElementById('hero-banner');
-            banner.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${m.backdrop_path})`;
+            const hero = document.getElementById('hero');
+            hero.style.backgroundImage = `url(${IMG_URL + m.backdrop_path})`;
             document.getElementById('hero-title').innerText = m.title;
             document.getElementById('hero-desc').innerText = m.overview;
-            document.getElementById('hero-btn-play').onclick = () => bukaDetail(m.id);
-            document.getElementById('hero-btn-trailer').onclick = () => bukaDetail(m.id);
+            document.getElementById('play-btn').onclick = () => openMovie(m.id);
+            document.getElementById('trailer-btn').onclick = () => openMovie(m.id);
         }
 
         // Infinite Scroll
         window.onscroll = () => {
-            if (!isSearching && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-                currentPage++;
-                loadMovies(currentPage);
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                loadMoreMovies();
             }
         };
     </script>
