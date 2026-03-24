@@ -296,7 +296,19 @@
             document.getElementById('play-btn').onclick = () => openMovie(m.id);
             document.getElementById('trailer-btn').onclick = () => openMovie(m.id);
         }
+<div id="readerModal" class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center">
+    <div class="absolute inset-0 bg-black/95 backdrop-blur-md"></div>
+    <div class="relative h-full w-full max-w-4xl bg-zinc-900 overflow-y-auto p-10 shadow-2xl">
+        <button onclick="closeReader()" class="fixed top-10 right-10 text-white/50 hover:text-red-600 text-5xl transition-all">
+            <i class="fa fa-times-circle"></i>
+        </button>
+        <div id="readerContent" class="mt-10">
+            </div>
+    </div>
+</div>
 
+<script>
+    // ... semua logic JS yang gue kasih tadi ...
         // Infinite Scroll
         window.onscroll = () => {
             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
