@@ -312,3 +312,62 @@ function toggleMusic(btn) {
         isMusicPlaying = false;
     }
 }
+// Variable untuk debounce search biar gak kena limit API
+let searchTimeout;
+
+async function liveSearch(query) {
+    clearTimeout(searchTimeout);
+    const grid = document.getElementById('movie-grid');
+    const trendingSection = document.querySelector('#pane-movies h2:first-of-type').parentElement;
+    
+    if (query.length < 1) {
+        // Balikin ke tampilan awal kalau input kosong
+        grid.innerHTML = "";
+        moviePage = 1;
+        loadMoreMovies();
+        trendingSection.style.display = "block";
+        return;
+    }
+
+    // Tunggu user selesai ngetik (300ms) baru tembak API
+    searchTimeout = setTimeout(async () => {
+        try {
+            const res = await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}&language=id-ID`);
+            const data = await res.json();
+            
+            // Sembunyiin trending pas lagi nyari
+            trendingSection.style.display = "none";
+            
+            grid.innerHTML = ""; // Bersihin grid
+            
+            if (data.results.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-20 font-bold italic uppercase">Film "${query}" gak ketemu, Kim!</p>`;
+                return;
+            }
+
+            data.results.forEach(m => {
+                if(!m.poster_path) return;
+                const card = document.createElement('div');
+                card.className = 'card-hover cursor-pointer group';
+                card.onclick = () => openMovie(m.id);
+                card.innerHTML = `
+                    <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+                        <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500">
+                    </div>
+                    <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition text-left">${m.title}</h3>
+                `;
+                grid.appendChild(card);
+            });
+        } catch (e) {
+            console.error("Search Error:", e);
+        }
+    }, 300);
+}
+
+// Update handleLogin sedikit biar nama profil otomatis berubah
+const originalHandleLogin = handleLogin;
+handleLogin = function() {
+    const name = document.getElementById('userNameInput').value || 'Kim';
+    document.getElementById('profile-name').innerText = name;
+    originalHandleLogin();
+}
