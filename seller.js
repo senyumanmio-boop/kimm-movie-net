@@ -249,3 +249,131 @@ window.onscroll = () => {
         if (currentTab === 'home' && !isLoading) loadTabHome();
     }
 };
+
+// ==========================================
+// 9. FITUR NOVEL (KIMMLIB)
+// ==========================================
+
+// Data Novel (Kamu bisa tambah terus di sini)
+const novelData = [
+    {
+        id: 1,
+        title: "The Art of Coding",
+        author: "Kim Robi",
+        category: "Psychology",
+        cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=300",
+        desc: "Kisah perjuangan seorang remaja Batam membangun ekosistem digital.",
+        content: `
+            <div class="max-w-2xl mx-auto py-10">
+                <h1 class="text-4xl font-black mb-2 uppercase italic tracking-tighter text-red-600">Bab 1: Baris Pertama</h1>
+                <p class="text-gray-500 font-bold mb-10 uppercase text-xs tracking-widest">Oleh: Kim Robi</p>
+                
+                <div class="space-y-6 text-gray-300 leading-loose text-lg font-medium">
+                    <p>Malam itu di Batam, cahaya dari layar laptop menyinari wajah Kim. Suasana hening, hanya terdengar suara ketikan keyboard yang ritmis. "Satu baris lagi," gumamnya...</p>
+                    <p>Membangun KimmMovie bukan soal koding semata, tapi soal konsistensi. Setiap error adalah guru, dan setiap baris kode adalah batu bata untuk istana masa depannya...</p>
+                    <p>Dia tahu bahwa dunia digital sangat luas, namun dia tidak gentar. Dengan semangat "Smadar FC" di dadanya, dia terus mengetik hingga fajar menyingsing.</p>
+                </div>
+                
+                <div class="h-40 flex flex-col items-center justify-center border-t border-white/10 mt-20">
+                    <div class="w-12 h-1 bg-red-600 mb-4"></div>
+                    <p class="text-gray-500 italic text-sm text-center font-bold uppercase">Bersambung ke Bab Berikutnya... <br> <span class="text-white">Pantau terus KimmLib!</span></p>
+                </div>
+            </div>
+        `
+    },
+    {
+        id: 2,
+        title: "Rahasia Algoritma",
+        author: "Robi",
+        category: "Thriller",
+        cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=300",
+        desc: "Ketika sebuah kode bisa mengendalikan seluruh kota Batam.",
+        content: `
+            <div class="max-w-2xl mx-auto py-10">
+                <h1 class="text-4xl font-black mb-2 uppercase italic tracking-tighter text-red-600">Bab 1: Glitch</h1>
+                <div class="space-y-6 text-gray-300 leading-loose text-lg font-medium mt-10">
+                    <p>Lampu jalanan di Nagoya tiba-tiba berkedip serentak. Tidak ada yang sadar, kecuali seorang anak yang sedang asyik dengan konsol gamenya...</p>
+                    <p>"Ini bukan bug biasa," bisiknya sembari memperhatikan barisan kode yang berjalan terlalu cepat di layarnya.</p>
+                </div>
+            </div>
+        `
+    }
+];
+
+// Fungsi Buka Tab Novel (Panggil dari Navigasi)
+function loadTabNovel() {
+    const container = document.getElementById('pane-novels');
+    if (!container) return;
+    
+    // Render Daftar Novel
+    const novelGrid = container.querySelector('.grid');
+    if (novelGrid) {
+        novelGrid.innerHTML = novelData.map(n => `
+            <div onclick="openNovel(${n.id})" class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
+                <div class="w-32 h-48 bg-gray-800 rounded-2xl overflow-hidden shadow-2xl flex-shrink-0">
+                    <img src="${n.cover}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category}</span>
+                    <h3 class="text-2xl font-black mb-2 group-hover:text-red-600 transition-colors">${n.title}</h3>
+                    <p class="text-gray-500 text-xs mb-4 line-clamp-3 font-medium">${n.desc}</p>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// Fungsi Membuka Isi Novel (Reader)
+function openNovel(id) {
+    const novel = novelData.find(n => n.id === id);
+    const readerModal = document.getElementById('readerModal');
+    const readerContent = document.getElementById('readerContent');
+    
+    if(novel && readerModal && readerContent) {
+        readerContent.innerHTML = novel.content;
+        readerModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        // Animasi Fade In
+        readerModal.style.opacity = '0';
+        setTimeout(() => readerModal.style.opacity = '1', 10);
+    }
+}
+
+function closeReader() {
+    const readerModal = document.getElementById('readerModal');
+    if (readerModal) {
+        readerModal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// ==========================================
+// 10. FITUR MUSIC (LOFI PLAYER)
+// ==========================================
+let isPlaying = false;
+const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'); // Ganti dengan link MP3 Lofi
+
+function toggleMusic(btn) {
+    const icon = btn.querySelector('i');
+    if (!isPlaying) {
+        audio.play();
+        icon.classList.replace('fa-play', 'fa-pause');
+        btn.classList.add('animate-pulse');
+        isPlaying = true;
+    } else {
+        audio.pause();
+        icon.classList.replace('fa-pause', 'fa-play');
+        btn.classList.remove('animate-pulse');
+        isPlaying = false;
+    }
+}
+
+// Tambahkan inisialisasi novel saat tab dipindah
+const originalPindahTab = pindahTab;
+pindahTab = function(tab) {
+    originalPindahTab(tab);
+    if(tab === 'novels') loadTabNovel();
+};
