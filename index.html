@@ -3,130 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KimmMovie Net - Ultimate</title>
+    <title>KimmMovie Net - Ultimate Hub</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/DZ3yMyM3/lalala-removebg-preview.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { background-color: #000; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        body { background-color: #050505; color: white; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
 
-        /* HERO RESPONSIVE */
-        #hero-banner {
-            height: 55vh;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: flex-end;
-            position: relative;
-            padding: 20px 5%;
-            transition: background 0.8s ease-in-out;
-        }
-        @media (min-width: 768px) { #hero-banner { height: 85vh; align-items: center; } }
+        /* Kustom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #e50914; border-radius: 10px; }
 
-        #hero-banner::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, #000 10%, transparent 90%), 
-                        linear-gradient(to right, rgba(0,0,0,0.8) 0%, transparent 100%);
+        .hero-gradient {
+            background: linear-gradient(to top, #050505 10%, transparent 90%), 
+                        linear-gradient(to right, rgba(0,0,0,0.9) 0%, transparent 100%);
         }
 
-        .hero-content { position: relative; z-index: 20; max-width: 700px; }
+        /* Animasi Glow */
+        .glow-hover:hover { box-shadow: 0 0 20px rgba(229, 9, 20, 0.4); transform: scale(1.03); }
+        
+        /* Modal Video Responsif */
+        .video-aspect { position: relative; padding-bottom: 56.25%; height: 0; }
+        .video-aspect iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; }
 
-        /* GRID POSTER (2 Kolom di HP) */
-        .poster-img {
-            height: 240px;
-            width: 100%;
-            object-fit: cover;
-            border-radius: 12px;
-            transition: 0.3s;
-        }
-        @media (min-width: 768px) { .poster-img { height: 350px; } }
-
-        /* HIDE SCROLLBAR */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        #movieModal { backdrop-filter: blur(15px); }
+        #main-tab-content > div { display: none; }
+        #main-tab-content > div.active { display: block; }
     </style>
 </head>
 <body>
-   
 
-    <div id="login-screen">
-        <div class="text-center px-6">
-            <h1 class="text-6xl font-black italic text-red-600 mb-8 tracking-tighter">Kimm<span class="text-white">Movie</span></h1>
-            <input type="text" id="userNameInput" placeholder="Nama lo siapa?" class="bg-white/5 p-4 rounded-2xl mb-4 w-full max-w-xs text-center border border-white/10 text-white font-bold outline-none focus:border-red-600">
+    <div id="login-screen" class="fixed inset-0 bg-black z-[10000] flex items-center justify-center transition-all duration-700">
+        <div class="text-center px-6 animate-pulse">
+            <h1 class="text-7xl font-black italic text-red-600 mb-8 tracking-tighter">Kimm<span class="text-white">Movie</span></h1>
+            <input type="text" id="userNameInput" placeholder="Ketik nama lo..." class="bg-white/5 p-4 rounded-2xl mb-4 w-full max-w-xs text-center border border-white/10 text-white font-bold outline-none focus:border-red-600 focus:ring-2 focus:ring-red-600 transition-all">
             <br>
-            <button onclick="handleLogin()" class="bg-red-600 w-full max-w-xs py-4 rounded-2xl font-black uppercase tracking-widest text-sm">Masuk</button>
+            <button onclick="handleLogin()" class="bg-red-600 hover:bg-red-700 w-full max-w-xs py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-transform active:scale-95 shadow-lg shadow-red-600/20">Mulai Petualangan</button>
         </div>
     </div>
 
-    <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000 pb-32">
+    <div id="main-content" class="hidden opacity-0 transition-opacity duration-1000">
         
-        <div class="p-4 sticky top-0 z-[100] bg-black/60 backdrop-blur-lg">
-            <input type="text" id="searchInput" onkeyup="searchMovies(this.value)" placeholder="Cari film..." class="w-full bg-white/10 border border-white/20 py-3 px-6 rounded-full outline-none focus:border-red-600 text-white text-sm">
-        </div>
+        <header class="p-4 sticky top-0 z-[100] bg-black/80 backdrop-blur-xl border-b border-white/5 flex items-center gap-4">
+            <div class="text-2xl font-black italic text-red-600 tracking-tighter">K<span class="text-white">M</span></div>
+            <input type="text" id="searchInput" onkeyup="searchMovies(this.value)" placeholder="Cari film atau judul novel..." class="flex-1 bg-white/5 border border-white/10 py-2.5 px-6 rounded-full outline-none focus:border-red-600 focus:bg-white/10 text-white text-sm transition-all">
+            <div id="userGreeting" class="text-[10px] font-bold text-gray-400 hidden md:block">Halo, <span class="text-white" id="display-name">Guest</span>!</div>
+        </header>
 
-        <div id="hero-banner">
-            <div class="hero-content">
-                <h1 id="hero-title" class="text-3xl md:text-7xl font-black italic mb-2 uppercase tracking-tighter">Memuat...</h1>
-                <p id="hero-desc" class="text-gray-400 text-[10px] md:text-sm mb-4 line-clamp-2 max-w-xl"></p>
-                <div class="flex gap-2">
-                    <button id="hero-btn-play" class="bg-white text-black px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest">Play</button>
-                    <button id="hero-btn-trailer" class="bg-white/10 border border-white/20 text-white px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest">Trailer</button>
+        <main id="main-tab-content">
+            
+            <div id="tab-movies" class="active">
+                <div id="hero-banner" class="relative h-[60vh] md:h-[85vh] bg-cover bg-center flex items-center px-[5%] transition-all duration-1000">
+                    <div class="absolute inset-0 hero-gradient"></div>
+                    <div class="relative z-20 max-w-2xl">
+                        <span class="bg-red-600 text-[10px] font-black px-2 py-1 rounded mb-4 inline-block">TRENDING SEKARANG</span>
+                        <h1 id="hero-title" class="text-4xl md:text-7xl font-black italic mb-4 leading-none uppercase tracking-tighter">...</h1>
+                        <p id="hero-desc" class="text-gray-300 text-xs md:text-base mb-6 line-clamp-3 opacity-80 font-medium leading-relaxed"></p>
+                        <div class="flex gap-3">
+                            <button id="hero-btn-play" class="bg-white text-black px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all">Play Now</button>
+                            <button id="hero-btn-trailer" class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-8 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-white/20 transition-all">Trailer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-10 space-y-12">
+                    <div class="pl-5">
+                        <h2 class="text-xl font-black italic uppercase tracking-tighter mb-5 flex items-center gap-2">
+                            <span class="w-1 h-6 bg-red-600 rounded-full"></span> Trending <span class="text-red-600">Minggu Ini</span>
+                        </h2>
+                        <div id="trending-list" class="flex gap-4 overflow-x-auto no-scrollbar pb-4 pr-5"></div>
+                    </div>
+
+                    <div class="px-5">
+                        <h2 id="section-title" class="text-xl font-black italic uppercase tracking-tighter mb-5 flex items-center gap-2">
+                            <span class="w-1 h-6 bg-red-600 rounded-full"></span> Eksplorasi <span class="text-red-600">Katalog</span>
+                        </h2>
+                        <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5"></div>
+                        <div id="loading-indicator" class="text-center py-20 text-gray-500 animate-pulse font-bold text-xs uppercase tracking-[0.3em]">Menyiapkan lebih banyak keseruan...</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="py-6 space-y-8">
-            <div class="px-5">
-                <h2 class="text-lg font-black italic uppercase tracking-tighter mb-4">Trending <span class="text-red-600">Minggu Ini</span></h2>
-                <div id="trending-list" class="flex gap-4 overflow-x-auto no-scrollbar"></div>
+            <div id="tab-novels" class="px-5 py-8 min-h-screen">
+                <h1 class="text-4xl font-black italic text-white mb-2 uppercase">Kimm<span class="text-red-600">Library</span></h1>
+                <p class="text-gray-400 text-sm mb-10">Baca novel populer secara gratis.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white/5 border border-white/10 p-6 rounded-3xl flex gap-5 hover:bg-white/10 transition-all cursor-pointer group">
+                        <div class="w-24 h-36 bg-gray-800 rounded-xl overflow-hidden flex-shrink-0 shadow-2xl">
+                            <img src="https://images.unsplash.com/photo-1543004629-142a4446302a?auto=format&fit=crop&w=200" class="w-full h-full object-cover group-hover:scale-110 transition-duration-500">
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-red-600 font-bold tracking-widest uppercase">Best Seller</span>
+                            <h3 class="text-xl font-bold mt-1">Dunia Dalam Koding</h3>
+                            <p class="text-xs text-gray-400 mt-2 line-clamp-3">Kisah seorang remaja di Batam yang membangun kerajaan AI...</p>
+                            <button class="mt-4 text-xs font-black uppercase tracking-tighter border-b-2 border-red-600 pb-1">Baca Sekarang</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="px-5">
-                <h2 id="section-title" class="text-lg font-black italic uppercase tracking-tighter mb-4">Eksplorasi <span class="text-red-600">Film</span></h2>
-                <div id="movie-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
-                <div id="loading-indicator" class="text-center py-10 text-gray-600 font-bold text-[10px] uppercase tracking-widest">Scroll terus buat film lainnya...</div>
-            </div>
-        </div>
+        </main>
 
-        <nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-2xl border-t border-white/5 z-[1000] py-4 flex justify-around">
-            <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="flex flex-col items-center gap-1 text-red-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-                <span class="text-[9px] font-black uppercase">Home</span>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full z-[1000] py-3 px-8 flex gap-10 shadow-2xl shadow-black">
+            <button onclick="switchTab('tab-movies', this)" class="tab-btn flex flex-col items-center gap-1 text-red-600 transition-all scale-110">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span class="text-[8px] font-black uppercase">Stream</span>
             </button>
-            <button onclick="document.getElementById('searchInput').focus()" class="flex flex-col items-center gap-1 text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                <span class="text-[9px] font-black uppercase">Search</span>
+            <button onclick="switchTab('tab-novels', this)" class="tab-btn flex flex-col items-center gap-1 text-gray-500 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span class="text-[8px] font-black uppercase">Novel</span>
             </button>
         </nav>
     </div>
 
-    <div id="movieModal" class="hidden fixed inset-0 bg-black/90 z-[10000] flex items-center justify-center p-4">
-        <div class="bg-[#111] max-w-4xl w-full rounded-3xl overflow-hidden relative border border-white/10 shadow-2xl">
-            <button onclick="tutupModal()" class="absolute top-4 right-4 z-50 bg-black/50 w-10 h-10 rounded-full text-white text-2xl">&times;</button>
-            <div id="modalContent" class="flex flex-col md:flex-row"></div>
+    <div id="movieModal" class="hidden fixed inset-0 bg-black/95 z-[10000] overflow-y-auto overflow-x-hidden p-4 md:p-10 backdrop-blur-3xl">
+        <button onclick="tutupModal()" class="fixed top-6 right-6 z-[11000] bg-red-600 w-12 h-12 rounded-full text-white text-3xl shadow-xl active:scale-90 transition-all">&times;</button>
+        
+        <div class="max-w-6xl mx-auto mt-10">
+            <div id="modalContent" class="flex flex-col lg:flex-row gap-10 bg-[#0a0a0a] rounded-[40px] overflow-hidden border border-white/5 shadow-2xl">
+                </div>
+
+            <div class="mt-10 mb-20">
+                <h3 class="text-2xl font-black italic uppercase mb-6 tracking-tighter">Official <span class="text-red-600">Trailer</span></h3>
+                <div id="trailerPlaceholder" class="video-aspect shadow-2xl shadow-red-600/10">
+                    </div>
+            </div>
         </div>
-        <div class="trailer-container">
-    <h2>Nonton Trailer Terbaru</h2>
-    <div class="video-wrapper">
-        <iframe 
-            src="https://www.youtube.com/embed/k2fDmz-61SJ" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen>
-        </iframe>
-    </div>
-</div>
     </div>
 
     <script>
         const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
         const BASE_URL = 'https://api.themoviedb.org/3';
-        const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
+        const IMG_PATH = 'https://image.tmdb.org/t/p/w1280';
+        const POSTER_PATH = 'https://image.tmdb.org/t/p/w500';
 
         let currentPage = 1;
         let isLoading = false;
@@ -135,11 +145,15 @@
         function handleLogin() {
             const name = document.getElementById('userNameInput').value;
             if(name.trim() !== "") {
-                document.getElementById('login-screen').style.display = 'none';
-                const main = document.getElementById('main-content');
-                main.classList.remove('hidden');
-                setTimeout(() => main.style.opacity = '1', 100);
-                initApp();
+                document.getElementById('display-name').innerText = name;
+                document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.display = 'none';
+                    const main = document.getElementById('main-content');
+                    main.classList.remove('hidden');
+                    setTimeout(() => main.style.opacity = '1', 100);
+                    initApp();
+                }, 700);
             }
         }
 
@@ -149,6 +163,17 @@
             setHero(data.results[0]);
             renderHorizontal(data.results);
             loadMovies(currentPage);
+        }
+
+        function switchTab(tabId, btn) {
+            // Update active content
+            document.querySelectorAll('#main-tab-content > div').forEach(div => div.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            // Update btn style
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-red-600', 'text-gray-500'));
+            btn.classList.replace('text-gray-500', 'text-red-600');
+            window.scrollTo({top:0, behavior:'smooth'});
         }
 
         async function loadMovies(page) {
@@ -169,31 +194,26 @@
                     grid.innerHTML = "";
                     currentPage = 1;
                     loadMovies(currentPage);
-                    title.innerHTML = "Eksplorasi <span class='text-red-600'>Film</span>";
+                    title.innerHTML = "<span class='w-1 h-6 bg-red-600 rounded-full'></span> Eksplorasi <span class='text-red-600'>Katalog</span>";
                 }
                 return;
             }
             isSearching = true;
-            title.innerHTML = `Hasil Cari: <span class='text-red-600'>${query}</span>`;
+            title.innerHTML = `Hasil Pencarian: <span class='text-red-600'>${query}</span>`;
             const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
             const data = await res.json();
             grid.innerHTML = "";
             renderGrid(data.results);
         }
 
-        window.onscroll = () => {
-            if (!isSearching && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
-                currentPage++;
-                loadMovies(currentPage);
-            }
-        };
-
         function renderHorizontal(movies) {
             const container = document.getElementById('trending-list');
             container.innerHTML = movies.map(m => `
-                <div onclick="bukaDetail(${m.id})" class="min-w-[140px] cursor-pointer">
-                    <img src="${IMG_PATH + m.poster_path}" class="w-full h-48 object-cover rounded-xl border border-white/10">
-                    <h3 class="text-[9px] font-bold mt-2 truncate uppercase text-gray-500">${m.title}</h3>
+                <div onclick="bukaDetail(${m.id})" class="min-w-[150px] md:min-w-[200px] cursor-pointer group">
+                    <div class="overflow-hidden rounded-2xl border border-white/5 glow-hover">
+                        <img src="${POSTER_PATH + m.poster_path}" class="w-full h-56 md:h-72 object-cover transition duration-500 group-hover:scale-110">
+                    </div>
+                    <h3 class="text-[10px] font-bold mt-3 truncate uppercase tracking-widest text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
                 </div>
             `).join('');
         }
@@ -202,39 +222,78 @@
             const container = document.getElementById('movie-grid');
             container.innerHTML += movies.map(m => `
                 <div onclick="bukaDetail(${m.id})" class="cursor-pointer group">
-                    <img src="${m.poster_path ? IMG_PATH + m.poster_path : 'https://via.placeholder.com/500x750'}" class="poster-img border border-white/5 shadow-lg group-hover:scale-105 transition">
-                    <h3 class="text-[10px] font-black mt-2 truncate uppercase text-red-600">${m.title}</h3>
+                    <div class="relative overflow-hidden rounded-2xl bg-white/5 border border-white/10 shadow-2xl glow-hover">
+                        <img src="${m.poster_path ? POSTER_PATH + m.poster_path : 'https://via.placeholder.com/500x750'}" class="w-full aspect-[2/3] object-cover transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                            <span class="bg-red-600 text-[8px] font-black px-2 py-1 rounded">DETAIL</span>
+                        </div>
+                    </div>
+                    <h3 class="text-[11px] font-black mt-3 truncate uppercase text-white group-hover:text-red-600 transition">${m.title}</h3>
+                    <p class="text-[9px] text-gray-500 font-bold">${m.release_date ? m.release_date.split('-')[0] : 'N/A'}</p>
                 </div>
             `).join('');
         }
 
         async function bukaDetail(id) {
-            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=id-ID`);
+            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=id-ID&append_to_response=videos`);
             const m = await res.json();
+            
+            // Get Trailer ID
+            const trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
+            const trailerHtml = trailer ? 
+                `<iframe src="https://www.youtube.com/embed/${trailer.key}?autoplay=0&rel=0" frameborder="0" allowfullscreen></iframe>` :
+                `<div class="flex items-center justify-center bg-gray-900 h-full text-gray-500 font-bold italic">Trailer Belum Tersedia</div>`;
+
             document.getElementById('modalContent').innerHTML = `
-                <img src="${IMG_PATH + m.poster_path}" class="w-full md:w-1/2 h-[400px] md:h-auto object-cover">
-                <div class="p-8 flex flex-col justify-center">
-                    <h2 class="text-3xl font-black italic mb-2 uppercase text-white">${m.title}</h2>
-                    <p class="text-yellow-500 font-bold text-xs mb-4">⭐ ${m.vote_average.toFixed(1)} | ${m.release_date.split('-')[0]}</p>
-                    <p class="text-gray-400 text-xs mb-6 leading-relaxed line-clamp-4">${m.overview}</p>
-                    <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 py-3 rounded-full font-black text-[10px] uppercase tracking-widest text-white">Nonton Sekarang</button>
+                <div class="w-full lg:w-2/5 relative">
+                    <img src="${IMG_PATH + (m.poster_path || m.backdrop_path)}" class="w-full h-full object-cover shadow-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-transparent to-transparent hidden lg:block text-white"></div>
+                </div>
+                <div class="w-full lg:w-3/5 p-8 md:p-12 flex flex-col justify-center">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="bg-yellow-500 text-black px-2 py-1 rounded text-[10px] font-black">⭐ ${m.vote_average.toFixed(1)}</span>
+                        <span class="text-gray-400 text-[10px] font-black uppercase tracking-widest">${m.runtime} MIN | ${m.release_date.split('-')[0]}</span>
+                    </div>
+                    <h2 class="text-4xl md:text-6xl font-black italic mb-4 uppercase text-white leading-none tracking-tighter">${m.title}</h2>
+                    <p class="text-gray-400 text-sm mb-8 leading-relaxed font-medium italic">"${m.tagline || 'No tagline available'}"</p>
+                    <p class="text-white/70 text-sm mb-10 leading-relaxed line-clamp-6">${m.overview}</p>
+                    
+                    <div class="flex flex-wrap gap-4 mt-auto">
+                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="flex-1 min-w-[200px] bg-red-600 hover:bg-red-700 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] text-white transition-all transform hover:scale-105 active:scale-95 shadow-xl shadow-red-600/20">Mulai Menonton</button>
+                        <button class="bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        </button>
+                    </div>
                 </div>
             `;
+
+            document.getElementById('trailerPlaceholder').innerHTML = trailerHtml;
             document.getElementById('movieModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
 
         function tutupModal() {
             document.getElementById('movieModal').classList.add('hidden');
+            document.getElementById('trailerPlaceholder').innerHTML = ""; // Stop video
             document.body.style.overflow = 'auto';
         }
 
         function setHero(m) {
-            document.getElementById('hero-banner').style.backgroundImage = `url(https://image.tmdb.org/t/p/original${m.backdrop_path})`;
+            const banner = document.getElementById('hero-banner');
+            banner.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${m.backdrop_path})`;
             document.getElementById('hero-title').innerText = m.title;
             document.getElementById('hero-desc').innerText = m.overview;
             document.getElementById('hero-btn-play').onclick = () => bukaDetail(m.id);
+            document.getElementById('hero-btn-trailer').onclick = () => bukaDetail(m.id);
         }
+
+        // Infinite Scroll
+        window.onscroll = () => {
+            if (!isSearching && (window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                currentPage++;
+                loadMovies(currentPage);
+            }
+        };
     </script>
 </body>
 </html>
