@@ -48,7 +48,7 @@
             </div>
             <div class="relative w-1/2 max-w-md">
                 <i class="fa fa-search absolute left-4 top-3 text-gray-500 text-xs"></i>
-                <input type="text" id="searchInput" placeholder="Cari Film, Novel, atau Musik..." class="w-full bg-white/5 border border-white/10 py-2.5 pl-12 pr-6 rounded-xl text-sm outline-none focus:bg-white/10 focus:border-red-600 transition-all text-white">
+                <input type="text" id="searchInput" placeholder="Cari Film..." class="w-full bg-white/5 border border-white/10 py-2.5 pl-12 pr-6 rounded-xl text-sm outline-none focus:bg-white/10 focus:border-red-600 transition-all text-white">
             </div>
         </nav>
 
@@ -86,10 +86,11 @@
                 <div class="flex justify-between items-end mb-12">
                     <div>
                         <h1 class="text-6xl font-black italic tracking-tighter">Kimm<span class="text-red-600">Lib</span></h1>
-                        <p class="text-gray-500 font-bold uppercase text-xs tracking-widest mt-2">Daftar Bacaan Exclusive Untukmu</p>
+                        <p class="text-gray-500 font-bold uppercase text-xs tracking-widest mt-2">Daftar Bacaan Exclusive dari Sheety</p>
                     </div>
                 </div>
-                <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
+                <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+                    </div>
             </section>
 
             <section id="pane-music" class="tab-panel p-8 max-w-4xl mx-auto text-center mt-20">
@@ -128,43 +129,18 @@
         <div id="modalData" class="max-w-7xl mx-auto animate-pop"></div>
     </div>
 
-    <div id="readerModal" class="hidden fixed inset-0 bg-[#030303] z-[100001] overflow-y-auto p-6 md:p-20">
+    <div id="readerModal" class="hidden fixed inset-0 bg-[#030303] z-[100001] overflow-y-auto p-6 md:p-20 text-left">
         <div class="max-w-3xl mx-auto">
-            <button onclick="closeReader()" class="fixed top-8 right-8 bg-red-600 text-white w-12 h-12 rounded-full text-2xl shadow-2xl hover:scale-110 transition-all">&times;</button>
-            <div id="readerContent" class="animate-pop text-gray-300 text-xl leading-loose"></div>
+            <button onclick="closeReader()" class="fixed top-8 right-8 bg-red-600 text-white w-12 h-12 rounded-full text-2xl shadow-2xl hover:scale-110 transition-all z-[100002]">&times;</button>
+            <div id="readerContent" class="animate-pop text-gray-300 text-xl leading-loose">
+                </div>
         </div>
-        <div id="tab-novels" class="tab-content hidden min-h-screen pt-24 pb-32 px-4 md:px-10">
-    <div class="max-w-7xl mx-auto">
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div>
-                <span class="text-red-600 font-black tracking-[.4em] uppercase text-xs mb-2 block">KimmLib Original</span>
-                <h2 class="text-5xl md:text-7xl font-black italic text-white uppercase tracking-tighter leading-none">
-                    KOLEKSI <span class="text-red-600">NOVEL</span>
-                </h2>
-            </div>
-            <p class="text-gray-500 font-bold italic text-sm md:text-base max-w-md border-l-2 border-red-600 pl-4">
-                Baca karya eksklusif dari komunitas Dev Batam langsung di sini.
-            </p>
-        </div>
-
-        <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
-            </div>
-    </div>
-</div>
-
-<div id="readerModal" class="fixed inset-0 z-[100] hidden bg-black overflow-y-auto pt-20">
-    <div class="min-h-screen w-full bg-[#050505] relative">
-        <button onclick="closeReader()" class="fixed top-6 right-6 z-[110] bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition">
-            <i class="fa fa-times text-xl"></i>
-        </button>
-
-        <div id="readerContent" class="text-white">
-            </div>
     </div>
 
     <script>
-        const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
-        const API_KEY = 'https://api.sheety.co/40744eda28ba4514b7bcf2e4f9d38dd3/untitledSpreadsheet/sheet1';
+        // API CONFIG
+        const MOVIE_API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
+        const NOVEL_API_URL = 'https://api.sheety.co/40744eda28ba4514b7bcf2e4f9d38dd3/untitledSpreadsheet/sheet1';
         const BASE_URL = 'https://api.themoviedb.org/3';
         const IMG_URL = 'https://image.tmdb.org/t/p/original';
         const POSTER_URL = 'https://image.tmdb.org/t/p/w500';
@@ -172,28 +148,6 @@
         let moviePage = 1;
         let isPlaying = false;
         const lofiAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-
-        // DATA NOVEL
-        const novelData = [
-            {
-                id: 1,
-                title: "The Art of Coding",
-                author: "Kim Robi",
-                category: "Psychology",
-                cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=300",
-                desc: "Bagaimana Kim membangun KimmMovie dari nol dengan JavaScript.",
-                content: "<h1 class='text-5xl font-black italic text-red-600 mb-8'>BAB 1: KODE PERTAMA</h1><p>Malam itu di Batam, Kim duduk menatap layar laptopnya. Baris demi baris kode JavaScript ia ketik dengan penuh ambisi...</p><p class='mt-6'>KimmMovie bukan sekadar proyek, itu adalah bukti bahwa ketekunan bisa mengubah segalanya.</p>"
-            },
-            {
-                id: 2,
-                title: "Smadar FC: Spirit",
-                author: "Robi",
-                category: "Sport",
-                cover: "https://images.unsplash.com/photo-1551952237-954a0e68786c?auto=format&fit=crop&w=300",
-                desc: "Kisah solidaritas di lapangan futsal yang terbawa sampai ke dunia nyata.",
-                content: "<h1 class='text-5xl font-black italic text-red-600 mb-8'>BAB 1: KICK OFF</h1><p>Peluit dibunyikan. Lapangan futsal Smadar riuh rendah. Kim memegang bola, matanya fokus mencari celah di pertahanan lawan...</p>"
-            }
-        ];
 
         function handleLogin() {
             const name = document.getElementById('userNameInput').value || 'Kim';
@@ -209,12 +163,15 @@
 
         async function initApp() {
             try {
-                const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}`);
+                // Load Movie
+                const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${MOVIE_API_KEY}`);
                 const data = await res.json();
                 setHero(data.results[0]);
                 renderTrending(data.results);
                 loadMoreMovies();
-                renderNovels();
+                
+                // Load Novel di awal (background)
+                fetchNovels();
             } catch (e) { console.error(e); }
         }
 
@@ -227,32 +184,56 @@
             });
             btn.classList.replace('text-gray-500', 'text-red-600');
             window.scrollTo({top:0, behavior:'smooth'});
+
+            if(paneId === 'pane-novels') fetchNovels();
         }
 
-        // NOVEL SYSTEM
-        function renderNovels() {
+        // NOVEL SYSTEM (SHEETY)
+        async function fetchNovels() {
             const grid = document.getElementById('novel-grid');
-            grid.innerHTML = novelData.map(n => `
-                <div onclick="openNovel(${n.id})" class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
-                    <img src="${n.cover}" class="w-32 h-48 object-cover rounded-2xl group-hover:scale-105 transition-all">
-                    <div class="flex flex-col justify-center">
-                        <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category}</span>
-                        <h3 class="text-2xl font-black mb-2 text-white">${n.title}</h3>
-                        <p class="text-gray-500 text-xs mb-4 line-clamp-2">${n.desc}</p>
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
+            if (!grid) return;
+            
+            try {
+                const res = await fetch(NOVEL_API_URL);
+                const data = await res.json();
+                const novels = data.sheet1;
 
-        function openNovel(id) {
-            const novel = novelData.find(n => n.id === id);
-            if(novel) {
-                document.getElementById('readerContent').innerHTML = novel.content;
-                document.getElementById('readerModal').classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
+                if (!novels || novels.length === 0) {
+                    grid.innerHTML = "<p class='text-center text-gray-500 col-span-full'>Belum ada data di Google Sheets.</p>";
+                    return;
+                }
+
+                grid.innerHTML = novels.map(n => `
+                    <div onclick='openNovel(${JSON.stringify(n).replace(/'/g, "&apos;")})' 
+                         class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
+                        <img src="${n.cover || 'https://via.placeholder.com/300'}" class="w-32 h-48 object-cover rounded-2xl group-hover:scale-105 transition-all">
+                        <div class="flex flex-col justify-center">
+                            <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category || 'NOVEL'}</span>
+                            <h3 class="text-2xl font-black mb-2 text-white italic uppercase">${n.title}</h3>
+                            <p class="text-gray-500 text-xs mb-4 line-clamp-2 text-left">${n.desc || ''}</p>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author || 'KIM'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { 
+                console.error("Gagal ambil data novel:", e); 
+                grid.innerHTML = "<p class='text-center text-red-600 col-span-full'>Gagal memuat novel. Cek Sheety lo!</p>";
             }
         }
+
+        function openNovel(novel) {
+            const content = `
+                <h1 class="text-5xl font-black italic text-red-600 mb-2 uppercase tracking-tighter">${novel.title}</h1>
+                <p class="text-gray-500 font-bold mb-10 border-b border-white/10 pb-4">AUTHOR: ${novel.author}</p>
+                <div class="space-y-6">
+                    ${novel.content ? novel.content.replace(/\n/g, '<br>') : 'Tidak ada isi konten.'}
+                </div>
+            `;
+            document.getElementById('readerContent').innerHTML = content;
+            document.getElementById('readerModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
         function closeReader() {
             document.getElementById('readerModal').classList.add('hidden');
             document.body.style.overflow = 'auto';
@@ -260,10 +241,11 @@
 
         // MOVIE SYSTEM
         async function loadMoreMovies() {
-            const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${moviePage}`);
+            const res = await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
             const data = await res.json();
             const grid = document.getElementById('movie-grid');
             data.results.forEach(m => {
+                if(!m.poster_path) return;
                 const card = document.createElement('div');
                 card.className = 'card-hover cursor-pointer group';
                 card.onclick = () => openMovie(m.id);
@@ -271,7 +253,7 @@
                     <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
                         <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-duration-500">
                     </div>
-                    <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+                    <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition text-left">${m.title}</h3>
                 `;
                 grid.appendChild(card);
             });
@@ -283,28 +265,28 @@
             row.innerHTML = movies.map(m => `
                 <div onclick="openMovie(${m.id})" class="min-w-[200px] md:min-w-[280px] card-hover cursor-pointer rounded-3xl overflow-hidden bg-white/5 border border-white/5">
                     <img src="${IMG_URL + m.backdrop_path}" class="w-full h-40 object-cover">
-                    <div class="p-4"><h3 class="text-xs font-black truncate uppercase tracking-tighter">${m.title}</h3></div>
+                    <div class="p-4 text-left"><h3 class="text-xs font-black truncate uppercase tracking-tighter">${m.title}</h3></div>
                 </div>
             `).join('');
         }
 
         async function openMovie(id) {
-            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos`);
+            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=id-ID`);
             const m = await res.json();
             const trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
 
             document.getElementById('modalData').innerHTML = `
-                <div class="flex flex-col lg:flex-row gap-12 mb-16">
-                    <div class="w-full lg:w-1/3"><img src="${POSTER_URL + m.poster_path}" class="w-full rounded-[40px] shadow-2xl"></div>
+                <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
+                    <div class="w-full lg:w-1/3"><img src="${POSTER_URL + m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10"></div>
                     <div class="w-full lg:w-2/3">
                         <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
-                        <p class="text-gray-300 text-lg mb-12 opacity-80">${m.overview}</p>
-                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl">Play Movie</button>
+                        <p class="text-gray-300 text-lg mb-12 opacity-80 leading-relaxed">${m.overview || 'Tidak ada deskripsi.'}</p>
+                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition-all">Mulai Nonton</button>
                     </div>
                 </div>
                 <div class="mb-20">
-                    <h2 class="text-2xl font-black italic uppercase mb-8"><i class="fa fa-play text-red-600"></i> Official Trailer</h2>
-                    <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10">
+                    <h2 class="text-2xl font-black italic uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Official Trailer</h2>
+                    <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
                         <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key || ''}" frameborder="0" allowfullscreen></iframe>
                     </div>
                 </div>
@@ -319,6 +301,7 @@
         }
 
         function setHero(m) {
+            if(!m) return;
             document.getElementById('hero').style.backgroundImage = `url(${IMG_URL + m.backdrop_path})`;
             document.getElementById('hero-title').innerText = m.title;
             document.getElementById('hero-desc').innerText = m.overview;
