@@ -441,5 +441,38 @@ handleLogin = function() {
             document.body.style.overflow = 'hidden';
             document.getElementById('movieModal').scrollTop = 0;
         }
+/* Khusus Mobile */
+@media (max-width: 768px) {
+    #modalData .flex-col {
+        gap: 1.5rem !important; /* Jarak poster & teks lebih rapet */
+    }
+
+    #modalData h1 {
+        font-size: 2.5rem !important; /* Font judul dikecilin biar gak kepotong */
+        line-height: 1.1;
+    }
+
+    #modalData .w-full.lg\:w-1\/3 {
+        width: 70% !important; /* Poster jangan menuhin layar banget, biar estetik */
+        margin: 0 auto;
+    }
+
+    #modalData p {
+        font-size: 1rem !important; /* Sinopsis biar enak dibaca */
+        line-height: 1.6;
+    }
+
+    /* Tombol Nonton di HP biar Full Width */
+    #modalData button {
+        width: 100%;
+        padding: 1rem !important;
+        font-size: 12px !important;
+    }
+}
+
+/* Biar scroll modal di HP halus */
+#movieModal {
+    -webkit-overflow-scrolling: touch;
+}
 
         // ... (kode bawah tetap sama)
