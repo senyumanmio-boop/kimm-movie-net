@@ -371,3 +371,75 @@ handleLogin = function() {
     document.getElementById('profile-name').innerText = name;
     originalHandleLogin();
 }
+// ... (kode atas tetap sama)
+
+        async function openMovie(id) {
+            // 1. Coba ambil data bahasa Indonesia dulu
+            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos,credits&language=id-ID`);
+            let m = await res.json();
+            
+            // 2. FALLBACK: Kalau sinopsis Indo kosong, ambil dari English
+            if (!m.overview || m.overview.length < 5) {
+                const resEn = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=en-US`);
+                const dataEn = await resEn.json();
+                m.overview = dataEn.overview;
+                // Kalau trailer Indo gak ada, pakai trailer hasil search English
+                if (!m.videos.results.length) m.videos.results = dataEn.videos.results;
+            }
+
+            const trailer = m.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube') || m.videos.results[0];
+            const cast = m.credits.cast.slice(0, 10); 
+            
+            document.getElementById('modalData').innerHTML = `
+                <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
+                    <div class="w-full lg:w-1/3">
+                        <img src="${POSTER_URL + m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10">
+                        <div class="mt-6 flex flex-wrap gap-2">
+                            ${m.genres.map(g => `<span class="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold text-gray-400 uppercase">${g.name}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-2/3">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="text-red-600 font-black text-xl italic tracking-tighter"><i class="fa fa-star"></i> ${m.vote_average.toFixed(1)}</span>
+                            <span class="text-gray-500 font-bold text-xs uppercase">${m.release_date ? m.release_date.split('-')[0] : '-'}</span>
+                            <span class="text-gray-500 font-bold text-xs uppercase">${m.runtime} Menit</span>
+                        </div>
+                        <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
+                        <h3 class="text-red-600 font-black uppercase text-sm mb-4 italic tracking-widest">Sinopsis:</h3>
+                        <p class="text-gray-300 text-lg mb-8 opacity-80 leading-loose">${m.overview || 'Sinopsis belum tersedia untuk film ini.'}</p>
+                        
+                        <div class="mb-10">
+                            <h3 class="text-red-600 font-black uppercase text-sm mb-6 italic tracking-widest">Pemeran Utama:</h3>
+                            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
+                                ${cast.map(c => `
+                                    <div class="min-w-[100px] text-center">
+                                        <div class="w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-white/10 mb-2">
+                                            <img src="${c.profile_path ? 'https://image.tmdb.org/t/p/w185' + c.profile_path : 'https://via.placeholder.com/185x185?text=No+Photo'}" class="w-full h-full object-cover">
+                                        </div>
+                                        <p class="text-[9px] font-black uppercase text-white truncate w-24">${c.name}</p>
+                                        <p class="text-[8px] font-bold uppercase text-gray-500 truncate w-24">${c.character}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition-all">Mulai Nonton</button>
+                    </div>
+                </div>
+                
+                <div class="mb-20">
+                    <h2 class="text-2xl font-black italic uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Official Trailer</h2>
+                    <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl bg-white/5">
+                        ${trailer ? 
+                            `<iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer.key}?autoplay=0&rel=0" frameborder="0" allowfullscreen></iframe>` 
+                            : `<div class="flex items-center justify-center h-full text-gray-500 font-bold italic uppercase">Trailer tidak ditemukan</div>`
+                        }
+                    </div>
+                </div>
+            `;
+            document.getElementById('movieModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('movieModal').scrollTop = 0;
+        }
+
+        // ... (kode bawah tetap sama)
