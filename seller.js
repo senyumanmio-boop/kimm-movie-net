@@ -1,6 +1,7 @@
 const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
+const NOVEL_API = 'https://api.sheety.co/40744eda28ba4514b7bcf2e4f9d38dd3/untitledSpreadsheet/sheet1';
 
 let currentPage = 1;
 let isLoading = false;
@@ -353,7 +354,41 @@ function toggleMusic(btn) {
         isPlaying = false;
     }
 }
+async function fetchNovelsFromAPI() {
+    try {
+        const res = await fetch(NOVEL_API);
+        const data = await res.json();
+        
+        // Sheety biasanya ngebungkus data dalem nama sheet-nya (misal: data.sheet1)
+        const novels = data.sheet1 || data.novels; 
+        
+        const grid = document.getElementById('novel-grid');
+        grid.innerHTML = novels.map(n => `
+            <div onclick="openNovelFromAPI(${JSON.stringify(n).replace(/"/g, '&quot;')})" class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
+                <img src="${n.cover}" class="w-32 h-48 object-cover rounded-2xl group-hover:scale-105 transition-all">
+                <div class="flex flex-col justify-center">
+                    <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category}</span>
+                    <h3 class="text-2xl font-black mb-2 text-white">${n.title}</h3>
+                    <p class="text-gray-500 text-xs mb-4 line-clamp-2">${n.desc}</p>
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author}</span>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) {
+        console.error("Gagal muat novel:", e);
+    }
+}
 
+// Fungsi buka novel khusus buat data dari API
+function openNovelFromAPI(novel) {
+    document.getElementById('readerContent').innerHTML = `
+        <h1 class="text-5xl font-black italic text-red-600 mb-4">${novel.title}</h1>
+        <p class="text-gray-500 font-bold mb-10 italic">By: ${novel.author}</p>
+        <div class="prose prose-invert">${novel.content}</div>
+    `;
+    document.getElementById('readerModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
 // Tambahkan inisialisasi novel saat tab dipindah
 const originalPindahTab = pindahTab;
 pindahTab = function(tab) {
