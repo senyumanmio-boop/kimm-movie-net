@@ -158,6 +158,15 @@
 
     <div id="movieModal" class="hidden fixed inset-0 bg-black/98 z-[9999] p-4 md:p-10 overflow-y-auto backdrop-blur-2xl">
         <button onclick="closeModal()" class="fixed top-8 right-8 z-[10001] bg-red-600 hover:bg-white hover:text-red-600 w-12 h-12 rounded-full text-white text-2xl transition-all shadow-xl">&times;</button>
+       
+        <div id="readerModal" class="hidden fixed inset-0 bg-[#030303] z-[100001] overflow-y-auto p-6 md:p-20">
+    <div class="max-w-3xl mx-auto">
+        <button onclick="closeReader()" class="fixed top-8 right-8 bg-red-600 text-white w-12 h-12 rounded-full text-2xl shadow-2xl hover:scale-110 transition-all">&times;</button>
+        
+        <div id="readerContent" class="animate-pop">
+            </div>
+    </div>
+</div>
         
         <div id="modalData" class="max-w-7xl mx-auto animate-pop">
             </div>
