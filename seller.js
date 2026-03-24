@@ -1,3 +1,6 @@
+// ==========================================
+// 1. KONFIGURASI API (Movie & Novel)
+// ==========================================
 const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
@@ -8,7 +11,9 @@ let isLoading = false;
 let currentTab = 'home';
 let searchTimeout;
 
-// 1. INITIALIZE APP
+// ==========================================
+// 2. INITIALIZE APP
+// ==========================================
 window.onload = () => {
     const savedName = localStorage.getItem('kimmMovie_user');
     if (savedName) {
@@ -38,31 +43,13 @@ function handleLogin() {
 }
 
 function initApp() {
-    loadTabHome(); 
+    loadTabHome(); // Load Movie Trending di awal
+    fetchNovelsFromAPI(); // Load Novel di background
 }
 
-// 2. SEARCH
-document.getElementById('searchInput').addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    const query = e.target.value;
-
-    searchTimeout = setTimeout(async () => {
-        if (query.length > 2) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            document.getElementById('search-result-section').classList.remove('hidden');
-
-            const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
-            const data = await res.json();
-            const container = document.getElementById('movie-list');
-            container.innerHTML = "";
-            renderGrid(data.results, 'movie-list');
-        } else if (query.length === 0) {
-            pindahTab('home');
-        }
-    }, 500);
-});
-
-// 3. NAVIGASI TAB
+// ==========================================
+// 3. SISTEM NAVIGASI TAB
+// ==========================================
 function pindahTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
@@ -71,74 +58,134 @@ function pindahTab(tab) {
     const targetTab = document.getElementById(`tab-${tab}`);
     if (targetTab) targetTab.classList.remove('hidden');
     
+    // Update warna tombol nav
     const btnHome = document.getElementById('btn-home');
     const btnMovie = document.getElementById('btn-movie');
+    const btnNovel = document.getElementById('btn-novels'); // Pastikan ID ini ada di HTML lo
     
-    if (tab === 'home') {
-        btnHome.classList.add('text-red-600');
-        btnMovie.classList.remove('text-red-600');
-    } else {
-        btnMovie.classList.add('text-red-600');
-        btnHome.classList.remove('text-red-600');
-        loadTabMovie(); // Fungsi ini yang kita pakai
-    }
+    if (btnHome) btnHome.classList.toggle('text-red-600', tab === 'home');
+    if (btnMovie) btnMovie.classList.toggle('text-red-600', tab === 'movie');
+    if (btnNovel) btnNovel.classList.toggle('text-red-600', tab === 'novels');
+
+    if (tab === 'movie') loadTabMovie();
+    if (tab === 'novels') fetchNovelsFromAPI();
+    
     window.scrollTo(0,0);
 }
 
-// 4. LOAD KATALOG (20 BARIS OTOMATIS)
+// ==========================================
+// 4. FITUR MOVIE (TMDB)
+// ==========================================
+async function loadTabHome() {
+    if (isLoading) return;
+    isLoading = true;
+    try {
+        const resTrending = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=id-ID`);
+        const dataTrending = await resTrending.json();
+        if(dataTrending.results.length > 0) setHero(dataTrending.results[0]);
+        
+        const container = document.getElementById('home-recommend');
+        if(currentPage === 1 && container) container.innerHTML = "";
+        renderGrid(dataTrending.results, 'home-recommend');
+        currentPage++;
+    } catch (e) { console.error(e); }
+    isLoading = false;
+}
+
+function setHero(movie) {
+    const banner = document.getElementById('hero-banner');
+    if(!banner || !movie) return;
+    banner.style.backgroundImage = `linear-gradient(to top, #000 15%, transparent 95%), url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
+    document.getElementById('hero-title').innerText = movie.title;
+    document.getElementById('hero-desc').innerText = movie.overview;
+    document.getElementById('hero-btn-nonton').onclick = () => bukaDetail(movie.id);
+}
+
 async function loadTabMovie() {
     const container = document.getElementById('katalog-container');
-    if (!container || container.innerHTML !== "") return; // Jangan load ulang kalau sudah ada isinya
+    if (!container || container.innerHTML !== "") return;
 
     const daftarKategori = [
-        { nama: "Lagi Rame (Trending)", url: `${BASE_URL}/trending/movie/week?api_key=${API_KEY}` },
-        { nama: "Film Indonesia Terbaru", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=ID` },
-        { nama: "Hollywood Blockbuster", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=US` },
+        { nama: "Lagi Rame", url: `${BASE_URL}/trending/movie/week?api_key=${API_KEY}` },
         { nama: "Horror Malam Jumat", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27` },
-        { nama: "Action & Petualangan", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28` },
-        { nama: "Drakor (Korea)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=KR` },
-        { nama: "Anime & Kartun", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=16` },
-        { nama: "Komedi Kocak", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=35` },
-        { nama: "Sci-Fi & Robot", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=878` },
-        { nama: "Misteri & Teka-teki", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=9648` },
-        { nama: "Romantis Bikin Baper", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10749` },
-        { nama: "Film Thailand", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_origin_country=TH` },
-        { nama: "Documentary", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=99` },
-        { nama: "Family Time", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10751` },
-        { nama: "War (Perang)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10752` },
-        { nama: "Thriller Menegangkan", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=53` },
-        { nama: "Fantasy Magic", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=14` },
-        { nama: "Music & Concert", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=10402` },
-        { nama: "Western (Koboi)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=37` },
-        { nama: "Crime (Kriminal)", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=80` }
+        { nama: "Action & Petualangan", url: `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28` }
     ];
 
     container.innerHTML = `<h2 class="text-2xl font-black italic uppercase mb-8 px-4 text-white">KATALOG <span class="text-red-600">FILM</span></h2>`;
 
     for (const kat of daftarKategori) {
         const rowId = `row-${kat.nama.replace(/\s+/g, '')}`;
-        const rowHTML = `
+        container.insertAdjacentHTML('beforeend', `
             <div class="mb-10">
                 <h3 class="text-red-600 font-black uppercase italic ml-4 mb-4 tracking-wider text-xs">${kat.nama}</h3>
-                <div id="${rowId}" class="flex overflow-x-auto gap-4 px-4 no-scrollbar pb-2 min-h-[150px]">
-                    <div class="min-w-[150px] h-56 bg-white/5 animate-pulse rounded-2xl"></div>
-                </div>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', rowHTML);
+                <div id="${rowId}" class="flex overflow-x-auto gap-4 px-4 no-scrollbar pb-2 min-h-[150px]"></div>
+            </div>`);
 
-        try {
-            const res = await fetch(`${kat.url}&language=id-ID&sort_by=popularity.desc`);
-            const data = await res.json();
-            const rowContainer = document.getElementById(rowId);
-            if (rowContainer && data.results) {
-                rowContainer.innerHTML = "";
-                renderSlider(data.results, rowId);
-            }
-        } catch (e) { console.error("Error di: " + kat.nama); }
+        const res = await fetch(`${kat.url}&language=id-ID`);
+        const data = await res.json();
+        renderSlider(data.results, rowId);
     }
 }
 
-// 5. RENDER HELPERS
+// ==========================================
+// 5. FITUR NOVEL (SHEETY API)
+// ==========================================
+async function fetchNovelsFromAPI() {
+    const grid = document.getElementById('novel-grid');
+    if(!grid) return;
+
+    try {
+        const res = await fetch(NOVEL_API);
+        const data = await res.json();
+        const novels = data.sheet1 || data.novels; 
+        
+        grid.innerHTML = novels.map(n => `
+            <div onclick="openNovelFromAPI(${JSON.stringify(n).replace(/"/g, '&quot;')})" 
+                 class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group shadow-2xl">
+                <div class="w-24 md:w-32 h-36 md:h-48 flex-shrink-0 overflow-hidden rounded-2xl">
+                    <img src="${n.cover || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500">
+                </div>
+                <div class="flex flex-col justify-center overflow-hidden">
+                    <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category || 'NOVEL'}</span>
+                    <h3 class="text-xl md:text-2xl font-black mb-2 text-white group-hover:text-red-600 transition truncate italic uppercase">${n.title}</h3>
+                    <p class="text-gray-500 text-[10px] md:text-xs mb-4 line-clamp-2">${n.desc || ''}</p>
+                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author || 'KIM'}</span>
+                </div>
+            </div>
+        `).join('');
+    } catch (e) { console.error("Gagal muat novel:", e); }
+}
+
+function openNovelFromAPI(novel) {
+    const readerContent = document.getElementById('readerContent');
+    if(!readerContent) return;
+
+    readerContent.innerHTML = `
+        <div class="max-w-3xl mx-auto py-10 px-4">
+            <div class="mb-10 border-b border-white/10 pb-10">
+                <h1 class="text-4xl md:text-6xl font-black italic text-white mb-4 uppercase tracking-tighter">${novel.title}</h1>
+                <p class="text-red-600 font-black italic uppercase tracking-widest text-sm">Author: ${novel.author}</p>
+            </div>
+            <div class="text-gray-300 text-lg md:text-xl leading-relaxed space-y-6 italic">
+                ${novel.content.replace(/\n/g, '<br>')}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('readerModal').classList.remove('hidden');
+    document.getElementById('readerModal').classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeReader() {
+    document.getElementById('readerModal').classList.add('hidden');
+    document.getElementById('readerModal').classList.remove('flex');
+    document.body.style.overflow = 'auto';
+}
+
+// ==========================================
+// 6. RENDER HELPERS & MODALS
+// ==========================================
 function renderSlider(movies, containerId) {
     const list = document.getElementById(containerId);
     if(!list) return;
@@ -167,48 +214,21 @@ function renderGrid(movies, containerId) {
         card.className = "cursor-pointer group";
         card.onclick = () => bukaDetail(movie.id);
         card.innerHTML = `
-            <div class="relative h-64 rounded-2xl overflow-hidden border border-white/10 group-hover:border-red-600 transition-all">
+            <div class="relative h-64 rounded-2xl overflow-hidden border border-white/10 group-hover:border-red-600 transition-all shadow-xl">
                 <img src="${IMG_PATH + movie.poster_path}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
             </div>
-            <h3 class="text-[10px] font-black mt-2 truncate uppercase text-white">${movie.title}</h3>
+            <h3 class="text-[10px] font-black mt-2 truncate uppercase text-white tracking-widest">${movie.title}</h3>
         `;
         list.appendChild(card);
     });
 }
 
-// 6. HOME & HERO
-async function loadTabHome() {
-    if (isLoading) return;
-    isLoading = true;
-    try {
-        const resTrending = await fetch(`${BASE_URL}/trending/movie/week?api_key=${API_KEY}&language=id-ID`);
-        const dataTrending = await resTrending.json();
-        if(dataTrending.results.length > 0) setHero(dataTrending.results[0]);
-        
-        const container = document.getElementById('home-recommend');
-        if(currentPage === 1 && container) container.innerHTML = "";
-        renderGrid(dataTrending.results, 'home-recommend');
-        currentPage++;
-    } catch (e) { console.error(e); }
-    isLoading = false;
-}
-
-function setHero(movie) {
-    const banner = document.getElementById('hero-banner');
-    if(!banner || !movie) return;
-    banner.style.backgroundImage = `linear-gradient(to top, #000 15%, transparent 95%), url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
-    document.getElementById('hero-title').innerText = movie.title;
-    document.getElementById('hero-desc').innerText = movie.overview;
-    document.getElementById('hero-btn-nonton').onclick = () => bukaDetail(movie.id);
-}
-
-// 7. DETAIL & WATCHLIST
 async function bukaDetail(id) {
     const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=id-ID`);
     const movie = await res.json();
     
     document.getElementById('modalContent').innerHTML = `
-        <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-2/5 object-cover h-[400px] md:h-auto">
+        <img src="${IMG_PATH + movie.poster_path}" class="w-full md:w-2/5 object-cover h-[400px] md:h-auto shadow-2xl">
         <div class="p-8 flex flex-col justify-center bg-[#0a0a0a]">
             <h2 class="text-3xl font-black mb-2 italic uppercase text-white leading-tight">${movie.title}</h2>
             <div class="flex gap-4 mb-4 text-[10px] font-black text-red-600 italic">
@@ -216,27 +236,12 @@ async function bukaDetail(id) {
                 <span>📅 ${movie.release_date.split('-')[0]}</span>
             </div>
             <p class="text-gray-400 text-[11px] mb-6 leading-relaxed line-clamp-4">${movie.overview}</p>
-            <div class="flex flex-wrap gap-3">
-                <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" 
-                    class="bg-red-600 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white shadow-lg shadow-red-600/20">Mulai Nonton</button>
-                <button onclick="saveWatchlist(${movie.id}, '${movie.title.replace(/'/g, "\\'")}', '${movie.poster_path}')" 
-                    class="bg-white/10 border border-white/20 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white hover:bg-white/20 transition">
-                    + Watchlist
-                </button>
-            </div>
+            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" 
+                class="bg-red-600 px-6 py-3 rounded-full font-black text-[9px] uppercase tracking-widest text-white shadow-lg shadow-red-600/20 hover:scale-105 transition">Mulai Nonton</button>
         </div>
     `;
     document.getElementById('movieModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-}
-
-function saveWatchlist(id, title, poster) {
-    let list = JSON.parse(localStorage.getItem('my_watchlist')) || [];
-    if (!list.find(m => m.id === id)) {
-        list.push({id, title, poster});
-        localStorage.setItem('my_watchlist', JSON.stringify(list));
-        alert("Sip! Film tersimpan di Watchlist.");
-    } else { alert("Udah ada di daftar kamu, Kim!"); }
 }
 
 function tutupModal() {
@@ -244,101 +249,29 @@ function tutupModal() {
     document.body.style.overflow = 'auto';
 }
 
-// 8. SCROLL
-window.onscroll = () => {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
-        if (currentTab === 'home' && !isLoading) loadTabHome();
-    }
-};
-// 1. DATA NOVEL (Isi kontennya di sini Kim)
-const novelData = [
-    {
-        id: 1,
-        title: "Kebangkitan Dev Batam",
-        author: "Kim Robi",
-        category: "Action",
-        cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=300",
-        desc: "Kisah seorang pemuda yang menguasai JS untuk meretas sistem kota.",
-        content: `
-            <h1 class="text-4xl font-black text-white mb-2 uppercase italic">Bab 1: Baris Terakhir</h1>
-            <p class="text-red-600 font-bold mb-8 tracking-widest uppercase text-xs">Oleh: Kim Robi</p>
-            <p class="text-gray-300 text-xl leading-relaxed mb-6">Malam di Batam Center terasa lebih dingin dari biasanya. Kim menatap monitor 24 incinya dengan mata merah. "Satu function lagi," bisiknya.</p>
-            <p class="text-gray-300 text-xl leading-relaxed mb-6">Jari-jarinya menari di atas keyboard mekanik, menghasilkan suara 'clicky' yang memecah keheningan. Tiba-tiba, layar berubah menjadi merah. Pesan 'Access Denied' muncul besar-besar.</p>
-            <p class="text-gray-300 text-xl leading-relaxed">Kim tersenyum tipis. "Lu pikir firewall kacangan begini bisa nahan gua?"</p>
-        `
-    },
-    {
-        id: 2,
-        title: "Smadar FC: Final Wish",
-        author: "Robi",
-        category: "Sport",
-        cover: "https://images.unsplash.com/photo-1551952237-954a0e68786c?auto=format&fit=crop&w=300",
-        desc: "Pertandingan futsal terakhir yang menentukan segalanya.",
-        content: `
-            <h1 class="text-4xl font-black text-white mb-2 uppercase italic">Bab 1: Menit Sembilan Puluh</h1>
-            <p class="text-red-600 font-bold mb-8 tracking-widest uppercase text-xs">Oleh: Robi</p>
-            <p class="text-gray-300 text-xl leading-relaxed mb-6">Keringat bercucuran. Skor 3-3. Smadar FC butuh satu gol lagi untuk angkat piala. Bola ada di kaki Kim.</p>
-            <p class="text-gray-300 text-xl leading-relaxed">Dia melihat celah kecil di sisi kiri kiper. Tanpa pikir panjang, Kim melakukan tendangan melengkung yang mematikan...</p>
-        `
-    }
-];
-
-// 2. FUNGSI TAMPILIN DAFTAR NOVEL (RENDER)
-function renderNovels() {
-    const novelGrid = document.querySelector('#pane-novels .grid'); // Pastikan ID pane-nya bener
-    if(!novelGrid) return;
-    
-    novelGrid.innerHTML = novelData.map(n => `
-        <div onclick="openNovel(${n.id})" class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
-            <div class="w-32 h-48 flex-shrink-0 overflow-hidden rounded-2xl shadow-2xl">
-                <img src="${n.cover}" class="w-full h-full object-cover group-hover:scale-110 transition-duration-500">
-            </div>
-            <div class="flex flex-col justify-center">
-                <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category}</span>
-                <h3 class="text-2xl font-black mb-2 text-white group-hover:text-red-600 transition">${n.title}</h3>
-                <p class="text-gray-500 text-xs mb-4 line-clamp-2">${n.desc}</p>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author}</span>
-            </div>
-        </div>
-    `).join('');
-}
-
-// 3. FUNGSI BUKA NOVEL (READER)
-function openNovel(id) {
-    const novel = novelData.find(n => n.id === id);
-    if(novel) {
-        const readerContent = document.getElementById('readerContent');
-        readerContent.innerHTML = novel.content;
-        
-        // Munculin Modal
-        const modal = document.getElementById('readerModal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex'); // Pakai flex biar tengah
-        
-        // Kunci Scroll Body
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-// 4. FUNGSI TUTUP NOVEL
-function closeReader() {
-    const modal = document.getElementById('readerModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-    
-    // Aktifkan lagi Scroll Body
-    document.body.style.overflow = 'auto';
-}
-
-// Panggil fungsi render pas app jalan
-// Taruh renderNovels() di dalam function initApp() lo!
-
-
 // ==========================================
-// 10. FITUR MUSIC (LOFI PLAYER)
+// 7. SEARCH & MUSIC
 // ==========================================
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    const query = e.target.value;
+    searchTimeout = setTimeout(async () => {
+        if (query.length > 2) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById('search-result-section').classList.remove('hidden');
+            const res = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&language=id-ID`);
+            const data = await res.json();
+            const container = document.getElementById('movie-list');
+            container.innerHTML = "";
+            renderGrid(data.results, 'movie-list');
+        } else if (query.length === 0) {
+            pindahTab('home');
+        }
+    }, 500);
+});
+
 let isPlaying = false;
-const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'); // Ganti dengan link MP3 Lofi
+const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'); 
 
 function toggleMusic(btn) {
     const icon = btn.querySelector('i');
@@ -354,44 +287,3 @@ function toggleMusic(btn) {
         isPlaying = false;
     }
 }
-async function fetchNovelsFromAPI() {
-    try {
-        const res = await fetch(NOVEL_API);
-        const data = await res.json();
-        
-        // Sheety biasanya ngebungkus data dalem nama sheet-nya (misal: data.sheet1)
-        const novels = data.sheet1 || data.novels; 
-        
-        const grid = document.getElementById('novel-grid');
-        grid.innerHTML = novels.map(n => `
-            <div onclick="openNovelFromAPI(${JSON.stringify(n).replace(/"/g, '&quot;')})" class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
-                <img src="${n.cover}" class="w-32 h-48 object-cover rounded-2xl group-hover:scale-105 transition-all">
-                <div class="flex flex-col justify-center">
-                    <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category}</span>
-                    <h3 class="text-2xl font-black mb-2 text-white">${n.title}</h3>
-                    <p class="text-gray-500 text-xs mb-4 line-clamp-2">${n.desc}</p>
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author}</span>
-                </div>
-            </div>
-        `).join('');
-    } catch (e) {
-        console.error("Gagal muat novel:", e);
-    }
-}
-
-// Fungsi buka novel khusus buat data dari API
-function openNovelFromAPI(novel) {
-    document.getElementById('readerContent').innerHTML = `
-        <h1 class="text-5xl font-black italic text-red-600 mb-4">${novel.title}</h1>
-        <p class="text-gray-500 font-bold mb-10 italic">By: ${novel.author}</p>
-        <div class="prose prose-invert">${novel.content}</div>
-    `;
-    document.getElementById('readerModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-// Tambahkan inisialisasi novel saat tab dipindah
-const originalPindahTab = pindahTab;
-pindahTab = function(tab) {
-    originalPindahTab(tab);
-    if(tab === 'novels') loadTabNovel();
-};
