@@ -332,10 +332,19 @@
         }
 
         async function openMovie(id) {
+            // Fetch dengan bahasa Indonesia
             const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos,credits&language=id-ID`);
-            const m = await res.json();
-            const trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
-            const cast = m.credits.cast.slice(0, 10); // Ambil 10 aktor teratas
+            let m = await res.json();
+            
+            // Fallback: Jika sinopsis Indonesia kosong, ambil yang bahasa Inggris
+            if (!m.overview || m.overview === "") {
+                const resEn = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&language=en-US`);
+                const dataEn = await resEn.json();
+                m.overview = dataEn.overview;
+            }
+
+            const trailer = m.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube') || m.videos.results[0];
+            const cast = m.credits.cast.slice(0, 10); 
             
             document.getElementById('modalData').innerHTML = `
                 <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
@@ -388,6 +397,8 @@
             `;
             document.getElementById('movieModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+            // Scroll ke atas otomatis saat buka modal
+            document.getElementById('movieModal').scrollTop = 0;
         }
 
         function closeModal() {
