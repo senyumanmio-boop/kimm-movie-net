@@ -308,13 +308,16 @@
 </div>
 
 <script>
-    // ... semua logic JS yang gue kasih tadi ...
-        // Infinite Scroll
-        window.onscroll = () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-                loadMoreMovies();
-            }
-        };
+   window.onscroll = () => {
+    // Hanya jalanin infinite scroll kalau lagi di tab Movies
+    const movieTab = document.getElementById('pane-movies');
+    if (movieTab && movieTab.classList.contains('active')) {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+            loadMoreMovies();
+        }
+    }
+};
+       
     </script>
 </body>
 </html>
