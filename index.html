@@ -133,10 +133,38 @@
             <button onclick="closeReader()" class="fixed top-8 right-8 bg-red-600 text-white w-12 h-12 rounded-full text-2xl shadow-2xl hover:scale-110 transition-all">&times;</button>
             <div id="readerContent" class="animate-pop text-gray-300 text-xl leading-loose"></div>
         </div>
+        <div id="tab-novels" class="tab-content hidden min-h-screen pt-24 pb-32 px-4 md:px-10">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+                <span class="text-red-600 font-black tracking-[.4em] uppercase text-xs mb-2 block">KimmLib Original</span>
+                <h2 class="text-5xl md:text-7xl font-black italic text-white uppercase tracking-tighter leading-none">
+                    KOLEKSI <span class="text-red-600">NOVEL</span>
+                </h2>
+            </div>
+            <p class="text-gray-500 font-bold italic text-sm md:text-base max-w-md border-l-2 border-red-600 pl-4">
+                Baca karya eksklusif dari komunitas Dev Batam langsung di sini.
+            </p>
+        </div>
+
+        <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+            </div>
+    </div>
+</div>
+
+<div id="readerModal" class="fixed inset-0 z-[100] hidden bg-black overflow-y-auto pt-20">
+    <div class="min-h-screen w-full bg-[#050505] relative">
+        <button onclick="closeReader()" class="fixed top-6 right-6 z-[110] bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition">
+            <i class="fa fa-times text-xl"></i>
+        </button>
+
+        <div id="readerContent" class="text-white">
+            </div>
     </div>
 
     <script>
         const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
+        const API_KEY = 'https://api.sheety.co/40744eda28ba4514b7bcf2e4f9d38dd3/untitledSpreadsheet/sheet1';
         const BASE_URL = 'https://api.themoviedb.org/3';
         const IMG_URL = 'https://image.tmdb.org/t/p/original';
         const POSTER_URL = 'https://image.tmdb.org/t/p/w500';
