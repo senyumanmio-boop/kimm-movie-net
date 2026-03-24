@@ -9,31 +9,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        
         :root { --accent: #ff0000; --bg: #030303; --glass: rgba(255, 255, 255, 0.05); }
         body { background-color: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
-
-        /* Smooth UI Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 50px; }
-
         .glass { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
         .hero-shadow { background: linear-gradient(0deg, var(--bg) 5%, transparent 100%), linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 60%); }
-
-        /* Animations */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .animate-pop { animation: fadeIn 0.6s ease forwards; }
-        
         .card-hover { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .card-hover:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15); border-color: var(--accent); }
-
-        /* Tab Content Logic */
         .tab-panel { display: none; }
         .tab-panel.active { display: block; animation: fadeIn 0.5s ease; }
-
-        /* Floating Music Player Style */
         .music-visualizer span { display: inline-block; width: 3px; background: var(--accent); animation: bounce 1s infinite alternate; }
         @keyframes bounce { from { height: 2px; } to { height: 15px; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="pb-24">
@@ -43,12 +33,11 @@
             <h1 class="text-8xl font-black italic text-red-600 tracking-tighter opacity-20 absolute -top-4 -left-4">KIM</h1>
             <h1 class="text-7xl font-black italic relative z-10 tracking-tighter">Kimm<span class="text-red-600">Movie</span></h1>
         </div>
-        <input type="text" id="userNameInput" placeholder="Siapa nama kodinger hari ini?" class="bg-white/5 border border-white/10 p-5 rounded-2xl w-80 text-center text-xl font-bold outline-none focus:border-red-600 focus:ring-4 focus:ring-red-600/20 transition-all mb-6">
+        <input type="text" id="userNameInput" placeholder="Siapa nama kodinger hari ini?" class="bg-white/5 border border-white/10 p-5 rounded-2xl w-80 text-center text-xl font-bold outline-none focus:border-red-600 focus:ring-4 focus:ring-red-600/20 transition-all mb-6 text-white">
         <button onclick="handleLogin()" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-red-600/30">Enter Workspace</button>
     </div>
 
     <div id="app" class="hidden opacity-0 transition-opacity duration-1000">
-        
         <nav class="fixed top-0 w-full z-[1000] glass px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-6">
                 <span class="text-3xl font-black italic text-red-600">K<span class="text-white">M</span></span>
@@ -59,12 +48,11 @@
             </div>
             <div class="relative w-1/2 max-w-md">
                 <i class="fa fa-search absolute left-4 top-3 text-gray-500 text-xs"></i>
-                <input type="text" id="searchInput" onkeyup="searchContent(this.value)" placeholder="Cari Film, Novel, atau Musik..." class="w-full bg-white/5 border border-white/10 py-2.5 pl-12 pr-6 rounded-xl text-sm outline-none focus:bg-white/10 focus:border-red-600 transition-all">
+                <input type="text" id="searchInput" placeholder="Cari Film, Novel, atau Musik..." class="w-full bg-white/5 border border-white/10 py-2.5 pl-12 pr-6 rounded-xl text-sm outline-none focus:bg-white/10 focus:border-red-600 transition-all text-white">
             </div>
         </nav>
 
         <main class="pt-20">
-            
             <section id="pane-movies" class="tab-panel active">
                 <div id="hero" class="relative h-[85vh] w-full flex items-center px-[5%] overflow-hidden bg-cover bg-center transition-all duration-700">
                     <div class="absolute inset-0 hero-shadow"></div>
@@ -88,7 +76,7 @@
                         <div id="trending-row" class="flex gap-6 overflow-x-auto no-scrollbar pb-6 pr-6"></div>
                     </div>
                     <div>
-                        <h2 id="grid-title" class="text-2xl font-black italic uppercase mb-6 flex items-center gap-3"><i class="fa fa-th-large text-red-600"></i> Koleksi <span class="text-red-600">Terbaru</span></h2>
+                        <h2 class="text-2xl font-black italic uppercase mb-6 flex items-center gap-3"><i class="fa fa-th-large text-red-600"></i> Koleksi <span class="text-red-600">Terbaru</span></h2>
                         <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-6"></div>
                     </div>
                 </div>
@@ -100,42 +88,21 @@
                         <h1 class="text-6xl font-black italic tracking-tighter">Kimm<span class="text-red-600">Lib</span></h1>
                         <p class="text-gray-500 font-bold uppercase text-xs tracking-widest mt-2">Daftar Bacaan Exclusive Untukmu</p>
                     </div>
-                    <div class="flex gap-2">
-                        <button class="bg-white/5 p-3 rounded-lg border border-white/10 text-xs font-bold uppercase">All Genres</button>
-                        <button class="bg-red-600 p-3 rounded-lg text-xs font-bold uppercase">Trending</button>
-                    </div>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="glass p-6 rounded-[32px] flex gap-6 hover:border-red-600 transition-all cursor-pointer group">
-                        <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=300" class="w-32 h-48 object-cover rounded-2xl shadow-2xl group-hover:scale-105 transition-all">
-                        <div class="flex flex-col justify-center">
-                            <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">Psychology</span>
-                            <h3 class="text-2xl font-black mb-2">The Art of Coding</h3>
-                            <p class="text-gray-500 text-xs mb-4 line-clamp-3">Bagaimana Kim membangun KimmMovie dari nol dengan JavaScript dan ketekunan tingkat tinggi.</p>
-                            <div class="flex items-center gap-4">
-                                <span class="text-[10px] font-bold text-gray-400"><i class="fa fa-book-open"></i> 240 Hal</span>
-                                <span class="text-[10px] font-bold text-gray-400"><i class="fa fa-star text-yellow-500"></i> 4.9</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8"></div>
             </section>
 
             <section id="pane-music" class="tab-panel p-8 max-w-4xl mx-auto text-center mt-20">
                 <div class="bg-red-600/10 border border-red-600/20 p-12 rounded-[50px] relative overflow-hidden">
-                    <div class="relative z-10">
-                        <div class="music-visualizer mb-8 flex items-end justify-center gap-1 h-16">
-                            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-                        </div>
-                        <h2 class="text-4xl font-black italic mb-2 tracking-tighter uppercase">Kimm<span class="text-red-600">Lofi</span> Radio</h2>
-                        <p class="text-gray-400 text-sm mb-10 italic">"Temani koding dan bacamu dengan musik relaksasi 24/7"</p>
-                        
-                        <div class="flex items-center justify-center gap-8">
-                            <button class="text-2xl opacity-50"><i class="fa fa-backward"></i></button>
-                            <button class="bg-red-600 w-20 h-20 rounded-full text-3xl shadow-2xl shadow-red-600/40 hover:scale-110 active:scale-90 transition-all"><i class="fa fa-play pl-1"></i></button>
-                            <button class="text-2xl opacity-50"><i class="fa fa-forward"></i></button>
-                        </div>
+                    <div class="music-visualizer mb-8 flex items-end justify-center gap-1 h-16">
+                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <h2 class="text-4xl font-black italic mb-2 tracking-tighter uppercase">Kimm<span class="text-red-600">Lofi</span> Radio</h2>
+                    <p class="text-gray-400 text-sm mb-10 italic">"Temani koding dan bacamu dengan musik relaksasi 24/7"</p>
+                    <div class="flex items-center justify-center gap-8">
+                        <button class="text-2xl opacity-50"><i class="fa fa-backward"></i></button>
+                        <button onclick="toggleMusic(this)" class="bg-red-600 w-20 h-20 rounded-full text-3xl shadow-2xl shadow-red-600/40 hover:scale-110 active:scale-90 transition-all"><i class="fa fa-play pl-1"></i></button>
+                        <button class="text-2xl opacity-50"><i class="fa fa-forward"></i></button>
                     </div>
                 </div>
             </section>
@@ -158,18 +125,14 @@
 
     <div id="movieModal" class="hidden fixed inset-0 bg-black/98 z-[9999] p-4 md:p-10 overflow-y-auto backdrop-blur-2xl">
         <button onclick="closeModal()" class="fixed top-8 right-8 z-[10001] bg-red-600 hover:bg-white hover:text-red-600 w-12 h-12 rounded-full text-white text-2xl transition-all shadow-xl">&times;</button>
-       
-        <div id="readerModal" class="hidden fixed inset-0 bg-[#030303] z-[100001] overflow-y-auto p-6 md:p-20">
-    <div class="max-w-3xl mx-auto">
-        <button onclick="closeReader()" class="fixed top-8 right-8 bg-red-600 text-white w-12 h-12 rounded-full text-2xl shadow-2xl hover:scale-110 transition-all">&times;</button>
-        
-        <div id="readerContent" class="animate-pop">
-            </div>
+        <div id="modalData" class="max-w-7xl mx-auto animate-pop"></div>
     </div>
-</div>
-        
-        <div id="modalData" class="max-w-7xl mx-auto animate-pop">
-            </div>
+
+    <div id="readerModal" class="hidden fixed inset-0 bg-[#030303] z-[100001] overflow-y-auto p-6 md:p-20">
+        <div class="max-w-3xl mx-auto">
+            <button onclick="closeReader()" class="fixed top-8 right-8 bg-red-600 text-white w-12 h-12 rounded-full text-2xl shadow-2xl hover:scale-110 transition-all">&times;</button>
+            <div id="readerContent" class="animate-pop text-gray-300 text-xl leading-loose"></div>
+        </div>
     </div>
 
     <script>
@@ -179,6 +142,30 @@
         const POSTER_URL = 'https://image.tmdb.org/t/p/w500';
 
         let moviePage = 1;
+        let isPlaying = false;
+        const lofiAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+
+        // DATA NOVEL
+        const novelData = [
+            {
+                id: 1,
+                title: "The Art of Coding",
+                author: "Kim Robi",
+                category: "Psychology",
+                cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=300",
+                desc: "Bagaimana Kim membangun KimmMovie dari nol dengan JavaScript.",
+                content: "<h1 class='text-5xl font-black italic text-red-600 mb-8'>BAB 1: KODE PERTAMA</h1><p>Malam itu di Batam, Kim duduk menatap layar laptopnya. Baris demi baris kode JavaScript ia ketik dengan penuh ambisi...</p><p class='mt-6'>KimmMovie bukan sekadar proyek, itu adalah bukti bahwa ketekunan bisa mengubah segalanya.</p>"
+            },
+            {
+                id: 2,
+                title: "Smadar FC: Spirit",
+                author: "Robi",
+                category: "Sport",
+                cover: "https://images.unsplash.com/photo-1551952237-954a0e68786c?auto=format&fit=crop&w=300",
+                desc: "Kisah solidaritas di lapangan futsal yang terbawa sampai ke dunia nyata.",
+                content: "<h1 class='text-5xl font-black italic text-red-600 mb-8'>BAB 1: KICK OFF</h1><p>Peluit dibunyikan. Lapangan futsal Smadar riuh rendah. Kim memegang bola, matanya fokus mencari celah di pertahanan lawan...</p>"
+            }
+        ];
 
         function handleLogin() {
             const name = document.getElementById('userNameInput').value || 'Kim';
@@ -193,22 +180,57 @@
         }
 
         async function initApp() {
-            const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}`);
-            const data = await res.json();
-            setHero(data.results[0]);
-            renderTrending(data.results);
-            loadMoreMovies();
+            try {
+                const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}`);
+                const data = await res.json();
+                setHero(data.results[0]);
+                renderTrending(data.results);
+                loadMoreMovies();
+                renderNovels();
+            } catch (e) { console.error(e); }
         }
 
         function switchTab(paneId, btn) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById(paneId).classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-red-600', 'text-gray-500'));
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('text-red-600');
+                b.classList.add('text-gray-500');
+            });
             btn.classList.replace('text-gray-500', 'text-red-600');
             window.scrollTo({top:0, behavior:'smooth'});
         }
 
+        // NOVEL SYSTEM
+        function renderNovels() {
+            const grid = document.getElementById('novel-grid');
+            grid.innerHTML = novelData.map(n => `
+                <div onclick="openNovel(${n.id})" class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
+                    <img src="${n.cover}" class="w-32 h-48 object-cover rounded-2xl group-hover:scale-105 transition-all">
+                    <div class="flex flex-col justify-center">
+                        <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category}</span>
+                        <h3 class="text-2xl font-black mb-2 text-white">${n.title}</h3>
+                        <p class="text-gray-500 text-xs mb-4 line-clamp-2">${n.desc}</p>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openNovel(id) {
+            const novel = novelData.find(n => n.id === id);
+            if(novel) {
+                document.getElementById('readerContent').innerHTML = novel.content;
+                document.getElementById('readerModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        function closeReader() {
+            document.getElementById('readerModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // MOVIE SYSTEM
         async function loadMoreMovies() {
             const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${moviePage}`);
             const data = await res.json();
@@ -220,9 +242,6 @@
                 card.innerHTML = `
                     <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
                         <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-0 group-hover:opacity-100 transition-all flex items-end p-4">
-                            <span class="bg-red-600 text-[8px] font-black px-2 py-1 rounded">DETAIL</span>
-                        </div>
                     </div>
                     <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
                 `;
@@ -236,44 +255,28 @@
             row.innerHTML = movies.map(m => `
                 <div onclick="openMovie(${m.id})" class="min-w-[200px] md:min-w-[280px] card-hover cursor-pointer rounded-3xl overflow-hidden bg-white/5 border border-white/5">
                     <img src="${IMG_URL + m.backdrop_path}" class="w-full h-40 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xs font-black truncate uppercase tracking-tighter">${m.title}</h3>
-                        <p class="text-[9px] text-red-600 font-black mt-1">Trending #1</p>
-                    </div>
+                    <div class="p-4"><h3 class="text-xs font-black truncate uppercase tracking-tighter">${m.title}</h3></div>
                 </div>
             `).join('');
         }
 
         async function openMovie(id) {
-            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos,credits`);
+            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos`);
             const m = await res.json();
             const trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
 
             document.getElementById('modalData').innerHTML = `
                 <div class="flex flex-col lg:flex-row gap-12 mb-16">
-                    <div class="w-full lg:w-1/3">
-                        <img src="${POSTER_URL + m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10">
-                    </div>
-                    <div class="w-full lg:w-2/3 flex flex-col justify-center">
-                        <div class="flex items-center gap-4 mb-6">
-                            <span class="text-yellow-500 font-black tracking-widest uppercase text-xs italic">Rating: ${m.vote_average.toFixed(1)}</span>
-                            <span class="text-gray-500">|</span>
-                            <span class="text-white font-black tracking-widest uppercase text-xs">${m.release_date.split('-')[0]}</span>
-                        </div>
+                    <div class="w-full lg:w-1/3"><img src="${POSTER_URL + m.poster_path}" class="w-full rounded-[40px] shadow-2xl"></div>
+                    <div class="w-full lg:w-2/3">
                         <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
-                        <p class="text-xl text-gray-400 font-medium mb-10 leading-relaxed italic border-l-4 border-red-600 pl-6">"${m.tagline || 'No tagline available'}"</p>
-                        <p class="text-gray-300 text-lg mb-12 leading-relaxed opacity-80">${m.overview}</p>
-                        
-                        <div class="flex flex-wrap gap-4">
-                            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 active:scale-95 transition-all">Play Movie</button>
-                            <button class="bg-white/5 border border-white/10 px-8 py-5 rounded-2xl font-black uppercase text-sm"><i class="fa fa-heart"></i> Favorit</button>
-                        </div>
+                        <p class="text-gray-300 text-lg mb-12 opacity-80">${m.overview}</p>
+                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl">Play Movie</button>
                     </div>
                 </div>
-
                 <div class="mb-20">
-                    <h2 class="text-2xl font-black italic uppercase mb-8 tracking-tighter"><i class="fa fa-play text-red-600"></i> Official <span class="text-red-600">Trailer</span></h2>
-                    <div class="relative w-full aspect-video rounded-[40px] overflow-hidden shadow-2xl border border-white/10 bg-white/5">
+                    <h2 class="text-2xl font-black italic uppercase mb-8"><i class="fa fa-play text-red-600"></i> Official Trailer</h2>
+                    <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10">
                         <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key || ''}" frameborder="0" allowfullscreen></iframe>
                     </div>
                 </div>
@@ -284,38 +287,29 @@
 
         function closeModal() {
             document.getElementById('movieModal').classList.add('hidden');
-            document.getElementById('modalData').innerHTML = ""; 
             document.body.style.overflow = 'auto';
         }
 
         function setHero(m) {
-            const hero = document.getElementById('hero');
-            hero.style.backgroundImage = `url(${IMG_URL + m.backdrop_path})`;
+            document.getElementById('hero').style.backgroundImage = `url(${IMG_URL + m.backdrop_path})`;
             document.getElementById('hero-title').innerText = m.title;
             document.getElementById('hero-desc').innerText = m.overview;
             document.getElementById('play-btn').onclick = () => openMovie(m.id);
             document.getElementById('trailer-btn').onclick = () => openMovie(m.id);
         }
-<div id="readerModal" class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center">
-    <div class="absolute inset-0 bg-black/95 backdrop-blur-md"></div>
-    <div class="relative h-full w-full max-w-4xl bg-zinc-900 overflow-y-auto p-10 shadow-2xl">
-        <button onclick="closeReader()" class="fixed top-10 right-10 text-white/50 hover:text-red-600 text-5xl transition-all">
-            <i class="fa fa-times-circle"></i>
-        </button>
-        <div id="readerContent" class="mt-10">
-            </div>
-    </div>
-</div>
-   window.onscroll = () => {
-    // Hanya jalanin infinite scroll kalau lagi di tab Movies
-    const movieTab = document.getElementById('pane-movies');
-    if (movieTab && movieTab.classList.contains('active')) {
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-            loadMoreMovies();
+
+        function toggleMusic(btn) {
+            const icon = btn.querySelector('i');
+            if (!isPlaying) { lofiAudio.play(); icon.classList.replace('fa-play', 'fa-pause'); isPlaying = true; }
+            else { lofiAudio.pause(); icon.classList.replace('fa-pause', 'fa-play'); isPlaying = false; }
         }
-    }
-};
-       
+
+        window.onscroll = () => {
+            const movieTab = document.getElementById('pane-movies');
+            if (movieTab && movieTab.classList.contains('active')) {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) loadMoreMovies();
+            }
+        };
     </script>
 </body>
 </html>
