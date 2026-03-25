@@ -501,7 +501,7 @@ function playAmbient(type) {
 }
 const sounds = {
     // Pakai link dari Google atau Dropbox yang lebih santai perizinannya
-    rain: new Audio('https://codeskulptor-demos.commondatastorage.googleapis.com/ext_res/rain.mp3'),
+    rain: new Audio('https://www28.online-convert.com/v2/dl/web7/download-file/9574345f-e446-4948-8c17-33bc1726575f/suara_hujan_pengantar_tidur_menenangkan_5_menit_128KBPS.mp3'),
     wind: new Audio('https://commondatastorage.googleapis.com/codeskulptor-assets/soundtracks/digital_props_atmo_02.mp3'),
     fire: new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'), // Ini contoh musik, ganti kalau ada mp3 api yang https
     water: new Audio('https://codeskulptor-demos.commondatastorage.googleapis.com/ext_res/rebel_mystery_occ.mp3')
