@@ -3,299 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KimmMovie Net - The Ultimate God Experience</title>
+    <title>KimmMovie Net - The Ultimate Experience</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/DZ3yMyM3/lalala-removebg-preview.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        
-        :root { 
-            --accent: #ff0000; 
-            --bg: #030303; 
-            --glass: rgba(255, 255, 255, 0.03); 
-            --glow: 0 0 20px rgba(255, 0, 0, 0.4);
-            --x: 50%; --y: 50%; /* Init spotlight */
-        }
-
-        body { 
-            background-color: var(--bg); 
-            color: #fff; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            overflow-x: hidden;
-            cursor: none; 
-            scroll-behavior: smooth;
-        }
-
-        /* 1. SCANLINE EFFECT (NEW) */
-        body::before {
-            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 999999; background-size: 100% 2px, 3px 100%; pointer-events: none; opacity: 0.3;
-        }
-
-        #custom-cursor {
-            width: 20px; height: 20px; background: var(--accent);
-            border-radius: 50%; position: fixed; pointer-events: none;
-            z-index: 99999; mix-blend-mode: difference; transition: transform 0.1s;
-            box-shadow: 0 0 15px var(--accent);
-        }
-        
-        /* 2. CURSOR TRAIL (NEW) */
-        .cursor-trail {
-            width: 8px; height: 8px; background: var(--accent); position: fixed;
-            border-radius: 50%; pointer-events: none; z-index: 99998; opacity: 0.5; transition: 0.3s;
-        }
-
-        #spotlight {
-            position: fixed; inset: 0; pointer-events: none; z-index: 99998;
-            background: radial-gradient(circle at var(--x) var(--y), transparent 0%, rgba(0,0,0,0.92) 35%);
-        }
-
+        :root { --accent: #ff0000; --bg: #030303; --glass: rgba(255, 255, 255, 0.05); }
+        body { background-color: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 50px; box-shadow: var(--glow); }
-
-        .glass { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.05); }
-        .hero-shadow { background: linear-gradient(0deg, var(--bg) 10%, transparent 100%), linear-gradient(90deg, rgba(0,0,0,0.95) 0%, transparent 70%); }
-        
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-        .animate-glitch:hover { animation: glitch 0.3s infinite; }
-        
-        .card-3d { 
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            transform-style: preserve-3d;
-        }
-        .card-3d:hover { 
-            transform: translateY(-15px) scale(1.05) rotateX(10deg) rotateY(10deg);
-            box-shadow: 0 25px 50px -12px rgba(255, 0, 0, 0.5);
-        }
-
-        /* 3. SKELETON ANIMATION (NEW) */
-        .skeleton { background: linear-gradient(90deg, #121212 25%, #1a1a1a 50%, #121212 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
-        @keyframes loading { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-
-        .music-visualizer span { 
-            display: inline-block; width: 4px; background: var(--accent); 
-            animation: bounce 0.8s infinite alternate; box-shadow: var(--glow);
-        }
-        @keyframes bounce { from { height: 4px; } to { height: 30px; } }
-
-        .paper-texture {
-            background-color: #0a0a0a;
-            background-image: url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
-        }
-
-        /* 4. SYSTEM ALERT (NEW) */
-        #sys-alert { position: fixed; top: 20px; right: 20px; z-index: 9999999; pointer-events: none; }
-        .alert-item { background: rgba(255, 0, 0, 0.8); color: white; padding: 10px 20px; border-radius: 5px; margin-bottom: 10px; font-weight: 800; font-size: 10px; text-transform: uppercase; animation: slideIn 0.3s forwards; }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 50px; }
+        .glass { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
+        .hero-shadow { background: linear-gradient(0deg, var(--bg) 5%, transparent 100%), linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 60%); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-pop { animation: fadeIn 0.6s ease forwards; }
+        .card-hover { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card-hover:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15); border-color: var(--accent); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: fadeIn 0.5s ease; }
+        .music-visualizer span { display: inline-block; width: 3px; background: var(--accent); animation: bounce 1s infinite alternate; }
+        @keyframes bounce { from { height: 2px; } to { height: 15px; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="pb-24">
 
-    <div id="sys-alert"></div>
-    <div id="custom-cursor"></div>
-    <div id="spotlight"></div>
-    <canvas id="canvas-particles" class="fixed inset-0 pointer-events-none z-[1]"></canvas>
-
     <div id="login-screen" class="fixed inset-0 bg-black z-[99999] flex flex-col items-center justify-center transition-all duration-1000">
-        <div id="boot-loader" class="mb-8 font-mono text-[10px] text-red-600 text-left w-64 h-32 overflow-hidden opacity-50"></div>
-        <div class="relative mb-12 group">
-            <h1 class="text-[120px] font-black italic text-red-600 tracking-tighter opacity-10 absolute -top-12 -left-8 animate-pulse">KIM</h1>
-            <h1 class="text-8xl font-black italic relative z-10 tracking-tighter animate-glitch cursor-default">Kimm<span class="text-red-600">Movie</span></h1>
+        <div class="relative mb-8">
+            <h1 class="text-8xl font-black italic text-red-600 tracking-tighter opacity-20 absolute -top-4 -left-4">KIM</h1>
+            <h1 class="text-7xl font-black italic relative z-10 tracking-tighter">Kimm<span class="text-red-600">Movie</span></h1>
         </div>
-        <div class="relative">
-            <input type="text" id="userNameInput" placeholder="Enter Code Name..." class="bg-white/5 border-b-2 border-white/10 p-5 w-80 text-center text-2xl font-bold outline-none focus:border-red-600 transition-all mb-10 text-white tracking-widest uppercase">
-        </div>
-        <button onclick="handleLogin()" class="group relative px-16 py-6 overflow-hidden rounded-full bg-white text-black font-black uppercase tracking-[0.3em] text-xs hover:text-white transition-all duration-500">
-            <span class="relative z-10">Access Terminal</span>
-            <div class="absolute inset-0 bg-red-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-        </button>
+        <input type="text" id="userNameInput" placeholder="Siapa nama kodinger hari ini?" class="bg-white/5 border border-white/10 p-5 rounded-2xl w-80 text-center text-xl font-bold outline-none focus:border-red-600 focus:ring-4 focus:ring-red-600/20 transition-all mb-6 text-white">
+        <button onclick="handleLogin()" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-red-600/30">Enter Workspace</button>
     </div>
 
     <div id="app" class="hidden opacity-0 transition-opacity duration-1000">
-        <nav class="fixed top-0 w-full z-[1000] glass px-8 py-5 flex justify-between items-center">
-            <div class="flex items-center gap-8">
-                <span onclick="location.reload()" class="text-4xl font-black italic text-red-600 animate-glitch cursor-pointer">K<span class="text-white">M</span></span>
-                <div class="hidden lg:flex gap-6 text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
-                    <span class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Batam Node: Active</span>
-                    <span id="user-display" class="text-white border-l border-white/10 pl-6">ID: Kim</span>
-                    <span id="sys-temp" class="text-red-600">42°C</span>
+        <nav class="fixed top-0 w-full z-[1000] glass px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <span class="text-3xl font-black italic text-red-600">K<span class="text-white">M</span></span>
+                <div class="hidden md:flex gap-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <span class="text-green-500">● Live Server Batam</span>
+                    <span id="user-display">User: Kim</span>
                 </div>
             </div>
-            <div class="relative w-1/3 group">
-                <i class="fa fa-search absolute left-5 top-4 text-gray-500 text-xs group-focus-within:text-red-600 transition"></i>
-                <input type="text" id="searchInput" oninput="liveSearch(this.value)" placeholder="Search Movie, Universe, or Cast..." class="w-full bg-white/5 border border-white/5 py-4 pl-14 pr-8 rounded-full text-xs outline-none focus:bg-white/10 focus:border-red-600/50 transition-all text-white">
-                <span class="absolute right-5 top-4 text-[8px] text-gray-600 font-bold border border-white/10 px-2 rounded">ALT+S</span>
+            <div class="relative w-1/2 max-w-md">
+                <i class="fa fa-search absolute left-4 top-3 text-gray-500 text-xs"></i>
+                <input type="text" id="searchInput" oninput="liveSearch(this.value)" placeholder="Ketik judul film..." class="w-full bg-white/5 border border-white/10 py-2.5 pl-12 pr-6 rounded-xl text-sm outline-none focus:bg-white/10 focus:border-red-600 transition-all text-white">
             </div>
         </nav>
 
-        <main class="pt-0">
-            <div class="fixed right-10 top-32 z-[50] hidden xl:block pointer-events-none opacity-20 font-mono text-[9px] text-red-600">
-                <p>LATENCY: 12ms</p>
-                <p>UPLOADING_LOGS: OK</p>
-                <p>KERNEL_V: 1.0.9_KIM</p>
-            </div>
-
+        <main class="pt-20">
             <section id="pane-movies" class="tab-panel active">
-                <div id="hero" class="relative h-screen w-full flex items-center px-[8%] overflow-hidden bg-cover bg-center transition-all duration-1000">
+                <div id="hero" class="relative h-[85vh] w-full flex items-center px-[5%] overflow-hidden bg-cover bg-center transition-all duration-700">
                     <div class="absolute inset-0 hero-shadow"></div>
-                    <div class="relative z-10 max-w-4xl">
-                        <div class="flex items-center gap-4 mb-6">
-                            <span class="bg-red-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase italic tracking-widest shadow-lg shadow-red-600/40">Top Worldwide</span>
-                            <span class="text-white/60 text-[10px] font-black uppercase tracking-widest">Available in 8K HDR</span>
+                    <div class="relative z-10 max-w-3xl">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-red-600 text-[10px] font-black px-3 py-1 rounded-full uppercase italic">Featured Movie</span>
+                            <span class="text-white/50 text-xs font-bold">4K Ultra HD</span>
                         </div>
-                        <h1 id="hero-title" class="text-7xl md:text-[120px] font-black italic uppercase leading-[0.85] mb-8 tracking-tighter drop-shadow-2xl">...</h1>
-                        <p id="hero-desc" class="text-gray-300 text-lg md:text-xl mb-10 line-clamp-3 font-medium leading-relaxed max-w-2xl opacity-80"></p>
-                        <div class="flex gap-6">
-                            <button id="play-btn" class="bg-red-600 text-white px-12 py-5 rounded-2xl font-black text-xs uppercase flex items-center gap-4 hover:scale-110 hover:shadow-[0_0_30px_rgba(255,0,0,0.5)] transition-all duration-500 group"><i class="fa fa-play group-hover:rotate-12"></i> Play Now</button>
-                            <button id="trailer-btn" class="bg-white/5 border border-white/10 px-12 py-5 rounded-2xl font-black text-xs uppercase backdrop-blur-xl hover:bg-white/10 transition-all">View Details</button>
+                        <h1 id="hero-title" class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">...</h1>
+                        <p id="hero-desc" class="text-gray-400 text-sm md:text-lg mb-8 line-clamp-3 font-medium leading-relaxed"></p>
+                        <div class="flex gap-4">
+                            <button id="play-btn" class="bg-white text-black px-10 py-4 rounded-2xl font-black text-xs uppercase flex items-center gap-3 hover:bg-red-600 hover:text-white transition-all"><i class="fa fa-play"></i> Nonton Sekarang</button>
+                            <button id="trailer-btn" class="bg-white/10 border border-white/20 px-10 py-4 rounded-2xl font-black text-xs uppercase backdrop-blur-md hover:bg-white/20 transition-all">Trailer</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="p-8 md:p-16 space-y-24">
-                    <div class="flex gap-4 overflow-x-auto no-scrollbar">
-                        <button onclick="liveSearch('Action')" class="glass px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition">Action</button>
-                        <button onclick="liveSearch('Horror')" class="glass px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition">Horror</button>
-                        <button onclick="liveSearch('Anime')" class="glass px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition">Anime</button>
-                        <button onclick="liveSearch('Sci-Fi')" class="glass px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition">Sci-Fi</button>
-                    </div>
-
+                <div class="p-6 space-y-12">
                     <div id="trending-container">
-                        <div class="flex justify-between items-center mb-10">
-                            <h2 class="text-3xl font-black italic uppercase tracking-tighter">Daily <span class="text-red-600 underline decoration-4">Vibes</span></h2>
-                        </div>
-                        <div id="trending-row" class="flex gap-8 overflow-x-auto no-scrollbar pb-10"></div>
+                        <h2 class="text-2xl font-black italic uppercase mb-6 flex items-center gap-3"><i class="fa fa-fire text-red-600"></i> Trending <span class="text-red-600">Terhangat</span></h2>
+                        <div id="trending-row" class="flex gap-6 overflow-x-auto no-scrollbar pb-6 pr-6"></div>
                     </div>
-                    
                     <div>
-                        <h2 id="grid-title" class="text-3xl font-black italic uppercase tracking-tighter mb-12">The <span class="text-red-600">Vault</span></h2>
-                        <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-8"></div>
+                        <h2 id="grid-title" class="text-2xl font-black italic uppercase mb-6 flex items-center gap-3"><i class="fa fa-th-large text-red-600"></i> Koleksi <span class="text-red-600">Terbaru</span></h2>
+                        <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-6"></div>
                     </div>
                 </div>
             </section>
 
-            <section id="pane-novels" class="tab-panel p-8 md:p-20 mt-10">
-                <div class="max-w-7xl mx-auto">
-                    <div class="text-center mb-20">
-                        <h1 class="text-8xl font-black italic tracking-tighter mb-4 animate-glitch">Kimm<span class="text-red-600">Lib</span></h1>
-                        <div class="h-1 w-40 bg-red-600 mx-auto rounded-full"></div>
-                        <p class="text-gray-500 font-bold uppercase text-[10px] tracking-[0.5em] mt-6">Endless Stories, Infinite Knowledge</p>
+            <section id="pane-novels" class="tab-panel p-8 max-w-6xl mx-auto mt-10">
+                <div class="flex justify-between items-end mb-12">
+                    <div>
+                        <h1 class="text-6xl font-black italic tracking-tighter">Kimm<span class="text-red-600">Lib</span></h1>
+                        <p class="text-gray-500 font-bold uppercase text-xs tracking-widest mt-2">Daftar Bacaan Exclusive dari Sheety</p>
                     </div>
-                    <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
                 </div>
+                <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left"></div>
             </section>
 
-            <section id="pane-music" class="tab-panel p-8 md:p-24 mt-20">
-                <div class="max-w-5xl mx-auto glass p-10 md:p-20 rounded-[60px] border border-white/10 relative">
-                    <div class="absolute -top-10 -left-10 w-40 h-40 bg-red-600/20 blur-[100px] rounded-full"></div>
-                    <div class="music-visualizer mb-16 flex items-end justify-center gap-2 h-24">
-                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            <section id="pane-music" class="tab-panel p-4 md:p-8 max-w-4xl mx-auto text-center mt-20">
+                <div class="bg-red-600/10 border border-red-600/20 p-6 md:p-12 rounded-[40px] md:rounded-[50px] relative overflow-hidden">
+                    <div class="music-visualizer mb-8 flex items-end justify-center gap-1 h-16">
+                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
                     </div>
                     
-                    <div class="text-center mb-12">
-                        <h3 class="text-4xl font-black italic text-red-600 mb-2 uppercase tracking-tighter">KIMM-RELAX STATION</h3>
-                        <p class="text-gray-500 font-bold text-xs tracking-widest">CRAFTED AMBIENT FOR FOCUS & CODING</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <button onclick="playAmbient('rain')" id="btn-rain" class="glass py-8 rounded-[30px] font-black text-sm uppercase transition-all hover:border-red-600 hover:scale-105 active:scale-95">🌧️ Rain</button>
-                        <button onclick="playAmbient('wind')" id="btn-wind" class="glass py-8 rounded-[30px] font-black text-sm uppercase transition-all hover:border-red-600 hover:scale-105 active:scale-95">💨 Wind</button>
-                        <button onclick="playAmbient('fire')" id="btn-fire" class="glass py-8 rounded-[30px] font-black text-sm uppercase transition-all hover:border-red-600 hover:scale-105 active:scale-95">🔥 Fire</button>
-                        <button onclick="playAmbient('water')" id="btn-water" class="glass py-8 rounded-[30px] font-black text-sm uppercase transition-all hover:border-red-600 hover:scale-105 active:scale-95">🌊 Water</button>
+                    <div style="background: #1e1e1e; border-radius: 20px; padding: 25px; margin: 0 auto; max-width: 400px; text-align: center; border: 1px solid #333; position: relative; z-index: 10;">
+                        <h3 style="color: #ff4757; margin-bottom: 15px; font-weight: 800; font-style: italic; letter-spacing: 1px;">🌿 KIMM-RELAX AMBIENT</h3>
+                        <p style="color: #888; font-size: 12px; margin-bottom: 20px; font-weight: 600;">Mix suara alam untuk fokus maksimal</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <button onclick="playAmbient('rain')" id="btn-rain" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s;">🌧️ Hujan</button>
+                            <button onclick="playAmbient('wind')" id="btn-wind" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s;">💨 Angin</button>
+                            <button onclick="playAmbient('fire')" id="btn-fire" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s;">🔥 Api</button>
+                            <button onclick="playAmbient('water')" id="btn-water" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s;">🌊 Air</button>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <section id="pane-profile" class="tab-panel p-8 md:p-24 mt-10">
-                <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2 glass p-12 rounded-[50px] border border-white/10 flex flex-col md:flex-row items-center gap-10">
-                        <img src="https://i.postimg.cc/P5pxGYsg/image.png" class="w-48 h-48 object-cover rounded-[40px] border-2 border-red-600 shadow-[0_0_50px_rgba(255,0,0,0.3)]">
-                        <div class="text-left">
-                            <span class="bg-red-600 px-4 py-1 rounded-full text-[9px] font-black tracking-widest uppercase">Verified System Architect</span>
-                            <h2 id="profile-name-display" class="text-6xl font-black italic uppercase tracking-tighter mt-4 mb-4">...</h2>
-                            <p class="text-gray-400 italic font-medium opacity-80 leading-relaxed">"Sucking at something is the first step towards being sorta good at something. Coding is my weapon, Movie is my sanctuary."</p>
-                        </div>
+            <section id="pane-profile" class="tab-panel p-8 max-w-4xl mx-auto mt-20">
+                <div class="glass p-10 rounded-[40px] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8 opacity-10">
+                        <i class="fa fa-user-shield text-9xl text-red-600"></i>
                     </div>
-                    <div class="bg-red-600 p-10 rounded-[50px] flex flex-col justify-center text-center text-white">
-                        <h4 class="font-black text-5xl italic">100+</h4>
-                        <p class="font-bold uppercase tracking-widest text-[10px] mt-2 opacity-80 text-black">Ideas Implemented</p>
-                    </div>
-                    <div class="glass p-8 rounded-[40px] flex flex-col justify-center gap-6">
-                        <div class="flex items-center gap-4 group cursor-pointer">
-                            <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-red-600 transition-all"><i class="fab fa-instagram"></i></div>
-                            <span class="font-black italic text-sm tracking-tighter">@kimmaja._</span>
+                    <div class="flex flex-col md:flex-row items-center gap-10 relative z-10 text-left">
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000"></div>
+                            <img src="https://i.postimg.cc/P5pxGYsg/image.png" class="relative w-44 h-44 object-cover rounded-full border-4 border-red-600/20 shadow-2xl">
                         </div>
-                        <div class="flex items-center gap-4 group cursor-pointer">
-                            <div class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-red-600 transition-all"><i class="fa fa-envelope"></i></div>
-                            <span class="font-black italic text-sm tracking-tighter">akimsukaweb@gmail.com</span>
-                        </div>
-                    </div>
-                    <div class="md:col-span-2 glass p-8 rounded-[40px] flex items-center justify-between">
-                        <div class="flex items-center gap-6">
-                            <div class="w-16 h-16 rounded-3xl bg-red-600/10 flex items-center justify-center"><i class="fa fa-location-dot text-red-600 text-2xl"></i></div>
+                        <div class="flex-1 space-y-4">
                             <div>
-                                <h4 class="font-black italic uppercase">Batam, Riau Islands</h4>
-                                <p class="text-xs text-gray-500 font-bold uppercase tracking-widest">Base of Operations</p>
+                                <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase">Verified Member</span>
+                                <h2 id="profile-name-display" class="text-5xl font-black italic uppercase tracking-tighter">TERIMAKASIH TELAH MAMPIR</h2>
                             </div>
-                        </div>
-                        <div class="text-right hidden sm:block">
-                            <p class="text-[10px] font-black text-gray-500 uppercase">Local Time</p>
-                            <p id="local-time" class="text-2xl font-black italic">--:--</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-medium">
+                                <p class="text-gray-400"><i class="fa fa-map-marker-alt text-red-600 w-6"></i> Batam, Indonesia</p>
+                                <p class="text-gray-400"><i class="fa fa-envelope text-red-600 w-6"></i> akimsukaweb@gmail.com</p>
+                                <p class="text-gray-400"><i class="fa fa-terminal text-red-600 w-6"></i> Music Fans</p>
+                                <p class="text-gray-400"><i class="fa fa-futsal text-red-600 w-6"></i> IG : @kimmaja._</p>
+                            </div>
+                            <p class="text-gray-500 italic text-sm leading-relaxed border-t border-white/10 pt-4">
+                                "Pengembang web dan penggemar film serta buku. Suka eksplorasi teknologi, coding, dan hiburan cinematic."
+                            </p>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
 
-        <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 glass rounded-full px-10 py-5 flex items-center gap-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[1000] border border-white/10">
-            <button onclick="switchTab('pane-movies', this)" class="nav-btn text-red-600 flex flex-col items-center gap-2 group">
-                <i class="fa fa-tv text-xl group-hover:scale-125 transition-all"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Stream</span>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 glass rounded-full px-8 py-4 flex items-center gap-10 shadow-2xl shadow-red-600/10 z-[1000]">
+            <button onclick="switchTab('pane-movies', this)" class="nav-btn text-red-600 flex flex-col items-center gap-1 transition-all">
+                <i class="fa fa-tv text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">Stream</span>
             </button>
-            <button onclick="switchTab('pane-novels', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-2 group">
-                <i class="fa fa-book-open text-xl group-hover:scale-125 transition-all"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Novels</span>
+            <button onclick="switchTab('pane-novels', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-1 transition-all">
+                <i class="fa fa-book text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">Novels</span>
             </button>
-            <button onclick="switchTab('pane-music', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-2 group">
-                <i class="fa fa-headphones-simple text-xl group-hover:scale-125 transition-all"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">Lofi</span>
+            <button onclick="switchTab('pane-music', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-1 transition-all">
+                <i class="fa fa-headphones text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">Lofi</span>
             </button>
-            <div class="w-px h-8 bg-white/10 mx-2"></div>
-            <button onclick="switchTab('pane-profile', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-2 group">
-                <i class="fa fa-ghost text-xl group-hover:scale-125 transition-all"></i>
-                <span class="text-[9px] font-black uppercase tracking-widest">User</span>
+            <div class="w-px h-6 bg-white/10 mx-2"></div>
+            <button onclick="switchTab('pane-profile', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-1 transition-all">
+                <i class="fa fa-user text-lg"></i><span class="text-[8px] font-black uppercase tracking-tighter">Profile</span>
             </button>
         </nav>
     </div>
 
-    <div id="movieModal" class="hidden fixed inset-0 bg-black/98 z-[9999] p-4 md:p-12 overflow-y-auto backdrop-blur-3xl">
-        <button onclick="closeModal()" class="fixed top-10 right-10 z-[10001] bg-red-600 w-14 h-14 rounded-full text-white text-3xl shadow-2xl hover:rotate-90 transition-all duration-500">&times;</button>
-        <div id="modalData" class="max-w-7xl mx-auto opacity-0 translate-y-10 transition-all duration-700"></div>
+    <div id="movieModal" class="hidden fixed inset-0 bg-black/98 z-[9999] p-4 md:p-10 overflow-y-auto backdrop-blur-2xl">
+        <button onclick="closeModal()" class="fixed top-8 right-8 z-[10001] bg-red-600 hover:bg-white hover:text-red-600 w-12 h-12 rounded-full text-white text-2xl transition-all shadow-xl">&times;</button>
+        <div id="modalData" class="max-w-7xl mx-auto animate-pop"></div>
     </div>
 
-    <div id="readerModal" class="hidden fixed inset-0 paper-texture z-[100001] overflow-y-auto p-6 md:p-24">
-        <div class="fixed top-5 left-1/2 -translate-x-1/2 glass px-6 py-2 rounded-full z-[100003] flex gap-4">
-            <button onclick="changeFontSize(-2)" class="text-xs font-bold">-A</button>
-            <button onclick="changeFontSize(2)" class="text-xs font-bold">+A</button>
-            <button onclick="toggleTheme()" class="text-xs font-bold">THEME</button>
-        </div>
+    <div id="readerModal" class="hidden fixed inset-0 bg-[#030303] z-[100001] overflow-y-auto p-6 md:p-20 text-left">
         <div class="max-w-3xl mx-auto">
-            <button onclick="closeReader()" class="fixed top-10 right-10 bg-red-600 text-white w-14 h-14 rounded-full text-3xl shadow-2xl hover:scale-110 transition-all z-[100002]">&times;</button>
-            <div id="readerContent" class="text-gray-300 text-2xl leading-[2] font-medium text-justify"></div>
+            <button onclick="closeReader()" class="fixed top-8 right-8 bg-red-600 text-white w-12 h-12 rounded-full text-2xl shadow-2xl hover:scale-110 transition-all z-[100002]">&times;</button>
+            <div id="readerContent" class="animate-pop text-gray-300 text-xl leading-loose"></div>
         </div>
     </div>
 
     <script>
-        // --- CONFIG & STATES ---
         const MOVIE_API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
         const NOVEL_API_URL = 'https://api.sheety.co/197265d85f1f62a99d8c1da249ca7819/untitledSpreadsheet/sheet1';
         const BASE_URL = 'https://api.themoviedb.org/3';
@@ -303,122 +179,43 @@
         const POSTER_URL = 'https://image.tmdb.org/t/p/w500';
 
         let moviePage = 1;
+        let isPlaying = false;
         let searchTimeout;
-        let readerFontSize = 24;
 
-        // --- 9. BOOT LOADER ANIMATION (NEW) ---
-        const bootText = [
-            "> INITIALIZING KIMM_SYSTEM_V1...",
-            "> LOADING KERNEL...",
-            "> CONNECTING TO BATAM_NODE...",
-            "> BYPASSING FIREWALL... DONE",
-            "> DECRYPTING MEDIA ASSETS...",
-            "> WELCOME, ARCHITECT."
-        ];
-        let bootIdx = 0;
-        function runBoot() {
-            const container = document.getElementById('boot-loader');
-            if (bootIdx < bootText.length) {
-                container.innerHTML += `<p>${bootText[bootIdx]}</p>`;
-                bootIdx++;
-                setTimeout(runBoot, 150);
-            }
-        }
-        runBoot();
-
-        // --- 10. SYSTEM ALERTS (NEW) ---
-        function sysAlert(msg) {
-            const container = document.getElementById('sys-alert');
-            const el = document.createElement('div');
-            el.className = 'alert-item';
-            el.innerText = msg;
-            container.appendChild(el);
-            setTimeout(() => el.remove(), 3000);
-        }
-
-        // --- CUSTOM CURSOR & SPOTLIGHT ---
-        const cursor = document.getElementById('custom-cursor');
-        const spotlight = document.getElementById('spotlight');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            spotlight.style.setProperty('--x', e.clientX + 'px');
-            spotlight.style.setProperty('--y', e.clientY + 'px');
-            
-            // 11. CURSOR TRAIL LOGIC (NEW)
-            const trail = document.createElement('div');
-            trail.className = 'cursor-trail';
-            trail.style.left = e.clientX + 'px';
-            trail.style.top = e.clientY + 'px';
-            document.body.appendChild(trail);
-            setTimeout(() => { trail.style.opacity = '0'; trail.style.transform = 'scale(0)'; }, 50);
-            setTimeout(() => trail.remove(), 500);
-        });
-
-        // --- 12. KEYBOARD SHORTCUTS (NEW) ---
-        window.addEventListener('keydown', (e) => {
-            if (e.altKey && e.key === 's') { e.preventDefault(); document.getElementById('searchInput').focus(); }
-            if (e.key === 'Escape') { closeModal(); closeReader(); }
-            if (e.key === 'm') { sysAlert("SYSTEM MUTED"); Object.values(sounds).forEach(s => s.pause()); }
-        });
-
-        // --- PARTICLE SYSTEM ---
-        const canvas = document.getElementById('canvas-particles');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        function initParticles() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            for(let i=0; i<50; i++) particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2,
-                speedX: Math.random() * 0.5 - 0.25,
-                speedY: Math.random() * 0.5 - 0.25
-            });
-        }
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-            particles.forEach(p => {
-                p.x += p.speedX; p.y += p.speedY;
-                if(p.x > canvas.width) p.x = 0; if(p.y > canvas.height) p.y = 0;
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
-            });
-            requestAnimationFrame(animateParticles);
-        }
-        initParticles(); animateParticles();
-
-        // --- AMBIENT SOUNDS ---
+        // AMBIENT SOUND LOGIC
         const sounds = {
             rain: new Audio('https://www.soundjay.com/nature/rain-01.mp3'),
             wind: new Audio('https://www.soundjay.com/nature/wind-01.mp3'),
             fire: new Audio('https://www.free-stock-music.com/music/fsm-team-64-fireplace.mp3'),
             water: new Audio('https://www.soundjay.com/nature/river-1.mp3')
         };
-        Object.values(sounds).forEach(s => { s.loop = true; s.crossOrigin = "anonymous"; });
+
+        Object.values(sounds).forEach(s => {
+            s.loop = true;
+            s.crossOrigin = "anonymous";
+        });
 
         function playAmbient(type) {
             const sound = sounds[type];
             const btn = document.getElementById('btn-' + type);
             if (sound.paused) {
                 sound.play();
-                btn.classList.add('bg-red-600', 'text-white', 'shadow-[0_0_20px_rgba(255,0,0,0.5)]');
-                sysAlert(`AMBIENT: ${type.toUpperCase()} ON`);
+                btn.style.background = "#ff4757";
+                btn.style.boxShadow = "0 0 15px rgba(255, 71, 87, 0.4)";
             } else {
                 sound.pause();
-                btn.classList.remove('bg-red-600', 'text-white', 'shadow-[0_0_20px_rgba(255,0,0,0.5)]');
+                btn.style.background = "#333";
+                btn.style.boxShadow = "none";
             }
         }
 
-        // --- CORE FUNCTIONS ---
         function handleLogin() {
             const name = document.getElementById('userNameInput').value || 'Kim';
-            sysAlert(`WELCOME ARCHITECT ${name.toUpperCase()}`);
-            document.getElementById('user-display').innerText = `ID: ${name}`;
+            document.getElementById('user-display').innerText = `User: ${name}`;
             document.getElementById('profile-name-display').innerText = name;
-            document.getElementById('login-screen').style.transform = 'translateY(-100%)';
+            document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
             setTimeout(() => {
+                document.getElementById('login-screen').remove();
                 document.getElementById('app').classList.remove('hidden');
                 setTimeout(() => document.getElementById('app').style.opacity = '1', 100);
                 initApp();
@@ -426,14 +223,6 @@
         }
 
         async function initApp() {
-            updateTime();
-            setInterval(updateTime, 1000);
-            // 13. DYNAMIC TEMPERATURE (NEW)
-            setInterval(() => { 
-                const temp = 38 + Math.floor(Math.random() * 10);
-                document.getElementById('sys-temp').innerText = `${temp}°C`;
-            }, 5000);
-
             try {
                 const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${MOVIE_API_KEY}`);
                 const data = await res.json();
@@ -444,125 +233,191 @@
             } catch (e) { console.error(e); }
         }
 
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-            if(document.getElementById('local-time')) document.getElementById('local-time').innerText = timeStr;
-        }
-
         function switchTab(paneId, btn) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
             document.getElementById(paneId).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-red-600', 'text-gray-500'));
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('text-red-600');
+                b.classList.add('text-gray-500');
+            });
             btn.classList.replace('text-gray-500', 'text-red-600');
             window.scrollTo({top:0, behavior:'smooth'});
-            sysAlert(`SWITCHED TO ${paneId.replace('pane-', '').toUpperCase()}`);
+            if(paneId === 'pane-novels') fetchNovels();
         }
 
         async function liveSearch(query) {
             clearTimeout(searchTimeout);
             const grid = document.getElementById('movie-grid');
-            if (query.length < 1) { 
-                grid.innerHTML = ""; moviePage = 1; loadMoreMovies(); 
-                document.getElementById('trending-container').style.display = "block";
-                return; 
+            const trendingContainer = document.getElementById('trending-container');
+            const gridTitle = document.getElementById('grid-title');
+            
+            if (query.length < 1) {
+                grid.innerHTML = "";
+                moviePage = 1;
+                loadMoreMovies();
+                trendingContainer.style.display = "block";
+                gridTitle.innerHTML = `<i class="fa fa-th-large text-red-600"></i> Koleksi <span class="text-red-600">Terbaru</span>`;
+                return;
             }
-            // 14. SEARCH FEEDBACK (NEW)
-            sysAlert(`SEARCHING: ${query}`);
+
             searchTimeout = setTimeout(async () => {
-                const res = await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}`);
-                const data = await res.json();
-                document.getElementById('trending-container').style.display = "none";
-                grid.innerHTML = data.results.map(m => createMovieCard(m)).join('');
-            }, 500);
+                try {
+                    const res = await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}&language=id-ID`);
+                    const data = await res.json();
+                    trendingContainer.style.display = "none";
+                    gridTitle.innerHTML = `<i class="fa fa-search text-red-600"></i> Hasil Pencarian: <span class="text-red-600">${query}</span>`;
+                    grid.innerHTML = "";
+                    if (data.results.length === 0) {
+                        grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-20 font-bold italic uppercase tracking-widest">Film tidak ditemukan!</p>`;
+                        return;
+                    }
+                    data.results.forEach(m => {
+                        if(!m.poster_path) return;
+                        const card = document.createElement('div');
+                        card.className = 'card-hover cursor-pointer group';
+                        card.onclick = () => openMovie(m.id);
+                        card.innerHTML = `
+                            <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+                                <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500">
+                            </div>
+                            <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition text-left">${m.title}</h3>
+                        `;
+                        grid.appendChild(card);
+                    });
+                } catch (e) { console.error(e); }
+            }, 300);
         }
 
-        function createMovieCard(m) {
-            if(!m.poster_path) return '';
-            return `
-                <div onclick="openMovie(${m.id})" class="card-3d cursor-pointer group">
-                    <div class="relative rounded-3xl overflow-hidden bg-white/5 border border-white/5 aspect-[2/3]">
-                        <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" loading="lazy">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                            <span class="text-[8px] font-bold text-red-600">PREVIEW SYSTEM</span>
+        async function fetchNovels() {
+            const grid = document.getElementById('novel-grid');
+            if (!grid) return;
+            try {
+                const res = await fetch(NOVEL_API_URL);
+                const data = await res.json();
+                const novels = data.sheet1;
+                if (!novels || novels.length === 0) {
+                    grid.innerHTML = "<p class='text-center text-gray-500 col-span-full'>Belum ada data novel.</p>";
+                    return;
+                }
+                grid.innerHTML = novels.map(n => `
+                    <div onclick='openNovel(${JSON.stringify(n).replace(/'/g, "&apos;")})' class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
+                        <img src="${n.cover || 'https://via.placeholder.com/300'}" class="w-32 h-48 object-cover rounded-2xl group-hover:scale-105 transition-all">
+                        <div class="flex flex-col justify-center">
+                            <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category || 'NOVEL'}</span>
+                            <h3 class="text-2xl font-black mb-2 text-white italic uppercase">${n.title}</h3>
+                            <p class="text-gray-500 text-xs mb-4 line-clamp-2 text-left">${n.desc || ''}</p>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author || 'KIM'}</span>
                         </div>
                     </div>
-                    <h3 class="text-[10px] font-black mt-4 truncate uppercase tracking-[0.2em] text-gray-500 group-hover:text-red-600 transition">${m.title}</h3>
-                </div>
+                `).join('');
+            } catch (e) { grid.innerHTML = "<p class='text-center text-red-600 col-span-full'>Gagal memuat novel.</p>"; }
+        }
+
+        function openNovel(novel) {
+            const content = `
+                <h1 class="text-5xl font-black italic text-red-600 mb-2 uppercase tracking-tighter">${novel.title}</h1>
+                <p class="text-gray-500 font-bold mb-10 border-b border-white/10 pb-4">AUTHOR: ${novel.author}</p>
+                <div class="space-y-6">${novel.content ? novel.content.replace(/\n/g, '<br>') : 'Tidak ada isi konten.'}</div>
             `;
+            document.getElementById('readerContent').innerHTML = content;
+            document.getElementById('readerModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReader() {
+            document.getElementById('readerModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
         }
 
         async function loadMoreMovies() {
             const res = await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
             const data = await res.json();
             const grid = document.getElementById('movie-grid');
-            data.results.forEach(m => grid.innerHTML += createMovieCard(m));
+            data.results.forEach(m => {
+                if(!m.poster_path) return;
+                const card = document.createElement('div');
+                card.className = 'card-hover cursor-pointer group';
+                card.onclick = () => openMovie(m.id);
+                card.innerHTML = `
+                    <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+                        <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-duration-500">
+                    </div>
+                    <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition text-left">${m.title}</h3>
+                `;
+                grid.appendChild(card);
+            });
             moviePage++;
         }
 
         function renderTrending(movies) {
             const row = document.getElementById('trending-row');
             row.innerHTML = movies.map(m => `
-                <div onclick="openMovie(${m.id})" class="min-w-[300px] card-3d cursor-pointer rounded-[40px] overflow-hidden bg-white/5 border border-white/5 group">
-                    <div class="relative h-44">
-                        <img src="${IMG_URL + m.backdrop_path}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-red-600/20 mix-blend-overlay"></div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="text-xs font-black uppercase tracking-widest truncate">${m.title}</h3>
-                        <p class="text-[9px] text-gray-500 mt-2 font-bold uppercase">Popularity Score: ${m.vote_average}</p>
-                    </div>
+                <div onclick="openMovie(${m.id})" class="min-w-[200px] md:min-w-[280px] card-hover cursor-pointer rounded-3xl overflow-hidden bg-white/5 border border-white/5">
+                    <img src="${IMG_URL + m.backdrop_path}" class="w-full h-40 object-cover">
+                    <div class="p-4 text-left"><h3 class="text-xs font-black truncate uppercase tracking-tighter">${m.title}</h3></div>
                 </div>
             `).join('');
         }
 
         async function openMovie(id) {
-            sysAlert("INITIALIZING STREAM...");
             const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos,credits&language=id-ID`);
             let m = await res.json();
-            const trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
-            
-            // 15. DYNAMIC CAST LIST (NEW)
-            const cast = m.credits.cast.slice(0, 5).map(c => c.name).join(', ');
-
+            if (!m.overview || m.overview === "") {
+                const resEn = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&language=en-US`);
+                const dataEn = await resEn.json();
+                m.overview = dataEn.overview;
+            }
+            const trailer = m.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube') || m.videos.results[0];
+            const cast = m.credits.cast.slice(0, 10); 
             document.getElementById('modalData').innerHTML = `
-                <div class="flex flex-col lg:flex-row gap-20 text-left items-start">
-                    <img src="${POSTER_URL + m.poster_path}" class="w-full lg:w-1/3 rounded-[60px] shadow-[0_0_100px_rgba(255,0,0,0.2)]">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-6 mb-8 text-[10px] font-black tracking-[0.4em] text-red-600 uppercase">
-                            <span>⭐ ${m.vote_average.toFixed(1)}</span>
-                            <span>📅 ${m.release_date.split('-')[0]}</span>
-                            <span>⏱️ ${m.runtime} MIN</span>
-                        </div>
-                        <h1 class="text-6xl md:text-[100px] font-black italic uppercase leading-none mb-4 tracking-tighter">${m.title}</h1>
-                        <p class="text-red-600 text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Starring: ${cast}</p>
-                        <p class="text-xl text-gray-400 leading-[1.8] mb-12 font-medium">${m.overview || 'The description for this masterpiece is encrypted.'}</p>
-                        <div class="flex gap-4">
-                            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-16 py-6 rounded-full font-black uppercase tracking-[0.3em] text-xs hover:scale-110 transition-all shadow-[0_0_40px_rgba(255,0,0,0.4)]">Initialize Stream</button>
-                            <button onclick="sysAlert('WATCHLIST UPDATED')" class="glass px-10 py-6 rounded-full font-black uppercase tracking-[0.3em] text-[10px] hover:bg-white hover:text-black transition">Add to Vault</button>
+                <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
+                    <div class="w-full lg:w-1/3">
+                        <img src="${POSTER_URL + m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10">
+                        <div class="mt-6 flex flex-wrap gap-2">
+                            ${m.genres.map(g => `<span class="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-[10px] font-bold text-gray-400 uppercase">${g.name}</span>`).join('')}
                         </div>
                     </div>
+                    <div class="w-full lg:w-2/3">
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="text-red-600 font-black text-xl italic tracking-tighter"><i class="fa fa-star"></i> ${m.vote_average.toFixed(1)}</span>
+                            <span class="text-gray-500 font-bold text-xs uppercase">${m.release_date.split('-')[0]}</span>
+                            <span class="text-gray-500 font-bold text-xs uppercase">${m.runtime} Menit</span>
+                        </div>
+                        <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
+                        <h3 class="text-red-600 font-black uppercase text-sm mb-4 italic tracking-widest">Sinopsis Lengkap:</h3>
+                        <p class="text-gray-300 text-lg mb-8 opacity-80 leading-loose">${m.overview || 'Maaf, deskripsi untuk film ini belum tersedia.'}</p>
+                        <div class="mb-10">
+                            <h3 class="text-red-600 font-black uppercase text-sm mb-6 italic tracking-widest">Pemeran Utama:</h3>
+                            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
+                                ${cast.map(c => `
+                                    <div class="min-w-[100px] text-center">
+                                        <div class="w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-white/10 mb-2">
+                                            <img src="${c.profile_path ? 'https://image.tmdb.org/t/p/w185' + c.profile_path : 'https://via.placeholder.com/185x185?text=No+Photo'}" class="w-full h-full object-cover">
+                                        </div>
+                                        <p class="text-[9px] font-black uppercase text-white truncate w-24">${c.name}</p>
+                                        <p class="text-[8px] font-bold uppercase text-gray-500 truncate w-24">${c.character}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition-all">Mulai Nonton</button>
+                    </div>
                 </div>
-                <div class="mt-32">
-                    <h2 class="text-3xl font-black italic mb-10 uppercase tracking-tighter">Official <span class="text-red-600">Archive</span></h2>
-                    <div class="relative w-full aspect-video rounded-[60px] overflow-hidden border border-white/10 shadow-2xl bg-black">
-                        ${trailer ? `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${trailer.key}?autoplay=0" frameborder="0" allowfullscreen></iframe>` : '<div class="flex items-center justify-center h-full font-black text-gray-800">NO ARCHIVE AVAILABLE</div>'}
+                <div class="mb-20">
+                    <h2 class="text-2xl font-black italic uppercase flex items-center gap-3 mb-8"><i class="fa fa-play text-red-600"></i> Official Trailer</h2>
+                    <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl bg-white/5">
+                        ${trailer ? `<iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer.key}?autoplay=0&rel=0" frameborder="0" allowfullscreen></iframe>` : `<div class="flex items-center justify-center h-full text-gray-500 font-bold italic uppercase">Trailer tidak tersedia</div>`}
                     </div>
                 </div>
             `;
             document.getElementById('movieModal').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('modalData').classList.remove('opacity-0', 'translate-y-10');
-            }, 100);
             document.body.style.overflow = 'hidden';
+            document.getElementById('movieModal').scrollTop = 0;
         }
 
         function closeModal() {
-            document.getElementById('modalData').classList.add('opacity-0', 'translate-y-10');
-            setTimeout(() => {
-                document.getElementById('movieModal').classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            }, 500);
+            document.getElementById('movieModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
         }
 
         function setHero(m) {
@@ -571,57 +426,14 @@
             document.getElementById('hero-title').innerText = m.title;
             document.getElementById('hero-desc').innerText = m.overview;
             document.getElementById('play-btn').onclick = () => openMovie(m.id);
-        }
-
-        async function fetchNovels() {
-            const grid = document.getElementById('novel-grid');
-            try {
-                const res = await fetch(NOVEL_API_URL);
-                const data = await res.json();
-                grid.innerHTML = data.sheet1.map(n => `
-                    <div onclick='openNovel(${JSON.stringify(n).replace(/'/g, "&apos;")})' class="glass p-8 rounded-[40px] border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
-                        <img src="${n.cover || 'https://via.placeholder.com/300'}" class="w-full h-64 object-cover rounded-[30px] mb-6 group-hover:scale-105 transition-all">
-                        <span class="text-red-600 font-black text-[9px] tracking-[0.4em] uppercase mb-4 block">${n.category || 'REDACTED'}</span>
-                        <h3 class="text-3xl font-black mb-4 italic uppercase tracking-tighter">${n.title}</h3>
-                        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest"><i class="fa fa-user-ninja text-red-600 mr-2"></i> ${n.author || 'KIM'}</p>
-                    </div>
-                `).join('');
-            } catch (e) { console.error("Novel node error"); }
-        }
-
-        function openNovel(novel) {
-            sysAlert(`DECRYPTING NOVEL: ${novel.title.toUpperCase()}`);
-            document.getElementById('readerContent').innerHTML = `
-                <h1 class="text-7xl font-black italic text-red-600 mb-6 uppercase tracking-tighter">${novel.title}</h1>
-                <div class="h-1 w-20 bg-red-600 mb-10"></div>
-                <div id="text-container" style="font-size: ${readerFontSize}px">${novel.content ? novel.content.replace(/\n/g, '<br><br>') : 'Content is being decrypted...'}</div>
-            `;
-            document.getElementById('readerModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        // --- 16. READING TOOLS LOGIC (NEW) ---
-        function changeFontSize(val) {
-            readerFontSize += val;
-            const container = document.getElementById('text-container');
-            if(container) container.style.fontSize = readerFontSize + 'px';
-            sysAlert(`FONT SIZE: ${readerFontSize}PX`);
-        }
-        function toggleTheme() {
-            const modal = document.getElementById('readerModal');
-            modal.style.backgroundColor = modal.style.backgroundColor === 'rgb(244, 234, 213)' ? '#0a0a0a' : '#f4ead5';
-            modal.style.color = modal.style.backgroundColor === 'rgb(244, 234, 213)' ? '#1a1a1a' : '#fff';
-            sysAlert("THEME TOGGLED");
-        }
-
-        function closeReader() {
-            document.getElementById('readerModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
+            document.getElementById('trailer-btn').onclick = () => openMovie(m.id);
         }
 
         window.onscroll = () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-                if(document.getElementById('pane-movies').classList.contains('active')) loadMoreMovies();
+            const movieTab = document.getElementById('pane-movies');
+            const searchInput = document.getElementById('searchInput');
+            if (movieTab && movieTab.classList.contains('active') && searchInput.value.length === 0) {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) loadMoreMovies();
             }
         };
     </script>
