@@ -478,10 +478,8 @@ handleLogin = function() {
         // ... (kode bawah tetap sama)
 
 
-// GANTI BARIS INI:
-const lofiAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-
-// MENJADI INI (Pilih salah satu):
-const lofiAudio = new Audio('https://coderadio-admin.freecodecamp.org/radio/8010/radio.mp3'); 
+const lofiAudio = new Audio('https://raw.githubusercontent.com/rafaelreis-hotmart/lofi-music/main/music/1.mp3');
 lofiAudio.crossOrigin = "anonymous";
-// (Ini adalah radio khusus koding yang sangat stabil)
+
+const lofiAudio = new Audio('https://stream.zeno.fm/0r0xa792kwzuv');
+lofiAudio.crossOrigin = "anonymous";
