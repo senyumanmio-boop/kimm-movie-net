@@ -501,7 +501,7 @@ function playAmbient(type) {
 }
 const sounds = {
     // Link ini stabil, HTTPS, dan gak bakal mati dalam 10 menit
-    rain: new Audio('https://serv1.y2dl.space/dl/mp3/IW07s1ul3Bg.mp3?sig=Hb2zdWSp4vNEjMVtmptw2eeE8p3OmYwRsxV-tBajYZZy1pOAoT7CXGJMzOx3C35pDJ5mRQSzbtkjIS4MhAWLX1nkK6tcbh_kY5mzLLx47C7JqJKpR8vWTMOHOS6XtdQqD_juk3fk-ZodE-6L3RrvsajCAXLtaL60ruFTRX29VUe_4EfkYZeIEq2wSqZXQ8E8T5fEoqFgfma9n-EIfzNPsYkCSob1o8hAC0L1f8BTzgQZwLJs5TRFHsBeY0aQ4I2jjBhLW2jgRtSrKy9Rk-OnWc7TsUUV-A.U2oB4PchRgxOXUJyoAyGZvFNcnbajNf7BsY1RL6LygU&name=suara+hujan+pengantar+tidur+menenangkan+%285+menit%29.mp3'),
+    rain: new Audio('https://serv1.y2dl.space/dl/mp3/IW07s1ul3Bg.mp3?sig=Hb2zdWSp4vNEjMVtmptw2eeE8p3OmYwRsxV-tBajYZZy1pOAoT7CXGJMzOx3C35pDJ5mRQSzbtkjIS4MhAWLX1nkK6tcbh_kY5mzLLx47C7JqJKpR8vWTMOHOS6XtdQqD_juk3fk-ZodE-6L3RrvsajCAXLtaL60ruFTRX29VUe_4EfkYZeIEq2wSqZXQ8E8T5fEoqFgfma9n-EIfzNPsYkCSob1o8hAC0L1f8BTzgQZwLJs5TRFHsBeY0aQ4I2jjBhLW2jgRtSrKy9Rk-OnWc7TsUUV-A.U2oB4PchRgxOXUJyoAyGZvFNcnbajNf7BsY1RL6LygU&name=suara+hujan+pengantar+tidur+menenangkan+%285+menit%29'),
     wind: new Audio('https://commondatastorage.googleapis.com/codeskulptor-assets/soundtracks/digital_props_atmo_02.mp3'),
     fire: new Audio('https://actions.google.com/sounds/v1/ambient/fireplace_crackling.ogg'),
     water: new Audio('https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg')
