@@ -478,8 +478,3 @@ handleLogin = function() {
         // ... (kode bawah tetap sama)
 
 
-const lofiAudio = new Audio('https://raw.githubusercontent.com/rafaelreis-hotmart/lofi-music/main/music/1.mp3');
-lofiAudio.crossOrigin = "anonymous";
-
-const lofiAudio = new Audio('https://stream.zeno.fm/0r0xa792kwzuv');
-lofiAudio.crossOrigin = "anonymous";
