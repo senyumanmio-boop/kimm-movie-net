@@ -98,7 +98,48 @@
                         <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
                     </div>
                 
+<div style="background: #1e1e1e; border-radius: 20px; padding: 20px; margin: 20px auto; max-width: 400px; text-align: center; border: 1px solid #333;">
+    <h3 style="color: #ff4757; margin-bottom: 15px;">🌿 Kimm-Relax</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        
+        <button onclick="playAmbient('rain')" id="btn-rain" style="background: #333; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">🌧️ Hujan</button>
+        
+        <button onclick="playAmbient('wind')" id="btn-wind" style="background: #333; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">💨 Angin</button>
+        
+        <button onclick="playAmbient('fire')" id="btn-fire" style="background: #333; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">🔥 Api</button>
+        
+        <button onclick="playAmbient('water')" id="btn-water" style="background: #333; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">🌊 Air</button>
+        
+    </div>
 
+<script>
+    // Database Suara (Pakai link yang super stabil)
+    const sounds = {
+        rain: new Audio('https://www.soundjay.com/nature/rain-01.mp3'),
+        wind: new Audio('https://www.soundjay.com/nature/wind-01.mp3'),
+        fire: new Audio('https://www.free-stock-music.com/music/fsm-team-64-fireplace.mp3'), // Contoh api
+        water: new Audio('https://www.soundjay.com/nature/river-1.mp3')
+    };
+
+    // Setting agar suara mengulang terus (loop)
+    Object.values(sounds).forEach(s => {
+        s.loop = true;
+        s.crossOrigin = "anonymous";
+    });
+
+    function playAmbient(type) {
+        const sound = sounds[type];
+        const btn = document.getElementById('btn-' + type);
+
+        if (sound.paused) {
+            sound.play();
+            btn.style.background = "#ff4757"; // Berubah warna saat nyala
+        } else {
+            sound.pause();
+            btn.style.background = "#333"; // Kembali gelap saat mati
+        }
+    }
+</script>
             <section id="pane-profile" class="tab-panel p-8 max-w-4xl mx-auto mt-20">
                 <div class="glass p-10 rounded-[40px] border border-white/5 relative overflow-hidden">
                     <div class="absolute top-0 right-0 p-8 opacity-10">
