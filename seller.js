@@ -477,4 +477,25 @@ handleLogin = function() {
 
         // ... (kode bawah tetap sama)
 
+function playAmbient(type) {
+    const sound = sounds[type];
+    const btn = document.getElementById('btn-' + type);
 
+    if (sound.paused) {
+        // Coba play dan tangkap kalau ada error
+        sound.play()
+            .then(() => {
+                console.log("Suara " + type + " mulai bunyi!");
+                btn.style.background = "#ff4757";
+                btn.style.boxShadow = "0 0 20px rgba(255, 71, 87, 0.5)";
+            })
+            .catch(error => {
+                console.error("Gagal putar suara:", error);
+                alert("Klik dulu di mana saja dalam web, baru tekan tombol suaranya!");
+            });
+    } else {
+        sound.pause();
+        btn.style.background = "#333";
+        btn.style.boxShadow = "none";
+    }
+}
