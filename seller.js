@@ -499,3 +499,16 @@ function playAmbient(type) {
         btn.style.boxShadow = "none";
     }
 }
+const sounds = {
+    // Pakai link dari Google atau Dropbox yang lebih santai perizinannya
+    rain: new Audio('https://codeskulptor-demos.commondatastorage.googleapis.com/ext_res/rain.mp3'),
+    wind: new Audio('https://commondatastorage.googleapis.com/codeskulptor-assets/soundtracks/digital_props_atmo_02.mp3'),
+    fire: new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'), // Ini contoh musik, ganti kalau ada mp3 api yang https
+    water: new Audio('https://codeskulptor-demos.commondatastorage.googleapis.com/ext_res/rebel_mystery_occ.mp3')
+};
+
+// WAJIB: Tambahkan ini di bawahnya supaya izinnya tembus
+Object.values(sounds).forEach(s => {
+    s.loop = true;
+    s.crossOrigin = "anonymous"; // Baris ini penting buat ngatasi CORS tadi
+});
