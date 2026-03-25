@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KimmMovie Premium - Beyond Cinematic</title>
+    <title>KimmMovie | The Infinite Experience</title>
     <link rel="icon" type="image/png" href="https://i.postimg.cc/DZ3yMyM3/lalala-removebg-preview.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;600;800&family=Outfit:wght@100;400;900&display=swap');
         
         :root { 
             --accent: #ff0000; 
-            --accent-glow: rgba(255, 0, 0, 0.5);
-            --bg: #050505; 
-            --glass: rgba(255, 255, 255, 0.03); 
+            --accent-glow: rgba(255, 0, 0, 0.6);
+            --bg: #020202; 
         }
 
         body { 
@@ -23,399 +22,443 @@
             color: #fff; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             overflow-x: hidden;
-            scroll-behavior: smooth;
+            cursor: none; /* Kita pakai custom cursor */
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { 
-            background: linear-gradient(to bottom, var(--accent), #660000); 
-            border-radius: 10px; 
+        /* Animated Mesh Gradient Background */
+        .mesh-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(at 0% 0%, rgba(255,0,0,0.15) 0, transparent 50%), 
+                        radial-gradient(at 100% 100%, rgba(255,0,0,0.1) 0, transparent 50%);
+            filter: blur(80px);
+            animation: meshMove 20s infinite alternate;
         }
 
-        .glass { background: var(--glass); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
-        .hero-shadow { background: linear-gradient(0deg, var(--bg) 10%, transparent 100%), linear-gradient(90deg, rgba(0,0,0,0.95) 0%, transparent 70%); }
-        
-        /* Card Effects */
-        .card-hover { 
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        @keyframes meshMove {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2) translate(20px, 20px); }
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            width: 20px; height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 999999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Glassmorphism Ultra */
+        .glass { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        /* Hero Shadow Depth */
+        .hero-shadow { 
+            background: linear-gradient(0deg, var(--bg) 10%, transparent 100%), 
+                        linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 70%); 
+        }
+
+        /* Skeleton Loading Animation */
+        .skeleton {
+            background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Movie Card Premium */
+        .movie-card {
             position: relative;
+            transition: all 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+            border-radius: 24px;
+            overflow: hidden;
         }
-        .card-hover:hover { 
-            transform: translateY(-12px) scale(1.03);
-            box-shadow: 0 15px 30px var(--accent-glow);
-        }
-        .card-hover::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 1rem;
-            border: 2px solid transparent;
-            transition: 0.3s;
-        }
-        .card-hover:hover::after { border-color: var(--accent); }
 
+        .movie-card:hover {
+            transform: scale(1.05) translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.3);
+        }
+
+        .movie-card img { transition: 0.8s; }
+        .movie-card:hover img { transform: scale(1.1) rotate(2deg); filter: brightness(0.5); }
+
+        /* Floating Animation */
+        .float { animation: floating 3s ease-in-out infinite; }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Tab Transition */
         .tab-panel { display: none; }
-        .tab-panel.active { display: block; animation: fadeInUp 0.8s ease; }
+        .tab-panel.active { display: block; animation: zoomFade 0.7s cubic-bezier(0.165, 0.84, 0.44, 1); }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Music Visualizer Upgrade */
-        .visualizer-bar {
-            width: 4px;
-            background: var(--accent);
-            border-radius: 2px;
-            animation: flow 1s ease-in-out infinite alternate;
-        }
-        @keyframes flow {
-            from { height: 5px; transform: scaleY(1); }
-            to { height: 40px; transform: scaleY(1.5); }
+        @keyframes zoomFade {
+            from { opacity: 0; transform: scale(0.95); filter: blur(10px); }
+            to { opacity: 1; transform: scale(1); filter: blur(0); }
         }
 
-        /* Glowing Text */
-        .glow-text {
-            text-shadow: 0 0 10px var(--accent-glow);
-        }
+        /* Navbar Hide/Show on Scroll */
+        .nav-hidden { transform: translateY(-100%); }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .novel-reader-dark { background: #0f0f0f; color: #d1d1d1; }
+        .novel-reader-sepia { background: #f4ecd8; color: #5b4636; }
     </style>
 </head>
-<body class="pb-28">
+<body>
 
-    <div id="login-screen" class="fixed inset-0 bg-[#000] z-[99999] flex flex-col items-center justify-center transition-all duration-1000">
-        <div class="relative mb-12 animate__animated animate__zoomIn">
-            <h1 class="text-9xl font-black italic text-red-600 tracking-tighter opacity-10 absolute -top-8 -left-8">KIM</h1>
-            <h1 class="text-8xl font-black italic relative z-10 tracking-tighter glow-text">Kimm<span class="text-red-600">Movie</span></h1>
-        </div>
-        <div class="flex flex-col gap-4 items-center animate__animated animate__fadeInUp animate__delay-1s">
-            <input type="text" id="userNameInput" placeholder="Nama Kodinger?" class="bg-white/5 border border-white/10 p-5 rounded-3xl w-80 text-center text-xl font-bold outline-none focus:border-red-600 focus:ring-4 focus:ring-red-600/20 transition-all text-white backdrop-blur-md">
-            <button onclick="handleLogin()" class="bg-red-600 px-16 py-5 rounded-3xl font-black uppercase tracking-widest hover:bg-white hover:text-red-600 transform hover:scale-105 transition-all duration-500 shadow-[0_0_30px_rgba(255,0,0,0.4)]">Initialize Experience</button>
+    <div id="cursor"></div>
+    <div class="mesh-bg"></div>
+
+    <div id="login-screen" class="fixed inset-0 bg-black z-[999999] flex flex-col items-center justify-center transition-all duration-1000">
+        <div class="text-center animate__animated animate__fadeIn">
+            <h1 style="font-family: 'Outfit', sans-serif;" class="text-8xl md:text-[12rem] font-black italic tracking-tighter leading-none">
+                KIMM<span class="text-red-600 drop-shadow-[0_0_50px_rgba(255,0,0,0.8)]">MOVIE</span>
+            </h1>
+            <p class="text-gray-500 tracking-[1em] uppercase text-xs mt-4 mb-12">Universal Cinema Access</p>
+            
+            <div class="relative group inline-block">
+                <input type="text" id="userNameInput" placeholder="ENTER ACCESS KEY (NAME)" 
+                    class="bg-transparent border-b-2 border-white/10 p-4 w-80 text-center text-xl font-bold outline-none focus:border-red-600 transition-all uppercase tracking-widest">
+                <div class="mt-8">
+                    <button onclick="handleLogin()" class="glass px-12 py-4 rounded-full font-black uppercase tracking-widest hover:bg-red-600 transition-all duration-500">Initialize Identity</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="app" class="hidden opacity-0">
-        <nav class="fixed top-0 w-full z-[1000] glass px-8 py-5 flex justify-between items-center">
-            <div class="flex items-center gap-8">
-                <span class="text-4xl font-black italic text-red-600 cursor-pointer hover:scale-110 transition-transform">K<span class="text-white">M</span></span>
-                <div class="hidden lg:flex gap-6 text-[11px] font-bold uppercase tracking-[0.2em]">
-                    <span class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Batam Center Node</span>
-                    <span id="user-display" class="text-gray-400"></span>
+    <div id="app" class="hidden">
+        <nav id="mainNav" class="fixed top-0 w-full z-[5000] px-8 py-6 flex justify-between items-center transition-transform duration-500">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(255,0,0,0.5)] rotate-3">
+                    <span class="text-2xl font-black italic">K</span>
                 </div>
+                <h2 class="text-xl font-black italic hidden md:block tracking-tighter">KIM<span class="text-red-600">WORKSPACE</span></h2>
             </div>
-            
-            <div class="relative w-1/3 group">
-                <i class="fa fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-600 transition-colors"></i>
-                <input type="text" id="searchInput" oninput="liveSearch(this.value)" placeholder="Cari mahakarya..." class="w-full bg-white/5 border border-white/10 py-3.5 pl-14 pr-6 rounded-2xl text-sm outline-none focus:bg-white/10 focus:border-red-600 transition-all">
+
+            <div class="glass px-6 py-2 rounded-2xl flex items-center gap-4 w-full max-w-lg mx-8 group">
+                <i class="fa fa-search text-gray-500 group-focus-within:text-red-600"></i>
+                <input type="text" id="searchInput" oninput="liveSearch(this.value)" placeholder="Search for masterpieces..." 
+                    class="bg-transparent border-none outline-none w-full text-sm font-medium">
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div id="user-avatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-red-600 to-orange-400 border-2 border-white/20"></div>
             </div>
         </nav>
 
         <main>
             <section id="pane-movies" class="tab-panel active">
-                <div id="hero" class="relative h-[90vh] w-full flex items-center px-[8%] overflow-hidden bg-cover bg-center transition-all duration-1000">
+                <div id="hero" class="relative h-[100vh] w-full flex items-center px-[8%] overflow-hidden bg-cover bg-fixed bg-center">
                     <div class="absolute inset-0 hero-shadow"></div>
-                    <div class="relative z-10 max-w-4xl">
-                        <div class="flex items-center gap-3 mb-6 animate__animated animate__fadeInLeft">
-                            <span class="bg-red-600 text-[10px] font-black px-4 py-1.5 rounded-full uppercase italic tracking-widest">Cinema Special</span>
-                            <span class="text-white/70 text-xs font-bold uppercase"><i class="fa fa-clock mr-2"></i>Baru Rilis</span>
+                    <div class="relative z-10 max-w-3xl">
+                        <div class="flex items-center gap-3 mb-6 animate__animated animate__fadeInDown">
+                            <span class="bg-red-600/20 text-red-600 text-[10px] font-black px-4 py-1 rounded-full border border-red-600/30">PREMIUM 4K</span>
+                            <span id="hero-year" class="text-white/50 text-xs font-bold uppercase tracking-widest"></span>
                         </div>
-                        <h1 id="hero-title" class="text-6xl md:text-9xl font-black italic uppercase leading-[0.9] mb-8 tracking-tighter glow-text">...</h1>
-                        <p id="hero-desc" class="text-gray-400 text-lg md:text-xl mb-10 line-clamp-3 font-medium max-w-2xl leading-relaxed"></p>
-                        <div class="flex gap-6">
-                            <button id="play-btn" class="bg-white text-black px-12 py-5 rounded-2xl font-black text-sm uppercase flex items-center gap-4 hover:bg-red-600 hover:text-white transition-all transform active:scale-90"><i class="fa fa-play"></i> Watch Now</button>
-                            <button id="trailer-btn" class="bg-white/10 border border-white/20 px-12 py-5 rounded-2xl font-black text-sm uppercase backdrop-blur-md hover:bg-white/20 transition-all">Full Details</button>
+                        <h1 id="hero-title" style="font-family: 'Outfit', sans-serif;" class="text-7xl md:text-9xl font-black uppercase leading-[0.85] mb-8 tracking-tighter italic">...</h1>
+                        <p id="hero-desc" class="text-gray-400 text-lg mb-10 line-clamp-3 leading-relaxed font-light"></p>
+                        <div class="flex flex-wrap gap-6">
+                            <button id="play-btn" class="bg-white text-black px-12 py-5 rounded-full font-black text-xs uppercase flex items-center gap-3 hover:bg-red-600 hover:text-white transition-all transform hover:scale-110 shadow-xl"><i class="fa fa-play"></i> Watch Now</button>
+                            <button id="info-btn" class="glass px-12 py-5 rounded-full font-black text-xs uppercase flex items-center gap-3 hover:bg-white/10 transition-all"><i class="fa fa-plus"></i> My List</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="p-8 space-y-20">
-                    <div id="trending-container">
-                        <div class="flex justify-between items-end mb-8">
-                            <h2 class="text-3xl font-black italic uppercase tracking-tighter">Hot <span class="text-red-600">Releases</span></h2>
-                            <span class="text-gray-500 text-xs font-bold uppercase border-b border-red-600">Slide to Explore</span>
+                <div class="px-8 -mt-32 relative z-20 space-y-24 pb-20">
+                    <div id="trending-section">
+                        <h3 class="text-xs font-black text-red-600 uppercase tracking-[0.5em] mb-4">On Fire Right Now</h3>
+                        <div id="trending-row" class="flex gap-6 overflow-x-auto no-scrollbar pb-10">
+                            <div class="min-w-[300px] h-44 rounded-3xl skeleton opacity-20"></div>
+                            <div class="min-w-[300px] h-44 rounded-3xl skeleton opacity-20"></div>
+                            <div class="min-w-[300px] h-44 rounded-3xl skeleton opacity-20"></div>
                         </div>
-                        <div id="trending-row" class="flex gap-8 overflow-x-auto no-scrollbar pb-8 cursor-grab active:cursor-grabbing"></div>
                     </div>
 
-                    <div>
-                        <h2 id="grid-title" class="text-3xl font-black italic uppercase tracking-tighter mb-10">Koleksi <span class="text-red-600">Eksklusif</span></h2>
+                    <div id="main-collection">
+                        <div class="flex justify-between items-center mb-10">
+                            <h2 class="text-4xl font-black italic tracking-tighter">THE <span class="text-red-600">VAULT</span></h2>
+                            <div class="flex gap-2">
+                                <button class="w-10 h-10 rounded-full glass hover:bg-red-600 transition-all"><i class="fa fa-filter text-xs"></i></button>
+                            </div>
+                        </div>
                         <div id="movie-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8"></div>
-                        <div id="loading-trigger" class="h-20 flex items-center justify-center mt-10">
-                            <div class="w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                        <div id="loader" class="h-40 flex items-center justify-center">
+                            <div class="w-2 h-2 bg-red-600 rounded-full animate-ping"></div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section id="pane-novels" class="tab-panel p-8 max-w-7xl mx-auto mt-24">
-                <div class="mb-16 text-center">
-                    <h1 class="text-7xl font-black italic tracking-tighter glow-text">Kimm<span class="text-red-600">Lib</span></h1>
-                    <p class="text-gray-500 font-bold uppercase text-xs tracking-[0.5em] mt-4">Pustaka Digital Tanpa Batas</p>
-                </div>
-                <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <section id="pane-novels" class="tab-panel pt-32 px-8 max-w-7xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end gap-8 mb-20">
+                    <div class="max-w-xl">
+                        <h1 class="text-8xl font-black italic tracking-tighter leading-none mb-4">KIMM<span class="text-red-600">LIB</span></h1>
+                        <p class="text-gray-500 font-medium">Infinite stories, endless worlds. Powered by KimmStudio intelligence.</p>
                     </div>
+                    <div class="flex gap-4">
+                        <span class="glass px-6 py-2 rounded-full text-[10px] font-black text-red-600">1,200+ TITLES</span>
+                    </div>
+                </div>
+                <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-3 gap-10"></div>
             </section>
 
-            <section id="pane-music" class="tab-panel p-8 max-w-5xl mx-auto mt-24">
-                <div class="glass p-16 rounded-[60px] relative overflow-hidden text-center border-red-600/10">
-                    <div class="flex justify-center gap-1.5 h-12 mb-10 items-end">
-                        <div class="visualizer-bar" style="animation-delay: 0.1s"></div>
-                        <div class="visualizer-bar" style="animation-delay: 0.3s"></div>
-                        <div class="visualizer-bar" style="animation-delay: 0.5s"></div>
-                        <div class="visualizer-bar" style="animation-delay: 0.2s"></div>
-                        <div class="visualizer-bar" style="animation-delay: 0.4s"></div>
-                        <div class="visualizer-bar" style="animation-delay: 0.1s"></div>
-                    </div>
+            <section id="pane-music" class="tab-panel pt-32 px-8 max-w-4xl mx-auto">
+                <div class="glass rounded-[60px] p-12 text-center relative overflow-hidden">
+                    <div id="music-wave" class="flex justify-center items-end gap-1 h-20 mb-12">
+                        </div>
+                    <h2 class="text-6xl font-black italic tracking-tighter mb-4 uppercase">Sonic <span class="text-red-600">Zen</span></h2>
+                    <p class="text-gray-400 mb-12 tracking-widest text-xs font-bold">OPTIMIZED AMBIENT FOR CODING & READING</p>
                     
-                    <h2 class="text-5xl font-black italic mb-4">RELAX <span class="text-red-600">&</span> FOCUS</h2>
-                    <p class="text-gray-400 font-medium mb-12">Nyalakan ambient untuk pengalaman membaca & menonton yang maksimal</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                        <button onclick="playAmbient('rain')" id="btn-rain" class="glass p-8 rounded-[40px] hover:border-red-600 transition-all group">
+                            <i class="fa fa-cloud-rain text-3xl mb-4 group-hover:scale-125 transition-transform"></i>
+                            <span class="block text-[10px] font-black uppercase">Rain</span>
+                        </button>
+                        <button onclick="playAmbient('fire')" id="btn-fire" class="glass p-8 rounded-[40px] hover:border-orange-600 transition-all group">
+                            <i class="fa fa-fire text-3xl mb-4 group-hover:scale-125 transition-transform"></i>
+                            <span class="block text-[10px] font-black uppercase">Fire</span>
+                        </button>
+                        <button onclick="playAmbient('forest')" id="btn-forest" class="glass p-8 rounded-[40px] hover:border-green-600 transition-all group">
+                            <i class="fa fa-tree text-3xl mb-4 group-hover:scale-125 transition-transform"></i>
+                            <span class="block text-[10px] font-black uppercase">Nature</span>
+                        </button>
+                        <button onclick="playAmbient('lofi')" id="btn-lofi" class="glass p-8 rounded-[40px] hover:border-purple-600 transition-all group">
+                            <i class="fa fa-compact-disc text-3xl mb-4 group-hover:animate-spin"></i>
+                            <span class="block text-[10px] font-black uppercase">Lo-Fi</span>
+                        </button>
+                    </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <button onclick="playAmbient('rain')" id="btn-rain" class="bg-white/5 p-8 rounded-[30px] border border-white/5 hover:bg-red-600 transition-all duration-500 group">
-                            <i class="fa fa-cloud-showers-heavy text-3xl mb-4 block group-hover:scale-125 transition-transform"></i>
-                            <span class="font-black text-xs uppercase italic tracking-widest">Rainfall</span>
-                        </button>
-                        <button onclick="playAmbient('wind')" id="btn-wind" class="bg-white/5 p-8 rounded-[30px] border border-white/5 hover:bg-blue-600 transition-all duration-500 group">
-                            <i class="fa fa-wind text-3xl mb-4 block group-hover:scale-125 transition-transform"></i>
-                            <span class="font-black text-xs uppercase italic tracking-widest">Breeze</span>
-                        </button>
-                        <button onclick="playAmbient('fire')" id="btn-fire" class="bg-white/5 p-8 rounded-[30px] border border-white/5 hover:bg-orange-600 transition-all duration-500 group">
-                            <i class="fa fa-fire text-3xl mb-4 block group-hover:scale-125 transition-transform"></i>
-                            <span class="font-black text-xs uppercase italic tracking-widest">Cozy Fire</span>
-                        </button>
-                        <button onclick="playAmbient('water')" id="btn-water" class="bg-white/5 p-8 rounded-[30px] border border-white/5 hover:bg-cyan-600 transition-all duration-500 group">
-                            <i class="fa fa-water text-3xl mb-4 block group-hover:scale-125 transition-transform"></i>
-                            <span class="font-black text-xs uppercase italic tracking-widest">Waves</span>
-                        </button>
+                    <div class="flex items-center gap-6 justify-center bg-black/40 p-6 rounded-full glass">
+                        <i class="fa fa-volume-down text-gray-500"></i>
+                        <input type="range" id="volumeControl" min="0" max="1" step="0.1" value="0.5" 
+                            class="w-48 accent-red-600">
+                        <i class="fa fa-volume-up text-gray-500"></i>
                     </div>
                 </div>
             </section>
 
-            <section id="pane-profile" class="tab-panel p-8 max-w-4xl mx-auto mt-24">
-                <div class="glass p-12 rounded-[50px] relative overflow-hidden border-white/10">
+            <section id="pane-profile" class="tab-panel pt-32 px-8 max-w-4xl mx-auto">
+                <div class="glass p-16 rounded-[60px] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-red-600/10 blur-[100px] -z-10"></div>
                     <div class="flex flex-col md:flex-row items-center gap-12 text-center md:text-left">
-                        <div class="relative group">
-                            <div class="absolute -inset-2 bg-gradient-to-r from-red-600 to-purple-600 rounded-full blur opacity-40 group-hover:opacity-100 transition duration-1000"></div>
-                            <img src="https://i.postimg.cc/P5pxGYsg/image.png" class="relative w-48 h-48 object-cover rounded-full border-4 border-black shadow-2xl">
+                        <div class="w-56 h-56 rounded-[50px] overflow-hidden border-4 border-red-600 rotate-6 hover:rotate-0 transition-all duration-700 shadow-2xl">
+                            <img src="https://i.postimg.cc/P5pxGYsg/image.png" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1">
-                            <span class="bg-red-600 px-4 py-1 rounded-full text-[10px] font-black uppercase italic tracking-widest">Administrator</span>
-                            <h2 id="profile-name-display" class="text-6xl font-black italic uppercase tracking-tighter mt-4 mb-4">Kim</h2>
-                            <div class="flex flex-wrap gap-4 justify-center md:justify-start text-sm text-gray-400">
-                                <span><i class="fa fa-map-pin text-red-600 mr-2"></i>Batam, ID</span>
-                                <span><i class="fa fa-code text-red-600 mr-2"></i>Fullstack Dev</span>
-                                <span><i class="fa fa-heart text-red-600 mr-2"></i>Cinema & Books</span>
+                            <h2 id="profile-name" class="text-7xl font-black italic tracking-tighter uppercase mb-4">Kim</h2>
+                            <p class="text-red-600 font-bold tracking-[0.3em] text-xs mb-8">VERIFIED ARCHITECT & CINEPHILE</p>
+                            <div class="grid grid-cols-2 gap-4 text-xs font-bold text-gray-400">
+                                <div class="glass p-4 rounded-2xl"><i class="fa fa-map-marker-alt text-red-600 mr-2"></i> BATAM, ID</div>
+                                <div class="glass p-4 rounded-2xl"><i class="fa fa-terminal text-red-600 mr-2"></i> FULLSTACK</div>
                             </div>
-                            <p class="mt-8 text-gray-500 italic leading-relaxed text-lg border-t border-white/5 pt-6">
-                                "Membangun dunia melalui baris kode dan merasakannya melalui layar perak."
-                            </p>
                         </div>
                     </div>
                 </div>
             </section>
         </main>
 
-        <nav class="fixed bottom-8 left-1/2 -translate-x-1/2 glass rounded-full px-10 py-5 flex items-center gap-12 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[1000] border-white/10">
-            <button onclick="switchTab('pane-movies', this)" class="nav-btn text-red-600 flex flex-col items-center gap-1.5 hover:scale-110 transition-all">
-                <i class="fa fa-film text-xl"></i><span class="text-[9px] font-black uppercase italic">Theater</span>
+        <nav class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[5000] flex items-center gap-2 p-2 glass rounded-full shadow-2xl">
+            <button onclick="switchTab('pane-movies', this)" class="nav-btn w-16 h-16 rounded-full flex flex-col items-center justify-center text-red-600 transition-all">
+                <i class="fa fa-tv text-xl"></i><span class="text-[8px] font-black uppercase mt-1">Home</span>
             </button>
-            <button onclick="switchTab('pane-novels', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-1.5 hover:scale-110 transition-all">
-                <i class="fa fa-book-open text-xl"></i><span class="text-[9px] font-black uppercase italic">Library</span>
+            <button onclick="switchTab('pane-novels', this)" class="nav-btn w-16 h-16 rounded-full flex flex-col items-center justify-center text-gray-500 transition-all hover:bg-white/5">
+                <i class="fa fa-book-open text-xl"></i><span class="text-[8px] font-black uppercase mt-1">Read</span>
             </button>
-            <button onclick="switchTab('pane-music', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-1.5 hover:scale-110 transition-all">
-                <i class="fa fa-headphones text-xl"></i><span class="text-[9px] font-black uppercase italic">Station</span>
+            <button onclick="switchTab('pane-music', this)" class="nav-btn w-16 h-16 rounded-full flex flex-col items-center justify-center text-gray-500 transition-all hover:bg-white/5">
+                <i class="fa fa-headphones text-xl"></i><span class="text-[8px] font-black uppercase mt-1">Listen</span>
             </button>
-            <div class="w-[1px] h-8 bg-white/10"></div>
-            <button onclick="switchTab('pane-profile', this)" class="nav-btn text-gray-500 flex flex-col items-center gap-1.5 hover:scale-110 transition-all">
-                <i class="fa fa-fingerprint text-xl"></i><span class="text-[9px] font-black uppercase italic">ID</span>
+            <button onclick="switchTab('pane-profile', this)" class="nav-btn w-16 h-16 rounded-full flex flex-col items-center justify-center text-gray-500 transition-all hover:bg-white/5">
+                <i class="fa fa-user text-xl"></i><span class="text-[8px] font-black uppercase mt-1">Admin</span>
             </button>
         </nav>
     </div>
 
-    <div id="movieModal" class="hidden fixed inset-0 bg-black/98 z-[9999] overflow-y-auto backdrop-blur-3xl">
-        <button onclick="closeModal()" class="fixed top-8 right-8 z-[10001] bg-white text-black w-14 h-14 rounded-full text-3xl font-light hover:bg-red-600 hover:text-white transition-all shadow-2xl">×</button>
-        <div id="modalData" class="max-w-7xl mx-auto py-20 px-8"></div>
+    <div id="movieModal" class="hidden fixed inset-0 z-[99999] bg-black overflow-y-auto no-scrollbar">
+        <div id="modalContent" class="animate__animated animate__fadeInUp"></div>
+        <button onclick="closeModal()" class="fixed top-8 right-8 w-16 h-16 rounded-full glass flex items-center justify-center text-3xl hover:bg-red-600 transition-all">×</button>
     </div>
 
-    <div id="readerModal" class="hidden fixed inset-0 bg-[#050505] z-[100001] overflow-y-auto p-8 md:p-24">
-        <button onclick="closeReader()" class="fixed top-8 right-8 bg-red-600 text-white w-14 h-14 rounded-full text-3xl shadow-2xl hover:rotate-90 transition-all">×</button>
-        <div id="readerContent" class="max-w-3xl mx-auto text-gray-300 text-xl leading-[2] font-medium"></div>
+    <div id="readerModal" class="hidden fixed inset-0 z-[100000] novel-reader-dark overflow-y-auto p-8 md:p-24 transition-colors duration-500">
+        <div class="max-w-3xl mx-auto">
+            <div class="fixed top-8 left-8 flex gap-4">
+                <button onclick="setReaderTheme('dark')" class="w-8 h-8 rounded-full bg-black border border-white/20"></button>
+                <button onclick="setReaderTheme('sepia')" class="w-8 h-8 rounded-full bg-[#f4ecd8] border border-black/10"></button>
+            </div>
+            <button onclick="closeReader()" class="fixed top-8 right-8 w-12 h-12 rounded-full bg-red-600 text-white shadow-2xl">×</button>
+            <div id="readerContent" class="animate__animated animate__fadeIn"></div>
+        </div>
     </div>
 
     <script>
-        // API CONFIG
-        const MOVIE_API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
+        const API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
         const BASE_URL = 'https://api.themoviedb.org/3';
-        const IMG_URL = 'https://image.tmdb.org/t/p/original';
-        const POSTER_URL = 'https://image.tmdb.org/t/p/w500';
-
-        let moviePage = 1;
+        let page = 1;
         let isFetching = false;
+        let lastScroll = 0;
 
-        // SOUND SYSTEM
-        const sounds = {
-            rain: new Audio('https://www.soundjay.com/nature/rain-01.mp3'),
-            wind: new Audio('https://www.soundjay.com/nature/wind-01.mp3'),
-            fire: new Audio('https://www.free-stock-music.com/music/fsm-team-64-fireplace.mp3'),
-            water: new Audio('https://www.soundjay.com/nature/river-1.mp3')
-        };
-        Object.values(sounds).forEach(s => { s.loop = true; s.volume = 0.5; });
+        // CUSTOM CURSOR LOGIC
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
 
-        function playAmbient(type) {
-            const sound = sounds[type];
-            const btn = document.getElementById('btn-' + type);
-            if (sound.paused) {
-                sound.play();
-                btn.classList.add('shadow-[0_0_20px_rgba(255,255,255,0.2)]', 'scale-105');
+        document.addEventListener('mousedown', () => cursor.style.transform = 'scale(0.8)');
+        document.addEventListener('mouseup', () => cursor.style.transform = 'scale(1)');
+
+        // NAVBAR SCROLL LOGIC
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            const nav = document.getElementById('mainNav');
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                nav.classList.add('nav-hidden');
             } else {
-                sound.pause();
-                btn.classList.remove('shadow-[0_0_20px_rgba(255,255,255,0.2)]', 'scale-105');
+                nav.classList.remove('nav-hidden');
             }
-        }
+            lastScroll = currentScroll;
+            
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                if(document.getElementById('pane-movies').classList.contains('active')) loadMovies();
+            }
+        });
 
-        // AUTH SYSTEM
+        // AUTH
         function handleLogin() {
-            const name = document.getElementById('userNameInput').value || 'Kim Member';
-            document.getElementById('user-display').innerText = `ACCESS GRANTED: ${name}`;
-            document.getElementById('profile-name-display').innerText = name;
-            
-            const login = document.getElementById('login-screen');
-            login.classList.add('animate__animated', 'animate__fadeOutUp');
-            
+            const nameInput = document.getElementById('userNameInput').value || 'KIMM';
+            document.getElementById('profile-name').innerText = nameInput;
+            const splash = document.getElementById('login-screen');
+            splash.style.opacity = '0';
+            splash.style.transform = 'scale(1.1)';
             setTimeout(() => {
-                login.remove();
-                const app = document.getElementById('app');
-                app.classList.remove('hidden');
-                setTimeout(() => app.style.opacity = '1', 100);
-                initApp();
-            }, 800);
+                splash.remove();
+                document.getElementById('app').classList.remove('hidden');
+                document.getElementById('app').classList.add('animate__animated', 'animate__fadeIn');
+                init();
+            }, 1000);
         }
 
-        // CORE LOGIC
-        async function initApp() {
-            try {
-                const res = await fetch(`${BASE_URL}/trending/movie/week?api_key=${MOVIE_API_KEY}&language=id-ID`);
-                const data = await res.json();
-                setHero(data.results[0]);
-                renderTrending(data.results);
-                loadMoreMovies();
-                generateInfiniteNovels(); // Memulai generator novel
-            } catch (e) { console.error("Init Error", e); }
+        async function init() {
+            loadHero();
+            loadTrending();
+            loadMovies();
+            generateMusicBars();
+            generateNovels();
         }
 
-        function setHero(m) {
-            const hero = document.getElementById('hero');
-            hero.style.backgroundImage = `url(${IMG_URL + m.backdrop_path})`;
+        async function loadHero() {
+            const res = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=id-ID`);
+            const data = await res.json();
+            const m = data.results[0];
+            document.getElementById('hero').style.backgroundImage = `url(https://image.tmdb.org/t/p/original${m.backdrop_path})`;
             document.getElementById('hero-title').innerText = m.title;
-            document.getElementById('hero-desc').innerText = m.overview || "Kisah luar biasa yang harus Anda saksikan sendiri.";
+            document.getElementById('hero-desc').innerText = m.overview;
+            document.getElementById('hero-year').innerText = m.release_date.split('-')[0];
             document.getElementById('play-btn').onclick = () => openMovie(m.id);
         }
 
-        async function loadMoreMovies() {
-            if(isFetching) return;
-            isFetching = true;
-            try {
-                const res = await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}&language=id-ID`);
-                const data = await res.json();
-                const grid = document.getElementById('movie-grid');
-                
-                data.results.forEach(m => {
-                    if(!m.poster_path) return;
-                    const card = document.createElement('div');
-                    card.className = 'card-hover cursor-pointer group rounded-3xl overflow-hidden';
-                    card.onclick = () => openMovie(m.id);
-                    card.innerHTML = `
-                        <div class="relative aspect-[2/3] overflow-hidden">
-                            <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                                <span class="text-red-600 font-black italic text-xs mb-1"><i class="fa fa-star"></i> ${m.vote_average.toFixed(1)}</span>
-                                <h3 class="text-xs font-bold uppercase truncate">${m.title}</h3>
-                            </div>
-                        </div>
-                    `;
-                    grid.appendChild(card);
-                });
-                moviePage++;
-            } finally { isFetching = false; }
+        async function loadTrending() {
+            const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}`);
+            const data = await res.json();
+            const row = document.getElementById('trending-row');
+            row.innerHTML = data.results.map(m => `
+                <div onclick="openMovie(${m.id})" class="min-w-[300px] h-44 rounded-3xl overflow-hidden relative group cursor-pointer shadow-2xl">
+                    <img src="https://image.tmdb.org/t/p/w500${m.backdrop_path}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black flex items-end p-6">
+                        <h4 class="font-black italic text-sm uppercase truncate">${m.title}</h4>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // INFINITE NOVELS GENERATOR
-        // Karena kita ingin konten tak terbatas, kita buat generator fiksi berdasarkan tema
-        function generateInfiniteNovels() {
-            const titles = ["Dunia di Balik Kode", "Cahaya Batam Malam Hari", "Algoritma Takdir", "Antara Dua Dimensi", "Pewaris Langit Ke-7", "Misteri Server Terlarang", "Hati dalam Binary", "Cyberpunk Indonesia 2077"];
-            const categories = ["TECH-THRILLER", "ROMANCE", "SCIFI", "MYSTERY"];
-            const grid = document.getElementById('novel-grid');
+        async function loadMovies() {
+            if (isFetching) return;
+            isFetching = true;
+            const res = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&page=${page}&language=id-ID`);
+            const data = await res.json();
+            const grid = document.getElementById('movie-grid');
             
-            for(let i=0; i<12; i++) {
-                const t = titles[Math.floor(Math.random()*titles.length)];
-                const c = categories[Math.floor(Math.random()*categories.length)];
-                const n = {
-                    title: `${t} Vol. ${i+1}`,
-                    category: c,
-                    author: "Kimm Studio",
-                    desc: "Sebuah karya fiksi mendalam yang mengeksplorasi batas antara kenyataan dan fantasi digital.",
-                    content: "Konten ini adalah simulasi pembacaan novel premium... Bayangkan sebuah kisah hebat sedang mengalir di sini."
-                };
-                
+            data.results.forEach(m => {
                 const card = document.createElement('div');
-                card.onclick = () => openNovel(n);
-                card.className = "glass p-8 rounded-[40px] flex flex-col gap-6 hover:border-red-600 transition-all cursor-pointer group";
+                card.className = 'movie-card group cursor-pointer';
+                card.onclick = () => openMovie(m.id);
                 card.innerHTML = `
-                    <div class="h-48 w-full bg-gradient-to-br from-red-900/40 to-black rounded-[30px] flex items-center justify-center border border-white/5">
-                        <i class="fa fa-book-open text-5xl text-red-600/30 group-hover:scale-110 transition-transform"></i>
+                    <div class="aspect-[2/3] relative">
+                        <img src="https://image.tmdb.org/t/p/w500${m.poster_path}" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute top-4 left-4 glass px-3 py-1 rounded-full text-[10px] font-black">
+                            <i class="fa fa-star text-red-600 mr-1"></i> ${m.vote_average.toFixed(1)}
+                        </div>
                     </div>
-                    <div>
-                        <span class="text-red-600 font-black text-[10px] tracking-widest uppercase">${n.category}</span>
-                        <h3 class="text-2xl font-black italic uppercase my-2 tracking-tighter">${n.title}</h3>
-                        <p class="text-gray-500 text-sm line-clamp-2">Klik untuk membaca bab terbaru dari serial terpopuler minggu ini.</p>
+                    <div class="pt-4 px-2">
+                        <h4 class="text-[10px] font-black uppercase truncate text-gray-400 group-hover:text-red-600 transition-colors">${m.title}</h4>
+                        <p class="text-[8px] font-bold text-gray-600 uppercase tracking-widest mt-1">${m.release_date.split('-')[0]}</p>
                     </div>
                 `;
                 grid.appendChild(card);
-            }
-        }
-
-        // TAB SYSTEM
-        function switchTab(paneId, btn) {
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById(paneId).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.classList.remove('text-red-600');
-                b.classList.add('text-gray-500');
             });
-            btn.classList.replace('text-gray-500', 'text-red-600');
-            window.scrollTo({top:0, behavior:'smooth'});
+            page++;
+            isFetching = false;
         }
 
-        // MOVIE MODAL
         async function openMovie(id) {
-            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos,credits&language=id-ID`);
+            const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos,credits&language=id-ID`);
             const m = await res.json();
             const trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
             
-            document.getElementById('modalData').innerHTML = `
-                <div class="grid lg:grid-cols-2 gap-20 items-center animate__animated animate__fadeIn">
-                    <img src="${IMG_URL + m.poster_path}" class="rounded-[50px] shadow-2xl border border-white/5">
-                    <div>
-                        <div class="flex gap-4 mb-8">
-                            <span class="text-red-600 font-black italic text-4xl tracking-tighter"><i class="fa fa-star mr-2"></i>${m.vote_average.toFixed(1)}</span>
-                            <div class="h-10 w-[1px] bg-white/10"></div>
-                            <span class="text-gray-500 font-bold self-center">${m.release_date}</span>
+            document.getElementById('modalContent').innerHTML = `
+                <div class="relative min-h-screen">
+                    <div class="absolute inset-0 h-[70vh]">
+                        <img src="https://image.tmdb.org/t/p/original${m.backdrop_path}" class="w-full h-full object-cover opacity-40">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+                    </div>
+                    
+                    <div class="relative pt-64 px-8 md:px-24 pb-20 max-w-7xl mx-auto">
+                        <div class="grid lg:grid-cols-3 gap-16">
+                            <div class="lg:col-span-1">
+                                <img src="https://image.tmdb.org/t/p/w500${m.poster_path}" class="w-full rounded-[40px] shadow-[0_0_100px_rgba(255,0,0,0.2)] border border-white/10">
+                            </div>
+                            <div class="lg:col-span-2">
+                                <div class="flex gap-4 mb-6">
+                                    <span class="glass px-6 py-2 rounded-full text-xs font-black uppercase text-red-600 tracking-tighter">${m.runtime} MINS</span>
+                                    <span class="glass px-6 py-2 rounded-full text-xs font-black uppercase tracking-tighter">${m.genres[0].name}</span>
+                                </div>
+                                <h1 style="font-family: 'Outfit', sans-serif;" class="text-7xl md:text-9xl font-black italic uppercase leading-[0.85] tracking-tighter mb-10">${m.title}</h1>
+                                <p class="text-xl text-gray-400 leading-relaxed mb-12 font-light italic">"${m.tagline || 'A KimmMovie Masterpiece'}"</p>
+                                <p class="text-lg text-gray-300 leading-loose mb-16 opacity-80">${m.overview}</p>
+                                
+                                <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" 
+                                    class="bg-red-600 px-20 py-6 rounded-full font-black uppercase tracking-[0.2em] shadow-[0_0_50px_rgba(255,0,0,0.5)] hover:scale-110 transition-all">
+                                    Start Playback
+                                </button>
+                            </div>
                         </div>
-                        <h1 class="text-7xl font-black italic uppercase tracking-tighter leading-none mb-8 glow-text">${m.title}</h1>
-                        <p class="text-gray-400 text-xl leading-loose mb-12 opacity-80">${m.overview || "Tanpa deskripsi."}</p>
-                        <div class="flex gap-4 mb-12">
-                            ${m.genres.map(g => `<span class="glass px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest">${g.name}</span>`).join('')}
+
+                        ${trailer ? `
+                        <div class="mt-32">
+                            <h3 class="text-2xl font-black italic uppercase mb-10 tracking-widest"><i class="fa fa-play text-red-600 mr-4"></i> Preview Trailer</h3>
+                            <div class="relative w-full aspect-video rounded-[50px] overflow-hidden border border-white/10 glass">
+                                <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer.key}" frameborder="0" allowfullscreen></iframe>
+                            </div>
                         </div>
-                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-16 py-6 rounded-3xl font-black uppercase tracking-widest hover:bg-white hover:text-red-600 transition-all shadow-2xl active:scale-95">Start Streaming Now</button>
+                        ` : ''}
                     </div>
                 </div>
-                ${trailer ? `
-                    <div class="mt-32">
-                        <h2 class="text-3xl font-black italic uppercase mb-10 text-center">Behind The Scenes / Trailer</h2>
-                        <iframe class="w-full aspect-video rounded-[60px] border border-white/5 shadow-2xl" src="https://www.youtube.com/embed/${trailer.key}"></iframe>
-                    </div>
-                ` : ''}
             `;
             document.getElementById('movieModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -426,30 +469,108 @@
             document.body.style.overflow = 'auto';
         }
 
+        // NOVELS GENERATOR (Sangat Banyak)
+        function generateNovels() {
+            const grid = document.getElementById('novel-grid');
+            const themes = ["Shadow of Batam", "The Last Developer", "Quantum Hearts", "Binary Soul", "Code Red", "Silent Server"];
+            const colors = ["from-red-600", "from-blue-600", "from-purple-600", "from-orange-600"];
+            
+            for(let i=0; i<30; i++) { // Generate 30 awal, bisa ditambah terus
+                const theme = themes[i % themes.length];
+                const color = colors[i % colors.length];
+                const n = {
+                    title: `${theme} Part ${i + 1}`,
+                    author: "Kimm AI",
+                    content: "Di kegelapan ruang server Batam, Kim menemukan sebuah baris kode yang bernapas... Kisah ini berlanjut ke dimensi di mana logika tidak lagi berlaku."
+                };
+                
+                const card = document.createElement('div');
+                card.className = "glass p-10 rounded-[50px] group cursor-pointer border-white/5 hover:border-red-600 transition-all";
+                card.onclick = () => openNovel(n);
+                card.innerHTML = `
+                    <div class="w-20 h-2 bg-gradient-to-r ${color} to-transparent mb-6 rounded-full"></div>
+                    <h3 class="text-3xl font-black italic uppercase tracking-tighter mb-4 group-hover:text-red-600 transition-colors">${n.title}</h3>
+                    <p class="text-gray-500 text-sm line-clamp-3 mb-8">Eksplorasi mendalam tentang masa depan teknologi dan kemanusiaan.</p>
+                    <div class="flex items-center gap-4 text-[10px] font-black text-gray-400">
+                        <span><i class="fa fa-clock mr-2"></i> 12 MIN READ</span>
+                        <span><i class="fa fa-fire mr-2 text-red-600"></i> POPULAR</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
         function openNovel(n) {
             document.getElementById('readerContent').innerHTML = `
-                <h1 class="text-6xl font-black italic text-red-600 mb-8 uppercase tracking-tighter">${n.title}</h1>
-                <div class="mb-12 flex gap-4 text-xs font-bold uppercase tracking-widest text-gray-500">
-                    <span>Author: ${n.author}</span>
-                    <span>Category: ${n.category}</span>
-                </div>
-                <div class="space-y-8 animate__animated animate__fadeIn">
+                <h1 class="text-7xl font-black italic uppercase tracking-tighter mb-10">${n.title}</h1>
+                <p class="text-red-600 font-bold mb-16 tracking-[0.5em] text-xs">OFFICIAL RELEASE / ${n.author.toUpperCase()}</p>
+                <div class="space-y-10 text-2xl font-light leading-relaxed">
                     <p>${n.content}</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nec diam in ex sollicitudin rhoncus. Vivamus quis enim ut odio imperdiet feugiat.</p>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis...</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nec diam in ex sollicitudin rhoncus. Vivamus quis enim ut odio imperdiet feugiat. Curabitur elementum magna vitae tellus iaculis, a molestie sem interdum.</p>
+                    <p>Phasellus sed est et justo laoreet hot spot. Mauris id lorem convallis, tincidunt nisi eu, feugiat ipsum. Donec ac est at ante pellentesque varius.</p>
                 </div>
             `;
             document.getElementById('readerModal').classList.remove('hidden');
         }
 
         function closeReader() { document.getElementById('readerModal').classList.add('hidden'); }
+        function setReaderTheme(t) {
+            const modal = document.getElementById('readerModal');
+            modal.className = `fixed inset-0 z-[100000] overflow-y-auto p-8 md:p-24 transition-colors duration-500 novel-reader-${t}`;
+        }
 
-        // SCROLL OBSERVER
-        window.addEventListener('scroll', () => {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
-                if(document.getElementById('pane-movies').classList.contains('active')) loadMoreMovies();
+        // MUSIC LOGIC
+        const ambientSounds = {
+            rain: new Audio('https://www.soundjay.com/nature/rain-01.mp3'),
+            fire: new Audio('https://www.free-stock-music.com/music/fsm-team-64-fireplace.mp3'),
+            forest: new Audio('https://www.soundjay.com/nature/forest-1.mp3'),
+            lofi: new Audio('https://www.soundjay.com/misc/sounds/record-static-01.mp3')
+        };
+        Object.values(ambientSounds).forEach(s => { s.loop = true; s.volume = 0.5; });
+
+        function playAmbient(type) {
+            const s = ambientSounds[type];
+            const btn = document.getElementById('btn-' + type);
+            if (s.paused) {
+                s.play();
+                btn.style.borderColor = 'var(--accent)';
+                btn.classList.add('float');
+            } else {
+                s.pause();
+                btn.style.borderColor = 'rgba(255,255,255,0.08)';
+                btn.classList.remove('float');
             }
+        }
+
+        document.getElementById('volumeControl').addEventListener('input', e => {
+            Object.values(ambientSounds).forEach(s => s.volume = e.target.value);
         });
+
+        function generateMusicBars() {
+            const wave = document.getElementById('music-wave');
+            for(let i=0; i<40; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'w-1 bg-red-600 rounded-full';
+                bar.style.height = Math.random() * 100 + '%';
+                bar.style.animation = `bounce ${0.5 + Math.random()}s infinite alternate`;
+                wave.appendChild(bar);
+            }
+        }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-red-600', 'text-gray-500'));
+            btn.classList.replace('text-gray-500', 'text-red-600');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function liveSearch(query) {
+            if(query.length > 2) {
+                // Logic search TMDB bisa dimasukkan di sini
+                console.log("Searching for:", query);
+            }
+        }
     </script>
 </body>
 </html>
