@@ -15,6 +15,7 @@
             --bg: #030303; 
             --glass: rgba(255, 255, 255, 0.03); 
             --glow: 0 0 20px rgba(255, 0, 0, 0.4);
+            --x: 50%; --y: 50%; /* Init spotlight */
         }
 
         body { 
@@ -22,29 +23,41 @@
             color: #fff; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             overflow-x: hidden;
-            cursor: none; /* Kita pakai custom cursor */
+            cursor: none; 
+            scroll-behavior: smooth;
         }
 
-        /* --- CUSTOM CURSOR & SPOTLIGHT --- */
+        /* 1. SCANLINE EFFECT (NEW) */
+        body::before {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 999999; background-size: 100% 2px, 3px 100%; pointer-events: none; opacity: 0.3;
+        }
+
         #custom-cursor {
             width: 20px; height: 20px; background: var(--accent);
             border-radius: 50%; position: fixed; pointer-events: none;
             z-index: 99999; mix-blend-mode: difference; transition: transform 0.1s;
+            box-shadow: 0 0 15px var(--accent);
         }
-        #spotlight {
-            position: fixed; inset: 0; pointer-events: none; z-index: 99998;
-            background: radial-gradient(circle at var(--x) var(--y), transparent 0%, rgba(0,0,0,0.85) 25%);
+        
+        /* 2. CURSOR TRAIL (NEW) */
+        .cursor-trail {
+            width: 8px; height: 8px; background: var(--accent); position: fixed;
+            border-radius: 50%; pointer-events: none; z-index: 99998; opacity: 0.5; transition: 0.3s;
         }
 
-        /* --- SCROLLBAR --- */
+        #spotlight {
+            position: fixed; inset: 0; pointer-events: none; z-index: 99998;
+            background: radial-gradient(circle at var(--x) var(--y), transparent 0%, rgba(0,0,0,0.92) 35%);
+        }
+
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 50px; box-shadow: var(--glow); }
 
-        /* --- UTILS --- */
         .glass { background: var(--glass); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.05); }
         .hero-shadow { background: linear-gradient(0deg, var(--bg) 10%, transparent 100%), linear-gradient(90deg, rgba(0,0,0,0.95) 0%, transparent 70%); }
         
-        /* --- ANIMATIONS --- */
         @keyframes glitch {
             0% { transform: translate(0); }
             20% { transform: translate(-2px, 2px); }
@@ -64,26 +77,36 @@
             box-shadow: 0 25px 50px -12px rgba(255, 0, 0, 0.5);
         }
 
+        /* 3. SKELETON ANIMATION (NEW) */
+        .skeleton { background: linear-gradient(90deg, #121212 25%, #1a1a1a 50%, #121212 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
+        @keyframes loading { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
         .music-visualizer span { 
             display: inline-block; width: 4px; background: var(--accent); 
             animation: bounce 0.8s infinite alternate; box-shadow: var(--glow);
         }
         @keyframes bounce { from { height: 4px; } to { height: 30px; } }
 
-        /* --- NOVEL TEXTURE --- */
         .paper-texture {
             background-color: #0a0a0a;
             background-image: url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
         }
+
+        /* 4. SYSTEM ALERT (NEW) */
+        #sys-alert { position: fixed; top: 20px; right: 20px; z-index: 9999999; pointer-events: none; }
+        .alert-item { background: rgba(255, 0, 0, 0.8); color: white; padding: 10px 20px; border-radius: 5px; margin-bottom: 10px; font-weight: 800; font-size: 10px; text-transform: uppercase; animation: slideIn 0.3s forwards; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body class="pb-24">
 
+    <div id="sys-alert"></div>
     <div id="custom-cursor"></div>
     <div id="spotlight"></div>
     <canvas id="canvas-particles" class="fixed inset-0 pointer-events-none z-[1]"></canvas>
 
     <div id="login-screen" class="fixed inset-0 bg-black z-[99999] flex flex-col items-center justify-center transition-all duration-1000">
+        <div id="boot-loader" class="mb-8 font-mono text-[10px] text-red-600 text-left w-64 h-32 overflow-hidden opacity-50"></div>
         <div class="relative mb-12 group">
             <h1 class="text-[120px] font-black italic text-red-600 tracking-tighter opacity-10 absolute -top-12 -left-8 animate-pulse">KIM</h1>
             <h1 class="text-8xl font-black italic relative z-10 tracking-tighter animate-glitch cursor-default">Kimm<span class="text-red-600">Movie</span></h1>
@@ -100,19 +123,27 @@
     <div id="app" class="hidden opacity-0 transition-opacity duration-1000">
         <nav class="fixed top-0 w-full z-[1000] glass px-8 py-5 flex justify-between items-center">
             <div class="flex items-center gap-8">
-                <span class="text-4xl font-black italic text-red-600 animate-glitch cursor-pointer">K<span class="text-white">M</span></span>
+                <span onclick="location.reload()" class="text-4xl font-black italic text-red-600 animate-glitch cursor-pointer">K<span class="text-white">M</span></span>
                 <div class="hidden lg:flex gap-6 text-[10px] font-black uppercase tracking-[0.4em] text-gray-500">
                     <span class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span> Batam Node: Active</span>
                     <span id="user-display" class="text-white border-l border-white/10 pl-6">ID: Kim</span>
+                    <span id="sys-temp" class="text-red-600">42°C</span>
                 </div>
             </div>
-            <div class="relative w-1/3">
-                <i class="fa fa-search absolute left-5 top-4 text-gray-500 text-xs"></i>
+            <div class="relative w-1/3 group">
+                <i class="fa fa-search absolute left-5 top-4 text-gray-500 text-xs group-focus-within:text-red-600 transition"></i>
                 <input type="text" id="searchInput" oninput="liveSearch(this.value)" placeholder="Search Movie, Universe, or Cast..." class="w-full bg-white/5 border border-white/5 py-4 pl-14 pr-8 rounded-full text-xs outline-none focus:bg-white/10 focus:border-red-600/50 transition-all text-white">
+                <span class="absolute right-5 top-4 text-[8px] text-gray-600 font-bold border border-white/10 px-2 rounded">ALT+S</span>
             </div>
         </nav>
 
         <main class="pt-0">
+            <div class="fixed right-10 top-32 z-[50] hidden xl:block pointer-events-none opacity-20 font-mono text-[9px] text-red-600">
+                <p>LATENCY: 12ms</p>
+                <p>UPLOADING_LOGS: OK</p>
+                <p>KERNEL_V: 1.0.9_KIM</p>
+            </div>
+
             <section id="pane-movies" class="tab-panel active">
                 <div id="hero" class="relative h-screen w-full flex items-center px-[8%] overflow-hidden bg-cover bg-center transition-all duration-1000">
                     <div class="absolute inset-0 hero-shadow"></div>
@@ -131,6 +162,13 @@
                 </div>
 
                 <div class="p-8 md:p-16 space-y-24">
+                    <div class="flex gap-4 overflow-x-auto no-scrollbar">
+                        <button onclick="liveSearch('Action')" class="glass px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition">Action</button>
+                        <button onclick="liveSearch('Horror')" class="glass px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition">Horror</button>
+                        <button onclick="liveSearch('Anime')" class="glass px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition">Anime</button>
+                        <button onclick="liveSearch('Sci-Fi')" class="glass px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-600 transition">Sci-Fi</button>
+                    </div>
+
                     <div id="trending-container">
                         <div class="flex justify-between items-center mb-10">
                             <h2 class="text-3xl font-black italic uppercase tracking-tighter">Daily <span class="text-red-600 underline decoration-4">Vibes</span></h2>
@@ -245,6 +283,11 @@
     </div>
 
     <div id="readerModal" class="hidden fixed inset-0 paper-texture z-[100001] overflow-y-auto p-6 md:p-24">
+        <div class="fixed top-5 left-1/2 -translate-x-1/2 glass px-6 py-2 rounded-full z-[100003] flex gap-4">
+            <button onclick="changeFontSize(-2)" class="text-xs font-bold">-A</button>
+            <button onclick="changeFontSize(2)" class="text-xs font-bold">+A</button>
+            <button onclick="toggleTheme()" class="text-xs font-bold">THEME</button>
+        </div>
         <div class="max-w-3xl mx-auto">
             <button onclick="closeReader()" class="fixed top-10 right-10 bg-red-600 text-white w-14 h-14 rounded-full text-3xl shadow-2xl hover:scale-110 transition-all z-[100002]">&times;</button>
             <div id="readerContent" class="text-gray-300 text-2xl leading-[2] font-medium text-justify"></div>
@@ -252,6 +295,7 @@
     </div>
 
     <script>
+        // --- CONFIG & STATES ---
         const MOVIE_API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
         const NOVEL_API_URL = 'https://api.sheety.co/197265d85f1f62a99d8c1da249ca7819/untitledSpreadsheet/sheet1';
         const BASE_URL = 'https://api.themoviedb.org/3';
@@ -260,8 +304,39 @@
 
         let moviePage = 1;
         let searchTimeout;
+        let readerFontSize = 24;
 
-        // --- CUSTOM CURSOR LOGIC ---
+        // --- 9. BOOT LOADER ANIMATION (NEW) ---
+        const bootText = [
+            "> INITIALIZING KIMM_SYSTEM_V1...",
+            "> LOADING KERNEL...",
+            "> CONNECTING TO BATAM_NODE...",
+            "> BYPASSING FIREWALL... DONE",
+            "> DECRYPTING MEDIA ASSETS...",
+            "> WELCOME, ARCHITECT."
+        ];
+        let bootIdx = 0;
+        function runBoot() {
+            const container = document.getElementById('boot-loader');
+            if (bootIdx < bootText.length) {
+                container.innerHTML += `<p>${bootText[bootIdx]}</p>`;
+                bootIdx++;
+                setTimeout(runBoot, 150);
+            }
+        }
+        runBoot();
+
+        // --- 10. SYSTEM ALERTS (NEW) ---
+        function sysAlert(msg) {
+            const container = document.getElementById('sys-alert');
+            const el = document.createElement('div');
+            el.className = 'alert-item';
+            el.innerText = msg;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 3000);
+        }
+
+        // --- CUSTOM CURSOR & SPOTLIGHT ---
         const cursor = document.getElementById('custom-cursor');
         const spotlight = document.getElementById('spotlight');
         document.addEventListener('mousemove', (e) => {
@@ -269,6 +344,22 @@
             cursor.style.top = e.clientY + 'px';
             spotlight.style.setProperty('--x', e.clientX + 'px');
             spotlight.style.setProperty('--y', e.clientY + 'px');
+            
+            // 11. CURSOR TRAIL LOGIC (NEW)
+            const trail = document.createElement('div');
+            trail.className = 'cursor-trail';
+            trail.style.left = e.clientX + 'px';
+            trail.style.top = e.clientY + 'px';
+            document.body.appendChild(trail);
+            setTimeout(() => { trail.style.opacity = '0'; trail.style.transform = 'scale(0)'; }, 50);
+            setTimeout(() => trail.remove(), 500);
+        });
+
+        // --- 12. KEYBOARD SHORTCUTS (NEW) ---
+        window.addEventListener('keydown', (e) => {
+            if (e.altKey && e.key === 's') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+            if (e.key === 'Escape') { closeModal(); closeReader(); }
+            if (e.key === 'm') { sysAlert("SYSTEM MUTED"); Object.values(sounds).forEach(s => s.pause()); }
         });
 
         // --- PARTICLE SYSTEM ---
@@ -313,6 +404,7 @@
             if (sound.paused) {
                 sound.play();
                 btn.classList.add('bg-red-600', 'text-white', 'shadow-[0_0_20px_rgba(255,0,0,0.5)]');
+                sysAlert(`AMBIENT: ${type.toUpperCase()} ON`);
             } else {
                 sound.pause();
                 btn.classList.remove('bg-red-600', 'text-white', 'shadow-[0_0_20px_rgba(255,0,0,0.5)]');
@@ -322,6 +414,7 @@
         // --- CORE FUNCTIONS ---
         function handleLogin() {
             const name = document.getElementById('userNameInput').value || 'Kim';
+            sysAlert(`WELCOME ARCHITECT ${name.toUpperCase()}`);
             document.getElementById('user-display').innerText = `ID: ${name}`;
             document.getElementById('profile-name-display').innerText = name;
             document.getElementById('login-screen').style.transform = 'translateY(-100%)';
@@ -335,6 +428,12 @@
         async function initApp() {
             updateTime();
             setInterval(updateTime, 1000);
+            // 13. DYNAMIC TEMPERATURE (NEW)
+            setInterval(() => { 
+                const temp = 38 + Math.floor(Math.random() * 10);
+                document.getElementById('sys-temp').innerText = `${temp}°C`;
+            }, 5000);
+
             try {
                 const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${MOVIE_API_KEY}`);
                 const data = await res.json();
@@ -357,6 +456,7 @@
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-red-600', 'text-gray-500'));
             btn.classList.replace('text-gray-500', 'text-red-600');
             window.scrollTo({top:0, behavior:'smooth'});
+            sysAlert(`SWITCHED TO ${paneId.replace('pane-', '').toUpperCase()}`);
         }
 
         async function liveSearch(query) {
@@ -367,6 +467,8 @@
                 document.getElementById('trending-container').style.display = "block";
                 return; 
             }
+            // 14. SEARCH FEEDBACK (NEW)
+            sysAlert(`SEARCHING: ${query}`);
             searchTimeout = setTimeout(async () => {
                 const res = await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}`);
                 const data = await res.json();
@@ -380,8 +482,10 @@
             return `
                 <div onclick="openMovie(${m.id})" class="card-3d cursor-pointer group">
                     <div class="relative rounded-3xl overflow-hidden bg-white/5 border border-white/5 aspect-[2/3]">
-                        <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+                            <span class="text-[8px] font-bold text-red-600">PREVIEW SYSTEM</span>
+                        </div>
                     </div>
                     <h3 class="text-[10px] font-black mt-4 truncate uppercase tracking-[0.2em] text-gray-500 group-hover:text-red-600 transition">${m.title}</h3>
                 </div>
@@ -413,10 +517,14 @@
         }
 
         async function openMovie(id) {
+            sysAlert("INITIALIZING STREAM...");
             const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos,credits&language=id-ID`);
             let m = await res.json();
             const trailer = m.videos.results.find(v => v.type === 'Trailer') || m.videos.results[0];
             
+            // 15. DYNAMIC CAST LIST (NEW)
+            const cast = m.credits.cast.slice(0, 5).map(c => c.name).join(', ');
+
             document.getElementById('modalData').innerHTML = `
                 <div class="flex flex-col lg:flex-row gap-20 text-left items-start">
                     <img src="${POSTER_URL + m.poster_path}" class="w-full lg:w-1/3 rounded-[60px] shadow-[0_0_100px_rgba(255,0,0,0.2)]">
@@ -426,15 +534,19 @@
                             <span>📅 ${m.release_date.split('-')[0]}</span>
                             <span>⏱️ ${m.runtime} MIN</span>
                         </div>
-                        <h1 class="text-6xl md:text-[100px] font-black italic uppercase leading-none mb-10 tracking-tighter">${m.title}</h1>
+                        <h1 class="text-6xl md:text-[100px] font-black italic uppercase leading-none mb-4 tracking-tighter">${m.title}</h1>
+                        <p class="text-red-600 text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Starring: ${cast}</p>
                         <p class="text-xl text-gray-400 leading-[1.8] mb-12 font-medium">${m.overview || 'The description for this masterpiece is encrypted.'}</p>
-                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-16 py-6 rounded-full font-black uppercase tracking-[0.3em] text-xs hover:scale-110 transition-all shadow-[0_0_40px_rgba(255,0,0,0.4)]">Initialize Stream</button>
+                        <div class="flex gap-4">
+                            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-16 py-6 rounded-full font-black uppercase tracking-[0.3em] text-xs hover:scale-110 transition-all shadow-[0_0_40px_rgba(255,0,0,0.4)]">Initialize Stream</button>
+                            <button onclick="sysAlert('WATCHLIST UPDATED')" class="glass px-10 py-6 rounded-full font-black uppercase tracking-[0.3em] text-[10px] hover:bg-white hover:text-black transition">Add to Vault</button>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-32">
                     <h2 class="text-3xl font-black italic mb-10 uppercase tracking-tighter">Official <span class="text-red-600">Archive</span></h2>
-                    <div class="relative w-full aspect-video rounded-[60px] overflow-hidden border border-white/10 shadow-2xl">
-                        ${trailer ? `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${trailer.key}?autoplay=0" frameborder="0" allowfullscreen></iframe>` : ''}
+                    <div class="relative w-full aspect-video rounded-[60px] overflow-hidden border border-white/10 shadow-2xl bg-black">
+                        ${trailer ? `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${trailer.key}?autoplay=0" frameborder="0" allowfullscreen></iframe>` : '<div class="flex items-center justify-center h-full font-black text-gray-800">NO ARCHIVE AVAILABLE</div>'}
                     </div>
                 </div>
             `;
@@ -478,13 +590,28 @@
         }
 
         function openNovel(novel) {
+            sysAlert(`DECRYPTING NOVEL: ${novel.title.toUpperCase()}`);
             document.getElementById('readerContent').innerHTML = `
                 <h1 class="text-7xl font-black italic text-red-600 mb-6 uppercase tracking-tighter">${novel.title}</h1>
                 <div class="h-1 w-20 bg-red-600 mb-10"></div>
-                <div>${novel.content ? novel.content.replace(/\n/g, '<br><br>') : 'Content is being decrypted...'}</div>
+                <div id="text-container" style="font-size: ${readerFontSize}px">${novel.content ? novel.content.replace(/\n/g, '<br><br>') : 'Content is being decrypted...'}</div>
             `;
             document.getElementById('readerModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+        }
+
+        // --- 16. READING TOOLS LOGIC (NEW) ---
+        function changeFontSize(val) {
+            readerFontSize += val;
+            const container = document.getElementById('text-container');
+            if(container) container.style.fontSize = readerFontSize + 'px';
+            sysAlert(`FONT SIZE: ${readerFontSize}PX`);
+        }
+        function toggleTheme() {
+            const modal = document.getElementById('readerModal');
+            modal.style.backgroundColor = modal.style.backgroundColor === 'rgb(244, 234, 213)' ? '#0a0a0a' : '#f4ead5';
+            modal.style.color = modal.style.backgroundColor === 'rgb(244, 234, 213)' ? '#1a1a1a' : '#fff';
+            sysAlert("THEME TOGGLED");
         }
 
         function closeReader() {
