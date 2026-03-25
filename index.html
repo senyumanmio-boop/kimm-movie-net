@@ -92,54 +92,26 @@
                 <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left"></div>
             </section>
 
-          <section id="pane-music" class="tab-panel p-4 md:p-8 max-w-4xl mx-auto text-center mt-20">
+            <section id="pane-music" class="tab-panel p-4 md:p-8 max-w-4xl mx-auto text-center mt-20">
                 <div class="bg-red-600/10 border border-red-600/20 p-6 md:p-12 rounded-[40px] md:rounded-[50px] relative overflow-hidden">
                     <div class="music-visualizer mb-8 flex items-end justify-center gap-1 h-16">
                         <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
                     </div>
-                
-<div style="background: #1e1e1e; border-radius: 20px; padding: 20px; margin: 20px auto; max-width: 400px; text-align: center; border: 1px solid #333;">
-    <h3 style="color: #ff4757; margin-bottom: 15px;">🌿 Kimm-Relax</h3>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        
-        <button onclick="playAmbient('rain')" id="btn-rain" style="background: #333; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">🌧️ Hujan</button>
-        
-        <button onclick="playAmbient('wind')" id="btn-wind" style="background: #333; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">💨 Angin</button>
-        
-        <button onclick="playAmbient('fire')" id="btn-fire" style="background: #333; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">🔥 Api</button>
-        
-        <button onclick="playAmbient('water')" id="btn-water" style="background: #333; color: white; border: none; padding: 10px; border-radius: 10px; cursor: pointer;">🌊 Air</button>
-        
-    </div>
+                    
+                    <div style="background: #1e1e1e; border-radius: 20px; padding: 25px; margin: 0 auto; max-width: 400px; text-align: center; border: 1px solid #333; position: relative; z-index: 10;">
+                        <h3 style="color: #ff4757; margin-bottom: 15px; font-weight: 800; font-style: italic; letter-spacing: 1px;">🌿 KIMM-RELAX AMBIENT</h3>
+                        <p style="color: #888; font-size: 12px; margin-bottom: 20px; font-weight: 600;">Mix suara alam untuk fokus maksimal</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <button onclick="playAmbient('rain')" id="btn-rain" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s;">🌧️ Hujan</button>
+                            <button onclick="playAmbient('wind')" id="btn-wind" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s;">💨 Angin</button>
+                            <button onclick="playAmbient('fire')" id="btn-fire" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s;">🔥 Api</button>
+                            <button onclick="playAmbient('water')" id="btn-water" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s;">🌊 Air</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-<script>
-    // Database Suara (Pakai link yang super stabil)
-    const sounds = {
-        rain: new Audio('https://www.soundjay.com/nature/rain-01.mp3'),
-        wind: new Audio('https://www.soundjay.com/nature/wind-01.mp3'),
-        fire: new Audio('https://www.free-stock-music.com/music/fsm-team-64-fireplace.mp3'), // Contoh api
-        water: new Audio('https://www.soundjay.com/nature/river-1.mp3')
-    };
-
-    // Setting agar suara mengulang terus (loop)
-    Object.values(sounds).forEach(s => {
-        s.loop = true;
-        s.crossOrigin = "anonymous";
-    });
-
-    function playAmbient(type) {
-        const sound = sounds[type];
-        const btn = document.getElementById('btn-' + type);
-
-        if (sound.paused) {
-            sound.play();
-            btn.style.background = "#ff4757"; // Berubah warna saat nyala
-        } else {
-            sound.pause();
-            btn.style.background = "#333"; // Kembali gelap saat mati
-        }
-    }
-</script>
             <section id="pane-profile" class="tab-panel p-8 max-w-4xl mx-auto mt-20">
                 <div class="glass p-10 rounded-[40px] border border-white/5 relative overflow-hidden">
                     <div class="absolute top-0 right-0 p-8 opacity-10">
@@ -209,7 +181,33 @@
         let moviePage = 1;
         let isPlaying = false;
         let searchTimeout;
-        const lofiAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+
+        // AMBIENT SOUND LOGIC
+        const sounds = {
+            rain: new Audio('https://www.soundjay.com/nature/rain-01.mp3'),
+            wind: new Audio('https://www.soundjay.com/nature/wind-01.mp3'),
+            fire: new Audio('https://www.free-stock-music.com/music/fsm-team-64-fireplace.mp3'),
+            water: new Audio('https://www.soundjay.com/nature/river-1.mp3')
+        };
+
+        Object.values(sounds).forEach(s => {
+            s.loop = true;
+            s.crossOrigin = "anonymous";
+        });
+
+        function playAmbient(type) {
+            const sound = sounds[type];
+            const btn = document.getElementById('btn-' + type);
+            if (sound.paused) {
+                sound.play();
+                btn.style.background = "#ff4757";
+                btn.style.boxShadow = "0 0 15px rgba(255, 71, 87, 0.4)";
+            } else {
+                sound.pause();
+                btn.style.background = "#333";
+                btn.style.boxShadow = "none";
+            }
+        }
 
         function handleLogin() {
             const name = document.getElementById('userNameInput').value || 'Kim';
@@ -266,16 +264,13 @@
                 try {
                     const res = await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}&language=id-ID`);
                     const data = await res.json();
-                    
                     trendingContainer.style.display = "none";
                     gridTitle.innerHTML = `<i class="fa fa-search text-red-600"></i> Hasil Pencarian: <span class="text-red-600">${query}</span>`;
                     grid.innerHTML = "";
-                    
                     if (data.results.length === 0) {
                         grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-20 font-bold italic uppercase tracking-widest">Film tidak ditemukan!</p>`;
                         return;
                     }
-
                     data.results.forEach(m => {
                         if(!m.poster_path) return;
                         const card = document.createElement('div');
@@ -365,20 +360,15 @@
         }
 
         async function openMovie(id) {
-            // Fetch dengan bahasa Indonesia
             const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos,credits&language=id-ID`);
             let m = await res.json();
-            
-            // Fallback: Jika sinopsis Indonesia kosong, ambil yang bahasa Inggris
             if (!m.overview || m.overview === "") {
                 const resEn = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&language=en-US`);
                 const dataEn = await resEn.json();
                 m.overview = dataEn.overview;
             }
-
             const trailer = m.videos.results.find(v => v.type === 'Trailer' && v.site === 'YouTube') || m.videos.results[0];
             const cast = m.credits.cast.slice(0, 10); 
-            
             document.getElementById('modalData').innerHTML = `
                 <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
                     <div class="w-full lg:w-1/3">
@@ -396,7 +386,6 @@
                         <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
                         <h3 class="text-red-600 font-black uppercase text-sm mb-4 italic tracking-widest">Sinopsis Lengkap:</h3>
                         <p class="text-gray-300 text-lg mb-8 opacity-80 leading-loose">${m.overview || 'Maaf, deskripsi untuk film ini belum tersedia.'}</p>
-                        
                         <div class="mb-10">
                             <h3 class="text-red-600 font-black uppercase text-sm mb-6 italic tracking-widest">Pemeran Utama:</h3>
                             <div class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
@@ -411,26 +400,18 @@
                                 `).join('')}
                             </div>
                         </div>
-
                         <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition-all">Mulai Nonton</button>
                     </div>
                 </div>
-                
                 <div class="mb-20">
-                    <div class="flex items-center justify-between mb-8">
-                        <h2 class="text-2xl font-black italic uppercase flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Official Trailer</h2>
-                    </div>
+                    <h2 class="text-2xl font-black italic uppercase flex items-center gap-3 mb-8"><i class="fa fa-play text-red-600"></i> Official Trailer</h2>
                     <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl bg-white/5">
-                        ${trailer ? 
-                            `<iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer.key}?autoplay=0&rel=0" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>` 
-                            : `<div class="flex items-center justify-center h-full text-gray-500 font-bold italic uppercase">Trailer tidak tersedia</div>`
-                        }
+                        ${trailer ? `<iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer.key}?autoplay=0&rel=0" frameborder="0" allowfullscreen></iframe>` : `<div class="flex items-center justify-center h-full text-gray-500 font-bold italic uppercase">Trailer tidak tersedia</div>`}
                     </div>
                 </div>
             `;
             document.getElementById('movieModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-            // Scroll ke atas otomatis saat buka modal
             document.getElementById('movieModal').scrollTop = 0;
         }
 
@@ -446,12 +427,6 @@
             document.getElementById('hero-desc').innerText = m.overview;
             document.getElementById('play-btn').onclick = () => openMovie(m.id);
             document.getElementById('trailer-btn').onclick = () => openMovie(m.id);
-        }
-
-        function toggleMusic(btn) {
-            const icon = btn.querySelector('i');
-            if (!isPlaying) { lofiAudio.play(); icon.classList.replace('fa-play', 'fa-pause'); isPlaying = true; }
-            else { lofiAudio.pause(); icon.classList.replace('fa-pause', 'fa-play'); isPlaying = false; }
         }
 
         window.onscroll = () => {
