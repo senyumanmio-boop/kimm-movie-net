@@ -114,20 +114,21 @@ body {
 
 <!-- Novels Panel -->
 <section id="pane-novels" class="tab-panel p-8 max-w-6xl mx-auto mt-10 hidden">
-  <!-- Judul dan Search Novel -->
   <div class="flex justify-between items-end mb-12">
     <div>
       <h1 class="text-6xl font-black italic tracking-tighter">Kimm<span class="text-red-600">Lib</span></h1>
       <p class="text-gray-500 font-bold uppercase text-xs tracking-widest mt-2">Daftar Bacaan Eksklusif dari Sheety</p>
     </div>
   </div>
+  <!-- Cari Novel -->
   <div class="mb-4">
     <input type="text" id="search-novel" placeholder="Cari Novel..." class="w-full p-3 rounded-xl border border-gray-600 bg-white/10 text-white focus:border-red-600 focus:outline-none transition" />
   </div>
+  <!-- Grid Novel -->
   <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left"></div>
 </section>
 
-<!-- Lofi & Music -->
+<!-- Lofi & Musik -->
 <section id="pane-music" class="tab-panel p-8 max-w-4xl mx-auto text-center hidden">
   <div class="bg-red-600/10 border border-red-600/20 p-12 rounded-[50px] relative overflow-hidden">
     <div class="music-visualizer mb-8 flex items-end justify-center gap-1 h-16">
@@ -177,65 +178,65 @@ body {
   </div>
 </div>
 
-<!-- Script -->
+<!-- Script utama -->
 <script>
-const MOVIE_API_KEY = '1306003844bd5fa3d43d44726d5a9cb0';
-const BASE_URL = 'https://api.themoviedb.org/3';
-const IMG_URL = 'https://image.tmdb.org/t/p/original';
-const POSTER_URL = 'https://image.tmdb.org/t/p/w500';
+const MOVIE_API_KEY='1306003844bd5fa3d43d44726d5a9cb0';
+const BASE_URL='https://api.themoviedb.org/3';
+const IMG_URL='https://image.tmdb.org/t/p/original';
+const POSTER_URL='https://image.tmdb.org/t/p/w500';
 
-let moviePage = 1;
-let isPlaying = false;
-const lofiPlaylist = [
+let moviePage=1;
+const lofiPlaylist=[
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
   'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
 ];
-let currentTrackIndex = 0;
-const lofiAudio = new Audio(lofiPlaylist[currentTrackIndex]);
+let currentTrackIndex=0;
+const lofiAudio= new Audio(lofiPlaylist[currentTrackIndex]);
+let isPlaying=false;
 
 // Login
 function handleLogin() {
-  const name = document.getElementById('userNameInput').value || 'Kim';
-  document.getElementById('user-display').innerText = `User: ${name}`;
-  document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
-  setTimeout(() => {
+  const name= document.getElementById('userNameInput').value || 'Kim';
+  document.getElementById('user-display').innerText= 'User: '+name;
+  document.getElementById('login-screen').classList.add('opacity-0','pointer-events-none');
+  setTimeout(()=> {
     document.getElementById('login-screen').remove();
     document.getElementById('app').classList.remove('hidden');
-    setTimeout(() => {
-      document.getElementById('app').style.opacity = '1';
+    setTimeout(()=> {
+      document.getElementById('app').style.opacity='1';
       init();
     }, 100);
   }, 800);
 }
 
-// Init app
+// Init semua fitur
 async function init() {
   try {
-    const res = await fetch(`${BASE_URL}/trending/movie/day?api_key=${MOVIE_API_KEY}`);
-    const data = await res.json();
+    const res= await fetch(`${BASE_URL}/trending/movie/day?api_key=${MOVIE_API_KEY}`);
+    const data= await res.json();
     setHero(data.results[0]);
     renderTrending(data.results);
     loadMoreMovies();
-  } catch(e) { console.error(e); }
+  } catch(e){ console.error(e); }
   fetchNovels();
   toggleMainMusic();
 }
 
 // Switch tab
 function switchTab(paneId, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById(paneId).classList.add('active');
-  document.querySelectorAll('.flex.justify-center button').forEach(b => b.classList.remove('bg-red-600', 'bg-gray-600'));
+  document.querySelectorAll('.flex.justify-center button').forEach(b=>b.classList.remove('bg-red-600'));
   btn.classList.add('bg-red-600');
   if(paneId==='pane-novels') fetchNovels();
 }
 
-// ================== NOVEL SYSTEM =====================
+// ================= SYSTEM Novel =================
 const NOVEL_API_URL='https://api.sheety.co/40744eda28ba4514b7bcf2e4f9d38dd3/untitledSpreadsheet/sheet1';
 
 async function fetchNovels() {
-  const grid = document.getElementById('novel-grid');
+  const grid= document.getElementById('novel-grid');
   grid.innerHTML='Loading...';
   try {
     const res= await fetch(NOVEL_API_URL);
@@ -278,9 +279,7 @@ function closeReader() {
   document.body.style.overflow='auto';
 }
 
-// ================== MOVIE SYSTEM =====================
-let moviePage=1;
-
+// ================= SYSTEM Film =================
 async function loadMoreMovies() {
   const res= await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
   const data= await res.json();
@@ -291,168 +290,6 @@ async function loadMoreMovies() {
     card.className='card-hover cursor-pointer group';
     card.onclick= ()=> openMovie(m.id);
     card.innerHTML=`
-      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
-        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
-      </div>
-      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
-    `;
-    grid.appendChild(card);
-  });
-  moviePage++;
-}
-
-async function openMovie(id) {
-  const res= await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=id-ID`);
-  const m= await res.json();
-  const trailer= m.videos.results.find(v=>v.type==='Trailer')|| m.videos.results[0];
-  document.getElementById('modalData').innerHTML=`
-    <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
-      <div class="w-full lg:w-1/3"><img src="${POSTER_URL+m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10" /></div>
-      <div class="w-full lg:w-2/3">
-        <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
-        <p class="text-gray-300 text-lg mb-12 opacity-80 leading-relaxed">${m.overview||'Tidak ada deskripsi.'}</p>
-        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition">Mulai Nonton</button>
-      </div>
-    </div>
-    <div class="mb-20">
-      <h2 class="text-2xl font-black italic uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Trailer Resmi</h2>
-      <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
-        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key||''}" frameborder="0" allowfullscreen></iframe>
-      </div>
-    </div>
-  `;
-  document.getElementById('movieModal').classList.remove('hidden');
-  document.body.style.overflow='hidden';
-}
-
-function closeModal() {
-  document.getElementById('movieModal').classList.add('hidden');
-  document.body.style.overflow='auto';
-}
-
-function setHero(m) {
-  if(!m) return;
-  document.getElementById('hero').style.backgroundImage= `url(${IMG_URL+m.backdrop_path})`;
-  document.getElementById('hero-title').innerText= m.title;
-  document.getElementById('hero-desc').innerText= m.overview;
-  document.getElementById('play-btn').onclick= ()=> openMovie(m.id);
-  document.getElementById('trailer-btn').onclick= ()=> openMovie(m.id);
-}
-
-// ================== Search Film =====================
-document.getElementById('searchInput').addEventListener('input', async (e) => {
-  const query= e.target.value.trim();
-  if(!query) {
-    switchTab('pane-movies', document.querySelector('button[onclick="switchTab(\'pane-movies\', this)"]'));
-    return;
-  }
-  const res= await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}&language=id-ID`);
-  const data= await res.json();
-  const grid= document.getElementById('movie-grid');
-  grid.innerHTML= data.results.length ? '' : '<p class="col-span-full text-center text-gray-500">Tidak ditemukan film.</p>';
-  data.results.forEach(m => {
-    if(!m.poster_path) return;
-    const card=document.createElement('div');
-    card.className='card-hover cursor-pointer group';
-    card.onclick= ()=> openMovie(m.id);
-    card.innerHTML=`
-      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
-        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
-      </div>
-      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
-    `;
-    grid.appendChild(card);
-  });
-});
-
-// ================== Novel Search =====================
-document.getElementById('search-novel').addEventListener('input', ()=> {
-  const query= document.getElementById('search-novel').value.toLowerCase();
-  document.querySelectorAll('#novel-grid > div').forEach(n => {
-    const title= n.querySelector('h3').innerText.toLowerCase();
-    n.style.display= title.includes(query) ? '' : 'none';
-  });
-});
-
-// ================== Infinite Scroll =====================
-window.onscroll= ()=> {
-  if((window.innerHeight+ window.scrollY) >= document.body.offsetHeight - 500) {
-    loadMoreMovies();
-  }
-}
-
-// ================== Musik Latar =====================
-const backgroundMusic= document.getElementById('background-music');
-let isPlaying= false;
-
-function toggleMainMusic() {
-  if(backgroundMusic.paused) backgroundMusic.play();
-  else backgroundMusic.pause();
-}
-
-function toggleMusic(btn) {
-  const icon= btn.querySelector('i');
-  if(!isPlaying) {
-    lofiAudio.play();
-    icon.classList.replace('fa-play', 'fa-pause');
-    isPlaying= true;
-  } else {
-    lofiAudio.pause();
-    icon.classList.replace('fa-pause', 'fa-play');
-    isPlaying= false;
-  }
-}
-
-function nextTrack() {
-  currentTrackIndex= (currentTrackIndex+1) % lofiPlaylist.length;
-  lofiAudio.src= lofiPlaylist[currentTrackIndex];
-  lofiAudio.play();
-}
-
-function prevTrack() {
-  currentTrackIndex= (currentTrackIndex-1+ lofiPlaylist.length) % lofiPlaylist.length;
-  lofiAudio.src= lofiPlaylist[currentTrackIndex];
-  lofiAudio.play();
-}
-
-// ================== Fungsi Utama =====================
-function handleLogin() {
-  const name= document.getElementById('userNameInput').value || 'Kim';
-  document.getElementById('user-display').innerText= `User: ${name}`;
-  document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
-  setTimeout(()=> {
-    document.getElementById('login-screen').remove();
-    document.getElementById('app').classList.remove('hidden');
-    setTimeout(()=> {
-      document.getElementById('app').style.opacity= '1';
-      init();
-    }, 100);
-  }, 800);
-}
-
-async function init() {
-  try {
-    const res= await fetch(`${BASE_URL}/trending/movie/day?api_key=${MOVIE_API_KEY}`);
-    const data= await res.json();
-    setHero(data.results[0]);
-    renderTrending(data.results);
-    loadMoreMovies();
-  } catch(e) { console.error(e); }
-  fetchNovels();
-  toggleMainMusic();
-}
-
-// ================== Load More Movies =====================
-async function loadMoreMovies() {
-  const res= await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
-  const data= await res.json();
-  const grid= document.getElementById('movie-grid');
-  data.results.forEach(m => {
-    if(!m.poster_path) return;
-    const card= document.createElement('div');
-    card.className= 'card-hover cursor-pointer group';
-    card.onclick= ()=> openMovie(m.id);
-    card.innerHTML= `
       <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
         <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
       </div>
@@ -484,12 +321,12 @@ async function openMovie(id) {
     </div>
   `;
   document.getElementById('movieModal').classList.remove('hidden');
-  document.body.style.overflow= 'hidden';
+  document.body.style.overflow='hidden';
 }
 
 function closeModal() {
   document.getElementById('movieModal').classList.add('hidden');
-  document.body.style.overflow= 'auto';
+  document.body.style.overflow='auto';
 }
 
 function setHero(m) {
@@ -497,11 +334,9 @@ function setHero(m) {
   document.getElementById('hero').style.backgroundImage= `url(${IMG_URL+m.backdrop_path})`;
   document.getElementById('hero-title').innerText= m.title;
   document.getElementById('hero-desc').innerText= m.overview;
-  document.getElementById('play-btn').onclick= ()=> openMovie(m.id);
-  document.getElementById('trailer-btn').onclick= ()=> openMovie(m.id);
 }
 
-// ================== Search Film =====================
+// ======================= Fungsi Search =========================
 document.getElementById('searchInput').addEventListener('input', async (e) => {
   const query= e.target.value.trim();
   if(!query) {
@@ -514,7 +349,7 @@ document.getElementById('searchInput').addEventListener('input', async (e) => {
   grid.innerHTML= data.results.length ? '' : '<p class="col-span-full text-center text-gray-500">Tidak ditemukan film.</p>';
   data.results.forEach(m => {
     if(!m.poster_path) return;
-    const card= document.createElement('div');
+    const card=document.createElement('div');
     card.className='card-hover cursor-pointer group';
     card.onclick= ()=> openMovie(m.id);
     card.innerHTML=`
@@ -527,31 +362,20 @@ document.getElementById('searchInput').addEventListener('input', async (e) => {
   });
 });
 
-// ================== Novel Search =====================
-document.getElementById('search-novel').addEventListener('input', ()=> {
-  const query= document.getElementById('search-novel').value.toLowerCase();
-  document.querySelectorAll('#novel-grid > div').forEach(n => {
-    const title= n.querySelector('h3').innerText.toLowerCase();
-    n.style.display= title.includes(query) ? '' : 'none';
-  });
-});
-
-// ================== Infinite Scroll =====================
+// ======================= Fungsi scroll load =========================
 window.onscroll= ()=> {
   if((window.innerHeight+ window.scrollY) >= document.body.offsetHeight - 500) {
     loadMoreMovies();
   }
 }
 
-// ================== Musik =====================
+// ======================= Musik =========================
 const backgroundMusic= document.getElementById('background-music');
 let isPlaying= false;
-
 function toggleMainMusic() {
   if(backgroundMusic.paused) backgroundMusic.play();
   else backgroundMusic.pause();
 }
-
 function toggleMusic(btn) {
   const icon= btn.querySelector('i');
   if(!isPlaying) {
@@ -564,20 +388,18 @@ function toggleMusic(btn) {
     isPlaying= false;
   }
 }
-
 function nextTrack() {
   currentTrackIndex= (currentTrackIndex+1) % lofiPlaylist.length;
   lofiAudio.src= lofiPlaylist[currentTrackIndex];
   lofiAudio.play();
 }
-
 function prevTrack() {
-  currentTrackIndex= (currentTrackIndex-1+ lofiPlaylist.length)% lofiPlaylist.length;
+  currentTrackIndex= (currentTrackIndex-1+ lofiPlaylist.length) % lofiPlaylist.length;
   lofiAudio.src= lofiPlaylist[currentTrackIndex];
   lofiAudio.play();
 }
 
-// ================== Profil =====================
+// ======================= Profile =========================
 function showProfile() {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('pane-profile').classList.add('active');
@@ -585,42 +407,53 @@ function showProfile() {
   document.querySelectorAll('.flex.justify-center button')[3].classList.add('bg-red-600');
 }
 
-// ================== Init =====================
-function handleLogin() {
-  const name= document.getElementById('userNameInput').value || 'Kim';
-  document.getElementById('user-display').innerText= `User: ${name}`;
-  document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
-  setTimeout(()=> {
-    document.getElementById('login-screen').remove();
-    document.getElementById('app').classList.remove('hidden');
-    setTimeout(()=> {
-      document.getElementById('app').style.opacity= '1';
-      init();
-    }, 100);
-  }, 800);
+// ======================= Modal =========================
+function openMovie(id) {
+  fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=id-ID`)
+    .then(res => res.json())
+    .then(m => {
+      const trailer= m.videos.results.find(v=>v.type==='Trailer') || m.videos.results[0];
+      document.getElementById('modalData').innerHTML= `
+        <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
+          <div class="w-full lg:w-1/3"><img src="${POSTER_URL+m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10" /></div>
+          <div class="w-full lg:w-2/3">
+            <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
+            <p class="text-gray-300 text-lg mb-12 opacity-80 leading-relaxed">${m.overview || 'Tidak ada deskripsi.'}</p>
+            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition">Mulai Nonton</button>
+          </div>
+        </div>
+        <div class="mb-20">
+          <h2 class="text-2xl font-black uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Trailer Resmi</h2>
+          <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
+            <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key || ''}" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>`;
+      document.getElementById('movieModal').classList.remove('hidden');
+      document.body.style.overflow='hidden';
+    });
+}
+function closeModal() {
+  document.getElementById('movieModal').classList.add('hidden');
+  document.body.style.overflow='auto';
 }
 
-async function init() {
-  try {
-    const res= await fetch(`${BASE_URL}/trending/movie/day?api_key=${MOVIE_API_KEY}`);
-    const data= await res.json();
-    setHero(data.results[0]);
-    renderTrending(data.results);
-    loadMoreMovies();
-  } catch(e) { console.error(e); }
-  fetchNovels();
-  toggleMainMusic();
+// ======================= Hero =========================
+function setHero(m) {
+  if(!m || !m.backdrop_path) return;
+  document.getElementById('hero').style.backgroundImage= `url(${IMG_URL+m.backdrop_path})`;
+  document.getElementById('hero-title').innerText= m.title;
+  document.getElementById('hero-desc').innerText= m.overview;
 }
 
-// ================== Load More Movies =====================
+// ======================= Load More =========================
 async function loadMoreMovies() {
   const res= await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
   const data= await res.json();
   const grid= document.getElementById('movie-grid');
-  data.results.forEach(m => {
+  data.results.forEach(m=>{
     if(!m.poster_path) return;
     const card= document.createElement('div');
-    card.className= 'card-hover cursor-pointer group';
+    card.className='card-hover cursor-pointer group';
     card.onclick= ()=> openMovie(m.id);
     card.innerHTML= `
       <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
@@ -633,46 +466,7 @@ async function loadMoreMovies() {
   moviePage++;
 }
 
-// ================== Open Movie Details =====================
-async function openMovie(id) {
-  const res= await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=id-ID`);
-  const m= await res.json();
-  const trailer= m.videos.results.find(v=>v.type==='Trailer')|| m.videos.results[0];
-  document.getElementById('modalData').innerHTML=`
-    <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
-      <div class="w-full lg:w-1/3"><img src="${POSTER_URL+m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10" /></div>
-      <div class="w-full lg:w-2/3">
-        <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
-        <p class="text-gray-300 text-lg mb-12 opacity-80 leading-relaxed">${m.overview||'Tidak ada deskripsi.'}</p>
-        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition">Mulai Nonton</button>
-      </div>
-    </div>
-    <div class="mb-20">
-      <h2 class="text-2xl font-black italic uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Trailer Resmi</h2>
-      <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
-        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key||''}" frameborder="0" allowfullscreen></iframe>
-      </div>
-    </div>
-  `;
-  document.getElementById('movieModal').classList.remove('hidden');
-  document.body.style.overflow='hidden';
-}
-
-// Close modal
-function closeModal() {
-  document.getElementById('movieModal').classList.add('hidden');
-  document.body.style.overflow='auto';
-}
-
-// Set hero background
-function setHero(m) {
-  if (!m) return;
-  document.getElementById('hero').style.backgroundImage= `url(${IMG_URL+m.backdrop_path})`;
-  document.getElementById('hero-title').innerText= m.title;
-  document.getElementById('hero-desc').innerText= m.overview;
-}
-
-// ================== Search Films =====================
+// ======================= Search =========================
 document.getElementById('searchInput').addEventListener('input', async (e) => {
   const query= e.target.value.trim();
   if(!query) {
@@ -688,7 +482,7 @@ document.getElementById('searchInput').addEventListener('input', async (e) => {
     const card= document.createElement('div');
     card.className='card-hover cursor-pointer group';
     card.onclick= ()=> openMovie(m.id);
-    card.innerHTML=`
+    card.innerHTML= `
       <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
         <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
       </div>
@@ -698,31 +492,21 @@ document.getElementById('searchInput').addEventListener('input', async (e) => {
   });
 });
 
-// ================== Novel Search =====================
-document.getElementById('search-novel').addEventListener('input', ()=> {
-  const query= document.getElementById('search-novel').value.toLowerCase();
-  document.querySelectorAll('#novel-grid > div').forEach(n => {
-    const title= n.querySelector('h3').innerText.toLowerCase();
-    n.style.display= title.includes(query) ? '' : 'none';
-  });
-});
-
-// ================== Infinite Scroll =====================
-window.onscroll= ()=> {
-  if((window.innerHeight+ window.scrollY) >= document.body.offsetHeight - 500) {
-    loadMoreMovies();
-  }
+// ======================= Profile =========================
+function showProfile() {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-profile').classList.add('active');
+  document.querySelectorAll('.flex.justify-center button').forEach(b => b.classList.remove('bg-red-600'));
+  document.querySelectorAll('.flex.justify-center button')[3].classList.add('bg-red-600');
 }
 
-// ================== Musik =====================
+// ======================= Audio Control =========================
 const backgroundMusic= document.getElementById('background-music');
 let isPlaying= false;
-
 function toggleMainMusic() {
   if(backgroundMusic.paused) backgroundMusic.play();
   else backgroundMusic.pause();
 }
-
 function toggleMusic(btn) {
   const icon= btn.querySelector('i');
   if(!isPlaying) {
@@ -735,20 +519,103 @@ function toggleMusic(btn) {
     isPlaying= false;
   }
 }
-
 function nextTrack() {
   currentTrackIndex= (currentTrackIndex+1) % lofiPlaylist.length;
   lofiAudio.src= lofiPlaylist[currentTrackIndex];
   lofiAudio.play();
 }
-
 function prevTrack() {
-  currentTrackIndex= (currentTrackIndex-1+ lofiPlaylist.length)% lofiPlaylist.length;
+  currentTrackIndex= (currentTrackIndex-1 + lofiPlaylist.length) % lofiPlaylist.length;
   lofiAudio.src= lofiPlaylist[currentTrackIndex];
   lofiAudio.play();
 }
 
-// ================== Show Profile =====================
+// ======================= Modal =========================
+function openMovie(id) {
+  fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=id-ID`)
+    .then(res => res.json())
+    .then(m => {
+      const trailer= m.videos.results.find(v=>v.type==='Trailer') || m.videos.results[0];
+      document.getElementById('modalData').innerHTML= `
+        <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
+          <div class="w-full lg:w-1/3"><img src="${POSTER_URL+m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10" /></div>
+          <div class="w-full lg:w-2/3">
+            <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
+            <p class="text-gray-300 text-lg mb-12 opacity-80 leading-relaxed">${m.overview || 'Tidak ada deskripsi.'}</p>
+            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition">Mulai Nonton</button>
+          </div>
+        </div>
+        <div class="mb-20">
+          <h2 class="text-2xl font-black uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Trailer Resmi</h2>
+          <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
+            <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key || ''}" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>`;
+      document.getElementById('movieModal').classList.remove('hidden');
+      document.body.style.overflow='hidden';
+    });
+}
+function closeModal() {
+  document.getElementById('movieModal').classList.add('hidden');
+  document.body.style.overflow='auto';
+}
+
+// ======================= Hero =========================
+function setHero(m) {
+  if(!m || !m.backdrop_path) return;
+  document.getElementById('hero').style.backgroundImage= `url(${IMG_URL+m.backdrop_path})`;
+  document.getElementById('hero-title').innerText= m.title;
+  document.getElementById('hero-desc').innerText= m.overview;
+}
+
+// ======================= Load Movies =========================
+async function loadMoreMovies() {
+  const res= await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
+  const data= await res.json();
+  const grid= document.getElementById('movie-grid');
+  data.results.forEach(m=>{
+    if(!m.poster_path) return;
+    const card= document.createElement('div');
+    card.className='card-hover cursor-pointer group';
+    card.onclick= ()=> openMovie(m.id);
+    card.innerHTML= `
+      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+      </div>
+      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+    `;
+    grid.appendChild(card);
+  });
+  moviePage++;
+}
+
+// ======================= Search =========================
+document.getElementById('searchInput').addEventListener('input', async (e) => {
+  const query= e.target.value.trim();
+  if(!query) {
+    switchTab('pane-movies', document.querySelector('button[onclick="switchTab(\'pane-movies\', this)"]'));
+    return;
+  }
+  const res= await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}&language=id-ID`);
+  const data= await res.json();
+  const grid= document.getElementById('movie-grid');
+  grid.innerHTML= data.results.length ? '' : '<p class="col-span-full text-center text-gray-500">Tidak ditemukan film.</p>';
+  data.results.forEach(m => {
+    if(!m.poster_path) return;
+    const card= document.createElement('div');
+    card.className='card-hover cursor-pointer group';
+    card.onclick= ()=> openMovie(m.id);
+    card.innerHTML= `
+      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+      </div>
+      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+    `;
+    grid.appendChild(card);
+  });
+});
+
+// ======================= Profile =========================
 function showProfile() {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.getElementById('pane-profile').classList.add('active');
@@ -756,32 +623,351 @@ function showProfile() {
   document.querySelectorAll('.flex.justify-center button')[3].classList.add('bg-red-600');
 }
 
-// ================== Initialize =====================
-function handleLogin() {
-  const name= document.getElementById('userNameInput').value || 'Kim';
-  document.getElementById('user-display').innerText= `User: ${name}`;
-  document.getElementById('login-screen').classList.add('opacity-0', 'pointer-events-none');
-  setTimeout(()=> {
-    document.getElementById('login-screen').remove();
-    document.getElementById('app').classList.remove('hidden');
-    setTimeout(()=> {
-      document.getElementById('app').style.opacity= '1';
-      init();
-    }, 100);
-  }, 800);
+// ======================= Music Control =========================
+const backgroundMusic= document.getElementById('background-music');
+let isPlaying= false;
+function toggleMainMusic() {
+  if(backgroundMusic.paused) backgroundMusic.play();
+  else backgroundMusic.pause();
+}
+function toggleMusic(btn) {
+  const icon= btn.querySelector('i');
+  if(!isPlaying) {
+    lofiAudio.play();
+    icon.classList.replace('fa-play', 'fa-pause');
+    isPlaying= true;
+  } else {
+    lofiAudio.pause();
+    icon.classList.replace('fa-pause', 'fa-play');
+    isPlaying= false;
+  }
+}
+function nextTrack() {
+  currentTrackIndex= (currentTrackIndex+1) % lofiPlaylist.length;
+  lofiAudio.src= lofiPlaylist[currentTrackIndex];
+  lofiAudio.play();
+}
+function prevTrack() {
+  currentTrackIndex= (currentTrackIndex-1 + lofiPlaylist.length) % lofiPlaylist.length;
+  lofiAudio.src= lofiPlaylist[currentTrackIndex];
+  lofiAudio.play();
 }
 
-async function init() {
-  try {
-    const res= await fetch(`${BASE_URL}/trending/movie/day?api_key=${MOVIE_API_KEY}`);
-    const data= await res.json();
-    setHero(data.results[0]);
-    renderTrending(data.results);
-    loadMoreMovies();
-  } catch(e) { console.error(e); }
-  fetchNovels();
-  toggleMainMusic();
+// ======================= Modal =========================
+function openMovie(id) {
+  fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=id-ID`)
+    .then(res => res.json())
+    .then(m => {
+      const trailer= m.videos.results.find(v=>v.type==='Trailer') || m.videos.results[0];
+      document.getElementById('modalData').innerHTML= `
+        <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
+          <div class="w-full lg:w-1/3"><img src="${POSTER_URL+m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10" /></div>
+          <div class="w-full lg:w-2/3">
+            <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
+            <p class="text-gray-300 text-lg mb-12 opacity-80 leading-relaxed">${m.overview || 'Tidak ada deskripsi.'}</p>
+            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition">Mulai Nonton</button>
+          </div>
+        </div>
+        <div class="mb-20">
+          <h2 class="text-2xl font-black uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Trailer Resmi</h2>
+          <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
+            <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key || ''}" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>`;
+      document.getElementById('movieModal').classList.remove('hidden');
+      document.body.style.overflow='hidden';
+    });
 }
+function closeModal() {
+  document.getElementById('movieModal').classList.add('hidden');
+  document.body.style.overflow='auto';
+}
+
+// ======================= Hero =========================
+function setHero(m) {
+  if(!m || !m.backdrop_path) return;
+  document.getElementById('hero').style.backgroundImage= `url(${IMG_URL+m.backdrop_path})`;
+  document.getElementById('hero-title').innerText= m.title;
+  document.getElementById('hero-desc').innerText= m.overview;
+}
+
+// ======================= Load Movies =========================
+async function loadMoreMovies() {
+  const res= await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
+  const data= await res.json();
+  const grid= document.getElementById('movie-grid');
+  data.results.forEach(m=>{
+    if(!m.poster_path) return;
+    const card= document.createElement('div');
+    card.className='card-hover cursor-pointer group';
+    card.onclick= ()=> openMovie(m.id);
+    card.innerHTML= `
+      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+      </div>
+      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+    `;
+    grid.appendChild(card);
+  });
+  moviePage++;
+}
+
+// ======================= Search =========================
+document.getElementById('searchInput').addEventListener('input', async (e) => {
+  const query= e.target.value.trim();
+  if(!query) {
+    switchTab('pane-movies', document.querySelector('button[onclick="switchTab(\'pane-movies\', this)"]'));
+    return;
+  }
+  const res= await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}&language=id-ID`);
+  const data= await res.json();
+  const grid= document.getElementById('movie-grid');
+  grid.innerHTML= data.results.length ? '' : '<p class="col-span-full text-center text-gray-500">Tidak ditemukan film.</p>';
+  data.results.forEach(m => {
+    if(!m.poster_path) return;
+    const card= document.createElement('div');
+    card.className='card-hover cursor-pointer group';
+    card.onclick= ()=> openMovie(m.id);
+    card.innerHTML= `
+      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+      </div>
+      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+    `;
+    grid.appendChild(card);
+  });
+});
+
+// ======================= Profile =========================
+function showProfile() {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-profile').classList.add('active');
+  document.querySelectorAll('.flex.justify-center button').forEach(b => b.classList.remove('bg-red-600'));
+  document.querySelectorAll('.flex.justify-center button')[3].classList.add('bg-red-600');
+}
+
+// ======================= Musik =========================
+const backgroundMusic= document.getElementById('background-music');
+let musicPlaying=false;
+function toggleMainMusic() {
+  if(backgroundMusic.paused) backgroundMusic.play();
+  else backgroundMusic.pause();
+}
+function toggleMusic(btn) {
+  const icon= btn.querySelector('i');
+  if(!musicPlaying) {
+    lofiAudio.play();
+    icon.classList.replace('fa-play', 'fa-pause');
+    musicPlaying=true;
+  } else {
+    lofiAudio.pause();
+    icon.classList.replace('fa-pause', 'fa-play');
+    musicPlaying=false;
+  }
+}
+function nextTrack() {
+  currentTrackIndex= (currentTrackIndex+1) % lofiPlaylist.length;
+  lofiAudio.src= lofiPlaylist[currentTrackIndex];
+  lofiAudio.play();
+}
+function prevTrack() {
+  currentTrackIndex= (currentTrackIndex-1 + lofiPlaylist.length) % lofiPlaylist.length;
+  lofiAudio.src= lofiPlaylist[currentTrackIndex];
+  lofiAudio.play();
+}
+
+// ======================= Modal =========================
+function openMovie(id) {
+  fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=id-ID`)
+    .then(res => res.json())
+    .then(m => {
+      const trailer= m.videos.results.find(v=>v.type==='Trailer') || m.videos.results[0];
+      document.getElementById('modalData').innerHTML= `
+        <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
+          <div class="w-full lg:w-1/3"><img src="${POSTER_URL+m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10" /></div>
+          <div class="w-full lg:w-2/3">
+            <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
+            <p class="text-gray-300 text-lg mb-12 opacity-80 leading-relaxed">${m.overview || 'Tidak ada deskripsi.'}</p>
+            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition">Mulai Nonton</button>
+          </div>
+        </div>
+        <div class="mb-20">
+          <h2 class="text-2xl font-black uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Trailer Resmi</h2>
+          <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
+            <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key || ''}" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>`;
+      document.getElementById('movieModal').classList.remove('hidden');
+      document.body.style.overflow='hidden';
+    });
+}
+function closeModal() {
+  document.getElementById('movieModal').classList.add('hidden');
+  document.body.style.overflow='auto';
+}
+
+// ======================= Hero =========================
+function setHero(m) {
+  if(!m || !m.backdrop_path) return;
+  document.getElementById('hero').style.backgroundImage= `url(${IMG_URL+m.backdrop_path})`;
+  document.getElementById('hero-title').innerText= m.title;
+  document.getElementById('hero-desc').innerText= m.overview;
+}
+
+// ======================= Load Movies =========================
+async function loadMoreMovies() {
+  const res= await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
+  const data= await res.json();
+  const grid= document.getElementById('movie-grid');
+  data.results.forEach(m=>{
+    if(!m.poster_path) return;
+    const card= document.createElement('div');
+    card.className='card-hover cursor-pointer group';
+    card.onclick= ()=> openMovie(m.id);
+    card.innerHTML= `
+      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+      </div>
+      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+    `;
+    grid.appendChild(card);
+  });
+  moviePage++;
+}
+
+// ======================= Search =========================
+document.getElementById('searchInput').addEventListener('input', async (e) => {
+  const query= e.target.value.trim();
+  if(!query) {
+    switchTab('pane-movies', document.querySelector('button[onclick="switchTab(\'pane-movies\', this)"]'));
+    return;
+  }
+  const res= await fetch(`${BASE_URL}/search/movie?api_key=${MOVIE_API_KEY}&query=${encodeURIComponent(query)}&language=id-ID`);
+  const data= await res.json();
+  const grid= document.getElementById('movie-grid');
+  grid.innerHTML= data.results.length ? '' : '<p class="col-span-full text-center text-gray-500">Tidak ditemukan film.</p>';
+  data.results.forEach(m => {
+    if(!m.poster_path) return;
+    const card= document.createElement('div');
+    card.className='card-hover cursor-pointer group';
+    card.onclick= ()=> openMovie(m.id);
+    card.innerHTML= `
+      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+      </div>
+      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+    `;
+    grid.appendChild(card);
+  });
+});
+
+// ======================= Profile =========================
+function showProfile() {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-profile').classList.add('active');
+  document.querySelectorAll('.flex.justify-center button').forEach(b => b.classList.remove('bg-red-600'));
+  document.querySelectorAll('.flex.justify-center button')[3].classList.add('bg-red-600');
+}
+
+// ======================= Music Player =========================
+const lofiPlaylist= [
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+];
+let currentTrackIndex=0;
+const lofiAudio= new Audio(lofiPlaylist[currentTrackIndex]);
+let musicPlaying=false;
+
+function toggleMainMusic() {
+  if(backgroundMusic.paused) backgroundMusic.play();
+  else backgroundMusic.pause();
+}
+
+function toggleMusic(btn) {
+  const icon= btn.querySelector('i');
+  if(!musicPlaying) {
+    lofiAudio.play();
+    icon.classList.replace('fa-play','fa-pause');
+    musicPlaying=true;
+  } else {
+    lofiAudio.pause();
+    icon.classList.replace('fa-pause','fa-play');
+    musicPlaying=false;
+  }
+}
+function nextTrack() {
+  currentTrackIndex= (currentTrackIndex+1) % lofiPlaylist.length;
+  lofiAudio.src= lofiPlaylist[currentTrackIndex];
+  lofiAudio.play();
+}
+function prevTrack() {
+  currentTrackIndex= (currentTrackIndex-1 + lofiPlaylist.length) % lofiPlaylist.length;
+  lofiAudio.src= lofiPlaylist[currentTrackIndex];
+  lofiAudio.play();
+}
+
+// ======================= Modal =========================
+function openMovie(id) {
+  fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos&language=id-ID`)
+    .then(res => res.json())
+    .then(m => {
+      const trailer= m.videos.results.find(v=>v.type==='Trailer') || m.videos.results[0];
+      document.getElementById('modalData').innerHTML= `
+        <div class="flex flex-col lg:flex-row gap-12 mb-16 text-left">
+          <div class="w-full lg:w-1/3"><img src="${POSTER_URL+m.poster_path}" class="w-full rounded-[40px] shadow-2xl border border-white/10" /></div>
+          <div class="w-full lg:w-2/3">
+            <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
+            <p class="text-gray-300 text-lg mb-12 opacity-80 leading-relaxed">${m.overview || 'Tidak ada deskripsi.'}</p>
+            <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition">Mulai Nonton</button>
+          </div>
+        </div>
+        <div class="mb-20">
+          <h2 class="text-2xl font-black uppercase mb-8 flex items-center gap-3"><i class="fa fa-play text-red-600"></i> Trailer Resmi</h2>
+          <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl">
+            <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer?.key || ''}" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>`;
+      document.getElementById('movieModal').classList.remove('hidden');
+      document.body.style.overflow='hidden';
+    });
+}
+function closeModal() {
+  document.getElementById('movieModal').classList.add('hidden');
+  document.body.style.overflow='auto';
+}
+
+// ======================= Hero =========================
+function setHero(m) {
+  if(!m || !m.backdrop_path) return;
+  document.getElementById('hero').style.backgroundImage= `url(${IMG_URL+m.backdrop_path})`;
+  document.getElementById('hero-title').innerText= m.title;
+  document.getElementById('hero-desc').innerText= m.overview;
+}
+
+// ======================= Load Movies =========================
+async function loadMoreMovies() {
+  const res= await fetch(`${BASE_URL}/movie/popular?api_key=${MOVIE_API_KEY}&page=${moviePage}`);
+  const data= await res.json();
+  const grid= document.getElementById('movie-grid');
+  data.results.forEach(m=>{
+    if(!m.poster_path) return;
+    const card= document.createElement('div');
+    card.className='card-hover cursor-pointer group';
+    card.onclick= ()=> openMovie(m.id);
+    card.innerHTML= `
+      <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
+        <img src="${POSTER_URL+m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+      </div>
+      <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition">${m.title}</h3>
+    `;
+    grid.appendChild(card);
+  });
+  moviePage++;
+}
+
+// ======================= Search =========================
 </script>
+
 </body>
 </html>
