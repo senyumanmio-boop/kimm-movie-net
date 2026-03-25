@@ -483,4 +483,5 @@ const lofiAudio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-
 
 // MENJADI INI (Pilih salah satu):
 const lofiAudio = new Audio('https://coderadio-admin.freecodecamp.org/radio/8010/radio.mp3'); 
+lofiAudio.crossOrigin = "anonymous";
 // (Ini adalah radio khusus koding yang sangat stabil)
