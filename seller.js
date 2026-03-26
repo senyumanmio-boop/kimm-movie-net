@@ -616,3 +616,81 @@ function render100NovelsHTML() {
     
     grid.innerHTML = allCardsHTML;
 }
+// --- BAGIAN UPDATE LOGIC NOVEL (GANTI FUNGSI INI DI SCRIPT LO) ---
+
+async function fetchNovels() {
+    const grid = document.getElementById('novel-grid');
+    grid.innerHTML = `<p class="col-span-full text-center py-20 animate-pulse">Memuat Perpustakaan Tanpa Batas...</p>`;
+
+    try {
+        const res = await fetch(NOVEL_API_URL);
+        const data = await res.json();
+        const sheetNovels = data.sheet1 || [];
+
+        // GENERATE 100+ NOVEL DENGAN ISI YANG SANGAT PANJANG
+        const manualNovels = [];
+        const words = ["Cyber", "Red", "Code", "Shadow", "Batam", "Void", "Soul", "Ghost", "Neo", "Matrix", "Elite"];
+        const cats = ["ACTION", "MYSTERY", "HORROR", "SCI-FI", "THRILLER"];
+        
+        for(let i=1; i<=100; i++) {
+            manualNovels.push({
+                title: `${words[Math.floor(Math.random()*words.length)]} ${words[Math.floor(Math.random()*words.length)]} #${i}`,
+                author: "Robi Kim",
+                category: cats[Math.floor(Math.random()*cats.length)],
+                cover: `https://picsum.photos/seed/kimm${i}/300/450`,
+                desc: `Arsip rahasia KimmLib nomor ${i}. Isinya sangat panjang dan mendalam.`
+            });
+        }
+
+        const allNovels = [...sheetNovels, ...manualNovels];
+
+        grid.innerHTML = allNovels.map(n => {
+            // Kita bungkus data novel ke dalam atribut string aman
+            const novelData = btoa(unescape(encodeURIComponent(JSON.stringify(n))));
+            return `
+                <div onclick="openNovel('${novelData}')" class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
+                    <img src="${n.cover || 'https://via.placeholder.com/300'}" class="w-24 h-36 object-cover rounded-2xl group-hover:scale-105 transition-all">
+                    <div class="flex flex-col justify-center text-left">
+                        <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-1">${n.category || 'NOVEL'}</span>
+                        <h3 class="text-xl font-black mb-1 text-white italic uppercase line-clamp-1">${n.title}</h3>
+                        <p class="text-gray-500 text-[10px] font-bold uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author || 'Kim'}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (e) { grid.innerHTML = "<p class='text-center text-red-600 col-span-full'>Gagal sinkron database.</p>"; }
+}
+
+function openNovel(encodedData) {
+    const n = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+    
+    // Trik "Isi Nggak Abis-Abis" (Generating 5000+ words on the fly)
+    const baseWords = ["misteri", "koding", "malam", "cahaya", "bayangan", "sistem", "terminal", "protokol", "masa depan", "kebenaran", "data", "enkripsi", "gelap", "digital", "dunia", "kenyataan", "ilusi"];
+    let infiniteContent = "";
+    
+    // Looping buat bikin teks yang super panjang banget
+    for(let j=0; j<500; j++) {
+        let sentence = "";
+        for(let k=0; k<12; k++) {
+            sentence += baseWords[Math.floor(Math.random()*baseWords.length)] + " ";
+        }
+        infiniteContent += `<p class="mb-6">${sentence.charAt(0).toUpperCase() + sentence.slice(1)}. ${sentence} ${sentence}.</p>`;
+    }
+
+    document.getElementById('readerContent').innerHTML = `
+        <div class="mb-12">
+            <h1 class="text-6xl font-black italic text-red-600 mb-2 uppercase tracking-tighter">${n.title}</h1>
+            <p class="text-gray-500 font-bold uppercase text-xs tracking-[0.5em] border-b border-white/10 pb-6">Arsip Digital: ${n.author} | KimmLib Secure Access</p>
+        </div>
+        <div class="space-y-4 text-gray-300 font-medium leading-[2.2]">
+            ${n.content ? n.content.replace(/\n/g, '<br>') : ''}
+            ${infiniteContent}
+        </div>
+        <div class="py-20 text-center border-t border-white/5 mt-10">
+            <p class="text-red-600 font-black italic">--- AKHIR DARI ARSIP ---</p>
+            <p class="text-gray-600 text-[10px] uppercase mt-2">Gunakan akses VIP untuk membaca volume selanjutnya.</p>
+        </div>
+    `;
+    document.getElementById('readerModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
