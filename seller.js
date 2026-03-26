@@ -583,3 +583,36 @@ function generate100Novels() {
     }
     return data;
 }
+// Panggil fungsi ini di dalam initApp() atau saat pindahTab('novels')
+function render100NovelsHTML() {
+    const grid = document.getElementById('novel-grid');
+    if (!grid) return;
+
+    const sub = ["Shadow", "Neon", "Cyber", "Dark", "Red", "Void", "Batam", "Code", "Ghost", "Last"];
+    const obj = ["Hunter", "Legend", "System", "Soul", "Warrior", "Protocol", "City", "Blade", "Empire", "Script"];
+    
+    let allCardsHTML = "";
+
+    for (let i = 1; i <= 100; i++) {
+        const judul = `${sub[Math.floor(Math.random() * sub.length)]} ${obj[Math.floor(Math.random() * obj.length)]} Vol.${i}`;
+        const cover = `https://picsum.photos/seed/kimm${i}/300/450`;
+        
+        // Template HTML Murni
+        allCardsHTML += `
+            <div class="novel-card glass p-5 rounded-[32px] flex gap-5 border border-white/5 hover:border-red-600 transition-all cursor-pointer bg-white/5 relative overflow-hidden group">
+                <div class="absolute -right-2 -bottom-4 text-white/5 text-7xl font-black italic">${i}</div>
+                <div class="w-24 h-36 flex-shrink-0 overflow-hidden rounded-2xl border border-white/10 relative z-10">
+                    <img src="${cover}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500">
+                </div>
+                <div class="flex flex-col justify-center relative z-10 text-left">
+                    <span class="text-red-600 font-black text-[9px] tracking-widest uppercase mb-1">PREMIUM NOVEL</span>
+                    <h3 class="text-lg font-black text-white group-hover:text-red-600 transition italic uppercase">${judul}</h3>
+                    <p class="text-gray-500 text-[10px] mb-3 line-clamp-2">Kisah ke-${i} dari arsip rahasia Kimm Movie Net.</p>
+                    <span class="text-[9px] font-bold text-gray-400"><i class="fa fa-user text-red-600 mr-1"></i> ROBI KIM</span>
+                </div>
+            </div>
+        `;
+    }
+    
+    grid.innerHTML = allCardsHTML;
+}
