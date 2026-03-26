@@ -511,3 +511,75 @@ Object.values(sounds).forEach(s => {
     s.loop = true;
     s.crossOrigin = "anonymous";
 });
+// ==========================================
+// 4. FITUR NOVEL (100+ NOVELS GENERATOR)
+// ==========================================
+async function fetchNovelsFromAPI() {
+    const grid = document.getElementById('novel-grid');
+    if(!grid) return;
+
+    grid.innerHTML = `<div class="col-span-full text-center text-white p-10 animate-pulse uppercase font-black italic">Menghubungkan ke Database 100+ Novel KimmLib...</div>`;
+
+    try {
+        const res = await fetch(NOVEL_API);
+        const data = await res.json();
+        const novelsFromSheet = data.sheet1 || []; 
+        
+        // PANGGIL GENERATOR 100 NOVEL
+        const manualNovels = generate100Novels();
+        
+        // Gabungin data Sheets (kalo ada) sama 100 novel buatan JS
+        const allNovels = [...novelsFromSheet, ...manualNovels];
+
+        grid.innerHTML = allNovels.map((n, index) => `
+            <div onclick="openNovelFromAPI(${JSON.stringify(n).replace(/"/g, '&quot;')})" 
+                 class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group shadow-2xl bg-white/5 relative overflow-hidden"
+                 style="animation-delay: ${index * 0.05}s">
+                <div class="w-24 md:w-32 h-36 md:h-48 flex-shrink-0 overflow-hidden rounded-2xl shadow-lg border border-white/5">
+                    <img src="${n.cover}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500" loading="lazy">
+                </div>
+                <div class="flex flex-col justify-center overflow-hidden text-left z-10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase">${n.category}</span>
+                        <span class="text-[8px] px-2 py-0.5 bg-white/10 rounded text-gray-400">#${index + 1}</span>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black mb-2 text-white group-hover:text-red-600 transition truncate italic uppercase">${n.title}</h3>
+                    <p class="text-gray-500 text-[10px] md:text-xs mb-4 line-clamp-2 italic">${n.desc}</p>
+                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author}</span>
+                </div>
+                <div class="absolute -right-4 -bottom-4 text-white/5 text-6xl font-black italic select-none">${index + 1}</div>
+            </div>
+        `).join('');
+    } catch (e) { 
+        console.error("Gagal muat novel:", e);
+        // Tetap munculin 100 novel kalau API Sheets lo error/limit
+        grid.innerHTML = generate100Novels().map((n, index) => `
+            <div onclick="openNovelFromAPI(${JSON.stringify(n).replace(/"/g, '&quot;')})" class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer bg-white/5">
+                </div>`).join('');
+    }
+}
+
+// GENERATOR 100 JUDUL NOVEL (KEREN & BERVARIASI)
+function generate100Novels() {
+    const data = [];
+    const subjects = ["Shadow", "Cyber", "Last", "Neon", "Red", "Code", "Ghost", "Dead", "Void", "Gold", "Night", "Batam", "Digital", "Echo", "Silent", "Lost", "Final", "Infinity", "Wild", "Black"];
+    const objects = ["Hunter", "Script", "System", "City", "Soul", "Heaven", "Warrior", "Legend", "Protocol", "Memory", "Sky", "Empire", "Blade", "Justice", "Reality", "Game", "Force", "King", "Bite", "Heart"];
+    const categories = ["ACTION", "CYBERPUNK", "DRAMA", "HORROR", "SCI-FI", "THRILLER", "FANTASY"];
+    const authors = ["Kimm Movie", "Robi Dev", "Era Khaii", "Unknown"];
+
+    for (let i = 1; i <= 100; i++) {
+        const sub = subjects[Math.floor(Math.random() * subjects.length)];
+        const obj = objects[Math.floor(Math.random() * objects.length)];
+        const cat = categories[Math.floor(Math.random() * categories.length)];
+        
+        data.push({
+            title: `${sub} ${obj} : Chapter ${i}`,
+            author: authors[Math.floor(Math.random() * authors.length)],
+            category: cat,
+            cover: `https://picsum.photos/seed/kimm${i}/300/450`,
+            desc: `Sebuah kisah epik tentang ${sub.toLowerCase()} yang mencoba menguasai ${obj.toLowerCase()} di masa depan.`,
+            content: `Ini adalah isi dari novel ${sub} ${obj}. Ceritanya sangat panjang dan mendalam... \n\nDi sebuah sudut kota yang gelap, bayangan itu mulai bergerak. Tidak ada yang tahu bahwa hari ini akan menjadi hari terakhir bagi dunia lama. ${sub} telah bangkit, dan tidak ada protokol yang bisa menghentikannya. \n\n"Apakah kamu siap, Kim?" tanya sebuah suara dari kegelapan.`
+        });
+    }
+    return data;
+}
