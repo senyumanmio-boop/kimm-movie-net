@@ -722,3 +722,22 @@ daftarNovel.forEach(novel => {
         </div>
     `;
 });
+const container = document.getElementById('fizzo-container');
+
+// Data dummy buat tes doang
+const dataTes = [
+    { judul: "Tes Novel 1", cover: "https://via.placeholder.com/150", link: "#" },
+    { judul: "Tes Novel 2", cover: "https://via.placeholder.com/150", link: "#" }
+];
+
+if (container) {
+    dataTes.forEach(n => {
+        container.innerHTML += `
+            <div style="background: gray; padding: 10px; border-radius: 10px;">
+                <img src="${n.cover}" style="width: 100%">
+                <p style="color: white;">${n.judul}</p>
+            </div>`;
+    });
+} else {
+    console.log("Waduh, ID fizzo-container nggak ketemu di HTML!");
+}
