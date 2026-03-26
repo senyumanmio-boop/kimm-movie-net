@@ -694,3 +694,31 @@ function openNovel(encodedData) {
     document.getElementById('readerModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
+// Simpan data novel dalam bentuk Array
+const daftarNovel = [
+    {
+        judul: "Reborn: Menjadi Kaya",
+        cover: "https://link-gambar-cover1.jpg",
+        link: "https://fizzo.org/judul-novel-1"
+    },
+    {
+        judul: "The Shadow Hacker",
+        cover: "https://link-gambar-cover2.jpg",
+        link: "https://fizzo.org/judul-novel-2"
+    }
+];
+
+const container = document.getElementById('fizzo-container');
+
+// Fungsi untuk nampilin ke HTML
+daftarNovel.forEach(novel => {
+    container.innerHTML += `
+        <div class="novel-card p-4 rounded-xl shadow-lg">
+            <img src="${novel.cover}" class="w-full h-40 object-cover rounded-md mb-3">
+            <h3 class="text-white font-semibold text-sm mb-3">${novel.judul}</h3>
+            <a href="${novel.link}" target="_blank" class="block text-center text-xs bg-orange-500 text-white py-2 rounded-lg font-bold">
+                BACA SEKARANG
+            </a>
+        </div>
+    `;
+});
