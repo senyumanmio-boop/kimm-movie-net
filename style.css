@@ -177,3 +177,46 @@
 #movieModal {
     -webkit-overflow-scrolling: touch;
 }
+
+/* Animasi Fade In untuk kartu novel */
+#novel-grid > div {
+    animation: fadeIn 0.6s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom Scrollbar Novel */
+#novel-grid::-webkit-scrollbar {
+    width: 4px;
+}
+#novel-grid::-webkit-scrollbar-thumb {
+    background: #dc2626;
+    border-radius: 10px;
+}
+
+/* Efek Hover Glassmorphism */
+.glass:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(220, 38, 38, 0.2);
+}
+
+/* Biar Gambar Cover Nggak Pecah */
+#novel-grid img {
+    object-position: center;
+    background: #111;
+}
+
+/* Animasi Fade In bertahap untuk 100 novel */
+#novel-grid > div {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
