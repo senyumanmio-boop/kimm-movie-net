@@ -24,6 +24,7 @@
         .music-visualizer span { display: inline-block; width: 3px; background: var(--accent); animation: bounce 1s infinite alternate; }
         @keyframes bounce { from { height: 2px; } to { height: 15px; } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .novel-card { animation: fadeIn 0.6s ease forwards; }
     </style>
 </head>
 <body class="pb-24">
@@ -82,22 +83,14 @@
                 </div>
             </section>
 
-            <section id="pane-novels" class="tab-panel p-8 max-w-6xl mx-auto mt-10">
+            <section id="pane-novels" class="tab-panel p-8 max-w-7xl mx-auto mt-10">
                 <div class="flex justify-between items-end mb-12">
-                    <div id="tab-novels" class="tab-content hidden px-4 py-10">
-    <h2 class="text-3xl font-black italic uppercase mb-10 text-white px-4">
-        KimmLib <span class="text-red-600">100+ COLLECTIONS</span>
-    </h2>
-    
-    <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        </div>
-</div>
                     <div>
                         <h1 class="text-6xl font-black italic tracking-tighter">Kimm<span class="text-red-600">Lib</span></h1>
-                        <p class="text-gray-500 font-bold uppercase text-xs tracking-widest mt-2">Daftar Bacaan Exclusive dari Sheety</p>
+                        <p class="text-gray-500 font-bold uppercase text-xs tracking-widest mt-2">Daftar Bacaan Exclusive & 100+ Koleksi Digital</p>
                     </div>
                 </div>
-                <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left"></div>
+                <div id="novel-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left"></div>
             </section>
 
             <section id="pane-music" class="tab-panel p-4 md:p-8 max-w-4xl mx-auto text-center mt-20">
@@ -133,7 +126,7 @@
                         <div class="flex-1 space-y-4">
                             <div>
                                 <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase">Verified Member</span>
-                                <h2 id="profile-name-display" class="text-5xl font-black italic uppercase tracking-tighter">TERIMAKASIH TELAH MAMPIR</h2>
+                                <h2 id="profile-name-display" class="text-5xl font-black italic uppercase tracking-tighter">KIM</h2>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-medium">
                                 <p class="text-gray-400"><i class="fa fa-map-marker-alt text-red-600 w-6"></i> Batam, Indonesia</p>
@@ -187,10 +180,8 @@
         const POSTER_URL = 'https://image.tmdb.org/t/p/w500';
 
         let moviePage = 1;
-        let isPlaying = false;
         let searchTimeout;
 
-        // AMBIENT SOUND LOGIC
         const sounds = {
             rain: new Audio('https://www.soundjay.com/nature/rain-01.mp3'),
             wind: new Audio('https://www.soundjay.com/nature/wind-01.mp3'),
@@ -209,11 +200,9 @@
             if (sound.paused) {
                 sound.play();
                 btn.style.background = "#ff4757";
-                btn.style.boxShadow = "0 0 15px rgba(255, 71, 87, 0.4)";
             } else {
                 sound.pause();
                 btn.style.background = "#333";
-                btn.style.boxShadow = "none";
             }
         }
 
@@ -250,7 +239,68 @@
             });
             btn.classList.replace('text-gray-500', 'text-red-600');
             window.scrollTo({top:0, behavior:'smooth'});
-            if(paneId === 'pane-novels') fetchNovels();
+        }
+
+        async function fetchNovels() {
+            const grid = document.getElementById('novel-grid');
+            if (!grid) return;
+            grid.innerHTML = `<p class="col-span-full text-center py-20 animate-pulse">Sinkronisasi Database KimmLib...</p>`;
+
+            try {
+                // Fetch data dari Sheety asli kamu
+                const res = await fetch(NOVEL_API_URL);
+                const data = await res.json();
+                const sheetNovels = data.sheet1 || [];
+
+                // Logic tambahan untuk generate 100 novel otomatis (tanpa hapus Sheety)
+                const manualNovels = [];
+                const words = ["Cyber", "Shadow", "Neon", "Void", "Dark", "Soul", "Code", "Batam", "Ghost", "Zero"];
+                const types = ["ACTION", "HORROR", "SCI-FI", "MYSTERY"];
+
+                for (let i = 1; i <= 100; i++) {
+                    manualNovels.push({
+                        title: `${words[Math.floor(Math.random()*words.length)]} Protocol Vol.${i}`,
+                        author: "Robi Kim",
+                        category: types[Math.floor(Math.random()*types.length)],
+                        cover: `https://picsum.photos/seed/kimm${i}/300/450`,
+                        desc: `Arsip digital nomor ${i} dari perpustakaan rahasia KimmLib.`,
+                        content: `Cerita ini adalah bagian dari koleksi eksklusif KimmLib... [Isi cerita novel ke-${i}]`
+                    });
+                }
+
+                // Gabungkan data Sheety + Manual
+                const allNovels = [...sheetNovels, ...manualNovels];
+
+                grid.innerHTML = allNovels.map(n => `
+                    <div onclick='openNovel(${JSON.stringify(n).replace(/'/g, "&apos;")})' class="novel-card glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
+                        <img src="${n.cover || 'https://via.placeholder.com/300'}" class="w-24 h-36 md:w-32 md:h-48 object-cover rounded-2xl group-hover:scale-105 transition-all">
+                        <div class="flex flex-col justify-center">
+                            <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category || 'NOVEL'}</span>
+                            <h3 class="text-xl md:text-2xl font-black mb-2 text-white italic uppercase line-clamp-1">${n.title}</h3>
+                            <p class="text-gray-500 text-xs mb-4 line-clamp-2">${n.desc || ''}</p>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author || 'KIM'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { 
+                grid.innerHTML = "<p class='text-center text-red-600 col-span-full'>Gagal memuat database novel.</p>"; 
+            }
+        }
+
+        function openNovel(novel) {
+            const content = `
+                <h1 class="text-5xl font-black italic text-red-600 mb-2 uppercase tracking-tighter">${novel.title}</h1>
+                <p class="text-gray-500 font-bold mb-10 border-b border-white/10 pb-4">AUTHOR: ${novel.author}</p>
+                <div class="space-y-6">${novel.content ? novel.content.replace(/\n/g, '<br>') : 'Konten segera hadir.'}</div>
+            `;
+            document.getElementById('readerContent').innerHTML = content;
+            document.getElementById('readerModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReader() {
+            document.getElementById('readerModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
         }
 
         async function liveSearch(query) {
@@ -274,67 +324,16 @@
                     const data = await res.json();
                     trendingContainer.style.display = "none";
                     gridTitle.innerHTML = `<i class="fa fa-search text-red-600"></i> Hasil Pencarian: <span class="text-red-600">${query}</span>`;
-                    grid.innerHTML = "";
-                    if (data.results.length === 0) {
-                        grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-20 font-bold italic uppercase tracking-widest">Film tidak ditemukan!</p>`;
-                        return;
-                    }
-                    data.results.forEach(m => {
-                        if(!m.poster_path) return;
-                        const card = document.createElement('div');
-                        card.className = 'card-hover cursor-pointer group';
-                        card.onclick = () => openMovie(m.id);
-                        card.innerHTML = `
+                    grid.innerHTML = data.results.map(m => `
+                        <div onclick="openMovie(${m.id})" class="card-hover cursor-pointer group">
                             <div class="relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 aspect-[2/3]">
-                                <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-500">
+                                <img src="${POSTER_URL + m.poster_path}" class="w-full h-full object-cover group-hover:scale-110 transition-all">
                             </div>
                             <h3 class="text-[10px] font-black mt-3 truncate uppercase tracking-tighter text-gray-400 group-hover:text-red-600 transition text-left">${m.title}</h3>
-                        `;
-                        grid.appendChild(card);
-                    });
+                        </div>
+                    `).join('');
                 } catch (e) { console.error(e); }
             }, 300);
-        }
-
-        async function fetchNovels() {
-            const grid = document.getElementById('novel-grid');
-            if (!grid) return;
-            try {
-                const res = await fetch(NOVEL_API_URL);
-                const data = await res.json();
-                const novels = data.sheet1;
-                if (!novels || novels.length === 0) {
-                    grid.innerHTML = "<p class='text-center text-gray-500 col-span-full'>Belum ada data novel.</p>";
-                    return;
-                }
-                grid.innerHTML = novels.map(n => `
-                    <div onclick='openNovel(${JSON.stringify(n).replace(/'/g, "&apos;")})' class="glass p-6 rounded-[32px] flex gap-6 border border-white/5 hover:border-red-600 transition-all cursor-pointer group">
-                        <img src="${n.cover || 'https://via.placeholder.com/300'}" class="w-32 h-48 object-cover rounded-2xl group-hover:scale-105 transition-all">
-                        <div class="flex flex-col justify-center">
-                            <span class="text-red-600 font-black text-[10px] tracking-[.3em] uppercase mb-2">${n.category || 'NOVEL'}</span>
-                            <h3 class="text-2xl font-black mb-2 text-white italic uppercase">${n.title}</h3>
-                            <p class="text-gray-500 text-xs mb-4 line-clamp-2 text-left">${n.desc || ''}</p>
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest"><i class="fa fa-user text-red-600 mr-1"></i> ${n.author || 'KIM'}</span>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) { grid.innerHTML = "<p class='text-center text-red-600 col-span-full'>Gagal memuat novel.</p>"; }
-        }
-
-        function openNovel(novel) {
-            const content = `
-                <h1 class="text-5xl font-black italic text-red-600 mb-2 uppercase tracking-tighter">${novel.title}</h1>
-                <p class="text-gray-500 font-bold mb-10 border-b border-white/10 pb-4">AUTHOR: ${novel.author}</p>
-                <div class="space-y-6">${novel.content ? novel.content.replace(/\n/g, '<br>') : 'Tidak ada isi konten.'}</div>
-            `;
-            document.getElementById('readerContent').innerHTML = content;
-            document.getElementById('readerModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeReader() {
-            document.getElementById('readerModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
         }
 
         async function loadMoreMovies() {
@@ -370,7 +369,7 @@
         async function openMovie(id) {
             const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&append_to_response=videos,credits&language=id-ID`);
             let m = await res.json();
-            if (!m.overview || m.overview === "") {
+            if (!m.overview) {
                 const resEn = await fetch(`${BASE_URL}/movie/${id}?api_key=${MOVIE_API_KEY}&language=en-US`);
                 const dataEn = await resEn.json();
                 m.overview = dataEn.overview;
@@ -389,38 +388,15 @@
                         <div class="flex items-center gap-4 mb-4">
                             <span class="text-red-600 font-black text-xl italic tracking-tighter"><i class="fa fa-star"></i> ${m.vote_average.toFixed(1)}</span>
                             <span class="text-gray-500 font-bold text-xs uppercase">${m.release_date.split('-')[0]}</span>
-                            <span class="text-gray-500 font-bold text-xs uppercase">${m.runtime} Menit</span>
                         </div>
                         <h1 class="text-5xl md:text-8xl font-black italic uppercase leading-none mb-6 tracking-tighter">${m.title}</h1>
-                        <h3 class="text-red-600 font-black uppercase text-sm mb-4 italic tracking-widest">Sinopsis Lengkap:</h3>
-                        <p class="text-gray-300 text-lg mb-8 opacity-80 leading-loose">${m.overview || 'Maaf, deskripsi untuk film ini belum tersedia.'}</p>
-                        <div class="mb-10">
-                            <h3 class="text-red-600 font-black uppercase text-sm mb-6 italic tracking-widest">Pemeran Utama:</h3>
-                            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-4">
-                                ${cast.map(c => `
-                                    <div class="min-w-[100px] text-center">
-                                        <div class="w-16 h-16 mx-auto rounded-full overflow-hidden border-2 border-white/10 mb-2">
-                                            <img src="${c.profile_path ? 'https://image.tmdb.org/t/p/w185' + c.profile_path : 'https://via.placeholder.com/185x185?text=No+Photo'}" class="w-full h-full object-cover">
-                                        </div>
-                                        <p class="text-[9px] font-black uppercase text-white truncate w-24">${c.name}</p>
-                                        <p class="text-[8px] font-bold uppercase text-gray-500 truncate w-24">${c.character}</p>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl shadow-red-600/30 hover:scale-105 transition-all">Mulai Nonton</button>
-                    </div>
-                </div>
-                <div class="mb-20">
-                    <h2 class="text-2xl font-black italic uppercase flex items-center gap-3 mb-8"><i class="fa fa-play text-red-600"></i> Official Trailer</h2>
-                    <div class="relative w-full aspect-video rounded-[40px] overflow-hidden border border-white/10 shadow-2xl bg-white/5">
-                        ${trailer ? `<iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/${trailer.key}?autoplay=0&rel=0" frameborder="0" allowfullscreen></iframe>` : `<div class="flex items-center justify-center h-full text-gray-500 font-bold italic uppercase">Trailer tidak tersedia</div>`}
+                        <p class="text-gray-300 text-lg mb-8 opacity-80 leading-loose">${m.overview || 'Sinopsis tidak tersedia.'}</p>
+                        <button onclick="window.open('https://vidsrc.to/embed/movie/${id}', '_blank')" class="bg-red-600 px-12 py-5 rounded-2xl font-black uppercase text-sm tracking-widest hover:scale-105 transition-all shadow-2xl shadow-red-600/30">Mulai Nonton</button>
                     </div>
                 </div>
             `;
             document.getElementById('movieModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
-            document.getElementById('movieModal').scrollTop = 0;
         }
 
         function closeModal() {
@@ -439,8 +415,7 @@
 
         window.onscroll = () => {
             const movieTab = document.getElementById('pane-movies');
-            const searchInput = document.getElementById('searchInput');
-            if (movieTab && movieTab.classList.contains('active') && searchInput.value.length === 0) {
+            if (movieTab && movieTab.classList.contains('active') && document.getElementById('searchInput').value === "") {
                 if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) loadMoreMovies();
             }
         };
